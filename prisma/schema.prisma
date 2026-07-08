@@ -1,0 +1,337 @@
+// SacredOps — construction operations platform
+// Prisma schema covering Staffing, Certifications & Training,
+// Safety & Incidents, and Permits & Documents.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Trade {
+  LABORER
+  CARPENTER
+  ELECTRICIAN
+  PLUMBER
+  IRONWORKER
+  OPERATOR
+  MASON
+  WELDER
+  PAINTER
+  ROOFER
+  HVAC
+  FOREMAN
+  SUPERINTENDENT
+}
+
+enum WorkerStatus {
+  ACTIVE
+  ON_LEAVE
+  INACTIVE
+}
+
+enum JobsiteStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+}
+
+enum AssignmentStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum CertificationStatus {
+  VALID
+  EXPIRING_SOON
+  EXPIRED
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum IncidentSeverity {
+  NEAR_MISS
+  MINOR
+  SERIOUS
+  CRITICAL
+  FATALITY
+}
+
+enum IncidentStatus {
+  REPORTED
+  INVESTIGATING
+  RESOLVED
+  CLOSED
+}
+
+enum InspectionStatus {
+  SCHEDULED
+  PASSED
+  FAILED
+  NEEDS_FOLLOWUP
+}
+
+enum ChecklistResult {
+  PASS
+  FAIL
+  NA
+}
+
+enum PermitStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum DocumentCategory {
+  DRAWING
+  CONTRACT
+  SAFETY_PLAN
+  RFI
+  SUBMITTAL
+  PHOTO
+  OTHER
+}
+
+// ---------------------------------------------------------------------------
+// Organizations: unions & training providers
+// ---------------------------------------------------------------------------
+
+model Union {
+  id        String   @id @default(cuid())
+  name      String
+  local     String? // e.g. "Local 3"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workers Worker[]
+}
+
+// ---------------------------------------------------------------------------
+// Staffing & Workers
+// ---------------------------------------------------------------------------
+
+model Worker {
+  id         String       @id @default(cuid())
+  firstName  String
+  lastName   String
+  email      String?      @unique
+  phone      String?
+  trade      Trade
+  status     WorkerStatus @default(ACTIVE)
+  hireDate   DateTime     @default(now())
+  hourlyRate Decimal?     @db.Decimal(10, 2)
+  notes      String?
+
+  unionId String?
+  union   Union?  @relation(fields: [unionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments    Assignment[]
+  certifications Certification[]
+  enrollments    Enrollment[]
+  reportedIncidents Incident[]  @relation("ReportedBy")
+
+  @@index([trade])
+  @@index([status])
+}
+
+model Jobsite {
+  id        String        @id @default(cuid())
+  name      String
+  code      String        @unique // internal project code
+  address   String?
+  city      String?
+  state     String?
+  status    JobsiteStatus @default(ACTIVE)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  assignments Assignment[]
+  incidents   Incident[]
+  inspections Inspection[]
+  permits     Permit[]
+  documents   Document[]
+
+  @@index([status])
+}
+
+model Assignment {
+  id        String           @id @default(cuid())
+  workerId  String
+  worker    Worker           @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  jobsiteId String
+  jobsite   Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  role      String? // role on this jobsite
+  status    AssignmentStatus @default(SCHEDULED)
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([workerId])
+  @@index([jobsiteId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Certifications & Training
+// ---------------------------------------------------------------------------
+
+model Certification {
+  id           String    @id @default(cuid())
+  workerId     String
+  worker       Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  name         String // e.g. "OSHA 30", "Confined Space Entry"
+  issuingBody  String?
+  credentialId String?
+  issuedDate   DateTime
+  expiresDate  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([workerId])
+  @@index([expiresDate])
+}
+
+model TrainingCourse {
+  id            String   @id @default(cuid())
+  title         String
+  provider      String?
+  description   String?
+  durationHours Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id          String           @id @default(cuid())
+  workerId    String
+  worker      Worker           @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      TrainingCourse   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status      EnrollmentStatus @default(ENROLLED)
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+  score       Int?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([workerId, courseId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Safety & Incidents
+// ---------------------------------------------------------------------------
+
+model Incident {
+  id          String           @id @default(cuid())
+  jobsiteId   String
+  jobsite     Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  reportedById String?
+  reportedBy  Worker?          @relation("ReportedBy", fields: [reportedById], references: [id], onDelete: SetNull)
+  title       String
+  description String
+  severity    IncidentSeverity
+  status      IncidentStatus   @default(REPORTED)
+  occurredAt  DateTime
+  location    String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([jobsiteId])
+  @@index([severity])
+  @@index([status])
+}
+
+model Inspection {
+  id          String           @id @default(cuid())
+  jobsiteId   String
+  jobsite     Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  title       String
+  inspector   String?
+  status      InspectionStatus @default(SCHEDULED)
+  scheduledAt DateTime
+  completedAt DateTime?
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  items ChecklistItem[]
+
+  @@index([jobsiteId])
+  @@index([status])
+}
+
+model ChecklistItem {
+  id           String          @id @default(cuid())
+  inspectionId String
+  inspection   Inspection      @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  label        String
+  result       ChecklistResult @default(NA)
+  comment      String?
+
+  @@index([inspectionId])
+}
+
+// ---------------------------------------------------------------------------
+// Permits & Documents
+// ---------------------------------------------------------------------------
+
+model Permit {
+  id          String       @id @default(cuid())
+  jobsiteId   String
+  jobsite     Jobsite      @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  type        String // e.g. "Building", "Electrical", "Excavation"
+  permitNumber String?
+  issuingAuthority String?
+  status      PermitStatus @default(DRAFT)
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([jobsiteId])
+  @@index([status])
+}
+
+model Document {
+  id          String           @id @default(cuid())
+  jobsiteId   String
+  jobsite     Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  name        String
+  category    DocumentCategory @default(OTHER)
+  url         String? // link to stored file
+  version     String?
+  uploadedBy  String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([jobsiteId])
+  @@index([category])
+}
