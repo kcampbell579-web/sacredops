@@ -24,6 +24,30 @@ model AppState {
   updatedAt DateTime @updatedAt
 }
 
+// Projects created in the Supervisor Portal's "New Project" flow. Decomposed
+// store: the portal reads/writes the `sacredops_custom_projects` key, and the
+// server projects that JSON into these rows (see lib/projectors.ts). This is a
+// dedicated table (not the aspirational, relation-heavy `Jobsite` model) so it
+// matches the portal's actual project-card shape without disturbing the seed.
+model Project {
+  id        String   @id // client-generated id (e.g. "p1720...")
+  name      String
+  loc       String?
+  div       String? // division / discipline
+  contract  String?
+  owner     String? // owner / agency
+  role      String? // GC | Sub
+  crew      Int      @default(0)
+  pct       Int      @default(0) // completion %
+  openInsp  Int      @default(0) // open inspection items
+  status    String? // ok | attention | ...
+  details   Json? // any additional fields captured
+  createdAt DateTime @default(now())
+
+  @@index([role])
+  @@index([status])
+}
+
 // Form submissions (permits, checklists, orientations, JHAs) created in the
 // Worker Portal and reviewed in the Supervisor Portal. This is the first
 // "decomposed" store: the portals still read/write the `sacredops_submissions`

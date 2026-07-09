@@ -129,6 +129,75 @@ projectors.sacredops_inspections = {
   },
 };
 
+function int(v: unknown): number {
+  const n = typeof v === "number" ? v : parseInt(String(v ?? ""), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Custom projects — { id, name, loc, div, contract, owner, role, crew, pct, openInsp, status }
+projectors.sacredops_custom_projects = {
+  read: async () => {
+    // Portal appends new projects to the end, so preserve insertion order.
+    const rows = await prisma.project.findMany({ orderBy: { createdAt: "asc" } });
+    return rows.map((r) => {
+      const extra =
+        r.details && typeof r.details === "object" && !Array.isArray(r.details)
+          ? (r.details as Record<string, unknown>)
+          : {};
+      return {
+        id: r.id,
+        name: r.name,
+        loc: r.loc ?? "",
+        div: r.div ?? "",
+        contract: r.contract ?? "",
+        owner: r.owner ?? "",
+        role: r.role ?? "GC",
+        crew: r.crew,
+        pct: r.pct,
+        openInsp: r.openInsp,
+        status: r.status ?? "ok",
+        ...extra,
+      };
+    });
+  },
+  write: async (value) => {
+    const items = asArray(value);
+    for (const p of items) {
+      const id = str(p.id);
+      if (!id) continue;
+      const {
+        id: _id,
+        name,
+        loc,
+        div,
+        contract,
+        owner,
+        role,
+        crew,
+        pct,
+        openInsp,
+        status,
+        ...rest
+      } = p;
+      void _id;
+      const data = {
+        name: str(name) ?? "",
+        loc: str(loc) ?? null,
+        div: str(div) ?? null,
+        contract: str(contract) ?? null,
+        owner: str(owner) ?? null,
+        role: str(role) ?? null,
+        crew: int(crew),
+        pct: int(pct),
+        openInsp: int(openInsp),
+        status: str(status) ?? null,
+        details: (Object.keys(rest).length ? rest : null) as never,
+      };
+      await prisma.project.upsert({ where: { id }, update: data, create: { id, ...data } });
+    }
+  },
+};
+
 export function isProjectedKey(key: string): boolean {
   return Object.prototype.hasOwnProperty.call(projectors, key);
 }
