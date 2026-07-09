@@ -127,25 +127,44 @@ const statusColor = (s: string) =>
     ? WN
     : MU;
 
+type Bundle = { submissions: Report; inspections: Report; projects: Report; incidents: Report };
+
+async function loadReports(project: string): Promise<Bundle> {
+  const q = project ? "?project=" + encodeURIComponent(project) : "";
+  const [submissions, inspections, projects, incidents] = await Promise.all([
+    getJSON("/api/reports/submissions" + q),
+    getJSON("/api/reports/inspections" + q),
+    getJSON("/api/reports/projects" + q),
+    getJSON("/api/reports/incidents" + q),
+  ]);
+  return { submissions, inspections, projects, incidents };
+}
+
 export default function ReportsPage() {
-  const [data, setData] = useState<{
-    submissions: Report;
-    inspections: Report;
-    projects: Report;
-    incidents: Report;
-  } | null>(null);
+  const [data, setData] = useState<Bundle | null>(null);
+  const [filter, setFilter] = useState("");
+  const [projectList, setProjectList] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const [submissions, inspections, projects, incidents] = await Promise.all([
-        getJSON("/api/reports/submissions"),
-        getJSON("/api/reports/inspections"),
-        getJSON("/api/reports/projects"),
-        getJSON("/api/reports/incidents"),
-      ]);
-      setData({ submissions, inspections, projects, incidents });
+      const d = await loadReports("");
+      setData(d);
+      const names = new Set<string>();
+      (d.submissions?.byProject ?? []).forEach((x: any) => x.project && names.add(x.project));
+      (d.incidents?.byProject ?? []).forEach((x: any) => x.project && names.add(x.project));
+      (d.inspections?.flaggedByProject ?? []).forEach((x: any) => x.project && names.add(x.project));
+      (d.projects?.recent ?? []).forEach((x: any) => x.name && names.add(x.name));
+      setProjectList([...names].sort());
     })();
   }, []);
+
+  const select = async (name: string) => {
+    setFilter(name);
+    setBusy(true);
+    setData(await loadReports(name));
+    setBusy(false);
+  };
 
   const wrap: React.CSSProperties = {
     minHeight: "100vh",
@@ -191,6 +210,38 @@ export default function ReportsPage() {
             ← Portals
           </Link>
         </div>
+
+        {/* Project filter */}
+        {projectList.length > 0 && (
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", opacity: busy ? 0.55 : 1, transition: "opacity .15s" }}>
+              <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: 1.2, color: MU, fontFamily: MONO, marginRight: 2 }}>
+                PROJECT
+              </span>
+              {[{ n: "", label: "All projects" }, ...projectList.map((n) => ({ n, label: n }))].map((c) => {
+                const on = filter === c.n;
+                return (
+                  <button
+                    key={c.n || "all"}
+                    onClick={() => !on && select(c.n)}
+                    style={{
+                      background: on ? AC + "1e" : "rgba(255,255,255,0.05)",
+                      border: "1px solid " + (on ? AC : HL),
+                      color: on ? AC : MU,
+                      borderRadius: 20,
+                      padding: "7px 13px",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      cursor: on ? "default" : "pointer",
+                    }}
+                  >
+                    {c.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* KPI row */}
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>

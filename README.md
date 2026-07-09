@@ -44,8 +44,9 @@ and **Profile**.
 A read-only analytics view (reachable from the role chooser) that visualizes the
 `/api/reports/*` endpoints — KPI tiles plus labeled single-hue magnitude bars for
 submissions, inspections (pass/flag, flagged-by-project), projects (crew by role,
-status), and incidents (by type/source/project). Because it reads the decomposed
-relational tables, it reflects live portal activity.
+status), and incidents (by type/source/project). A **project filter** drills every
+chart and KPI down to a single project (each report endpoint accepts `?project=`).
+Because it reads the decomposed relational tables, it reflects live portal activity.
 
 The two portals **share data** — e.g. a worker's form submissions (`sacredops_submissions`),
 pay (`sacredops_pay`), and safety locations (`sacredops_safety_locations`) are visible
