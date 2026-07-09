@@ -6,8 +6,9 @@ async function main() {
   console.log("Seeding SacredOps database…");
 
   // Clear existing data (idempotent seeding for local dev)
-  await prisma.checklistItem.deleteMany();
-  await prisma.inspection.deleteMany();
+  // Note: Inspection/ChecklistItem are the portal's decomposed store (see
+  // lib/projectors.ts), so this relational demo seed intentionally leaves them
+  // alone — seeding them would inject demo inspections into the live portal.
   await prisma.incident.deleteMany();
   await prisma.permit.deleteMany();
   await prisma.document.deleteMany();
@@ -132,24 +133,6 @@ async function main() {
       location: "Pier 3 scaffold",
     },
   });
-  const inspection = await prisma.inspection.create({
-    data: {
-      jobsiteId: ironwood.id,
-      title: "Daily Fall Protection Inspection",
-      inspector: "John Rivera",
-      status: "PASSED",
-      scheduledAt: new Date("2025-07-08T07:00:00Z"),
-      completedAt: new Date("2025-07-08T07:30:00Z"),
-    },
-  });
-  await prisma.checklistItem.createMany({
-    data: [
-      { inspectionId: inspection.id, label: "Guardrails in place", result: "PASS" },
-      { inspectionId: inspection.id, label: "PFAS inspected & tagged", result: "PASS" },
-      { inspectionId: inspection.id, label: "Anchor points rated", result: "PASS" },
-    ],
-  });
-
   // Permits & documents
   await prisma.permit.create({
     data: {

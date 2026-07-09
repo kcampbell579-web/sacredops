@@ -20,6 +20,7 @@ This repository contains two mobile-first portals — a **Supervisor Portal** an
 | `/api/state` | `GET` all persisted portal state |
 | `/api/state/[key]` | `GET` / `PUT` / `DELETE` a single state document |
 | `/api/reports/submissions` | Aggregated report over the decomposed submissions table |
+| `/api/reports/inspections` | Aggregated report over the decomposed inspections tables |
 
 ## The portals
 
@@ -73,9 +74,21 @@ Decomposed so far:
   Powers `GET /api/reports/submissions`, which aggregates counts by project and form
   type — the kind of reporting that is impossible over a JSON blob.
 
+- **`sacredops_inspections` → `Inspection` + `ChecklistItem` tables** — safety
+  inspections and walk-throughs. The inspection's `project`, `type`, `by`, `date`, and
+  `status` become columns; each checklist item becomes an ordered `ChecklistItem` row
+  (`label`, `result`, `position`); the richer form body (`fullSections`/`fullObs`) is
+  preserved in a `details` JSONB column. Because checklist items are now real rows,
+  `GET /api/reports/inspections` can `JOIN` across the two tables — e.g. count flagged
+  items per project — alongside status/type breakdowns.
+
 The remaining relational models (`Worker`, `Jobsite`, `Certification`, `Incident`,
-`Permit`, …) are the domain model for further decomposition; inspections, projects, and
-incidents are natural next candidates to move from `AppState` into typed tables.
+`Permit`, …) are the domain model for further decomposition; projects and incidents are
+natural next candidates to move from `AppState` into typed tables.
+
+> The relational demo seed (`prisma/seed.ts`) intentionally does **not** write to the
+> decomposed tables (`Submission`, `Inspection`, `ChecklistItem`) — those are live portal
+> stores, and seeding them would inject demo data into the running portals.
 
 ## Getting started
 

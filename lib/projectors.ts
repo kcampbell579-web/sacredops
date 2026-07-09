@@ -63,6 +63,72 @@ export const projectors: Record<string, Projector> = {
   },
 };
 
+// Inspections — { id, type, proj, date, by, status, items:[[label,result]], note, ... }
+projectors.sacredops_inspections = {
+  read: async () => {
+    const rows = await prisma.inspection.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { items: { orderBy: { position: "asc" } } },
+    });
+    return rows.map((r) => {
+      const extra =
+        r.details && typeof r.details === "object" && !Array.isArray(r.details)
+          ? (r.details as Record<string, unknown>)
+          : {};
+      return {
+        id: r.id,
+        type: r.type,
+        proj: r.project,
+        date: r.date ?? undefined,
+        by: r.by ?? undefined,
+        status: r.status,
+        items: r.items.map((it) => [it.label, it.result]),
+        note: r.note ?? undefined,
+        ...extra,
+      };
+    });
+  },
+  write: async (value) => {
+    const items = asArray(value);
+    // Upsert-only across inspections (they accrue); an inspection's checklist
+    // items are replaced wholesale when that inspection is (re)written.
+    for (const ins of items) {
+      const id = str(ins.id);
+      if (!id) continue;
+
+      const { id: _id, type, proj, date, by, status, note, items: checks, ...rest } = ins;
+      void _id;
+      const hasExtra = Object.keys(rest).length > 0;
+      const data = {
+        project: str(proj) ?? "",
+        type: str(type) ?? "",
+        by: str(by) ?? null,
+        date: str(date) ?? null,
+        status: str(status) ?? "",
+        note: str(note) ?? null,
+        details: (hasExtra ? rest : null) as never,
+      };
+      const checkRows = (Array.isArray(checks) ? checks : []).map(
+        (pair: unknown, idx: number) => {
+          const p = pair as unknown[];
+          return {
+            inspectionId: id,
+            label: str(p?.[0]) ?? "",
+            result: str(p?.[1]) ?? "",
+            position: idx,
+          };
+        }
+      );
+
+      await prisma.$transaction([
+        prisma.checklistItem.deleteMany({ where: { inspectionId: id } }),
+        prisma.inspection.upsert({ where: { id }, update: data, create: { id, ...data } }),
+        prisma.checklistItem.createMany({ data: checkRows }),
+      ]);
+    }
+  },
+};
+
 export function isProjectedKey(key: string): boolean {
   return Object.prototype.hasOwnProperty.call(projectors, key);
 }

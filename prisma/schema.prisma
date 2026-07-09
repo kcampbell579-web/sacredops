@@ -111,19 +111,6 @@ enum IncidentStatus {
   CLOSED
 }
 
-enum InspectionStatus {
-  SCHEDULED
-  PASSED
-  FAILED
-  NEEDS_FOLLOWUP
-}
-
-enum ChecklistResult {
-  PASS
-  FAIL
-  NA
-}
-
 enum PermitStatus {
   DRAFT
   SUBMITTED
@@ -202,7 +189,6 @@ model Jobsite {
 
   assignments Assignment[]
   incidents   Incident[]
-  inspections Inspection[]
   permits     Permit[]
   documents   Document[]
 
@@ -300,34 +286,39 @@ model Incident {
   @@index([status])
 }
 
+// Safety inspections & walk-throughs. Decomposed store: the Supervisor Portal
+// reads/writes the `sacredops_inspections` key, and the server projects that
+// JSON into these rows (see lib/projectors.ts). `project` is the project name
+// (custom projects don't live in the Jobsite table), status is "pass"|"open"|
+// "fail", and `details` preserves the richer form body (fullSections/fullObs).
 model Inspection {
-  id          String           @id @default(cuid())
-  jobsiteId   String
-  jobsite     Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
-  title       String
-  inspector   String?
-  status      InspectionStatus @default(SCHEDULED)
-  scheduledAt DateTime
-  completedAt DateTime?
-  notes       String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id        String   @id // client-generated id (e.g. "i1", "ni...", "wt...")
+  project   String
+  type      String // Scaffold, Fall Protection, Crane / Rigging, ...
+  by        String? // inspector
+  date      String? // human-facing date string as captured
+  status    String // pass | open | fail
+  note      String?
+  details   Json? // extra form body (fullSections / fullObs)
+  createdAt DateTime @default(now())
 
   items ChecklistItem[]
 
-  @@index([jobsiteId])
+  @@index([project])
   @@index([status])
+  @@index([type])
 }
 
 model ChecklistItem {
-  id           String          @id @default(cuid())
+  id           String     @id @default(cuid())
   inspectionId String
-  inspection   Inspection      @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
   label        String
-  result       ChecklistResult @default(NA)
-  comment      String?
+  result       String // pass | flag
+  position     Int // preserves item order within the inspection
 
   @@index([inspectionId])
+  @@index([result])
 }
 
 // ---------------------------------------------------------------------------
