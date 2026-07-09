@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 // Brand palette (matches the portals' dark industrial theme)
@@ -174,10 +174,14 @@ export default function ReportsPage() {
   const [filter, setFilter] = useState("");
   const [projectList, setProjectList] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  // Monotonic request id so a slow earlier fetch can't overwrite a newer one.
+  const reqSeq = useRef(0);
 
   useEffect(() => {
     (async () => {
+      const myId = ++reqSeq.current;
       const d = await loadReports("");
+      if (myId !== reqSeq.current) return;
       setData(d);
       const names = new Set<string>();
       (d.submissions?.byProject ?? []).forEach((x: any) => x.project && names.add(x.project));
@@ -191,7 +195,10 @@ export default function ReportsPage() {
   const select = async (name: string) => {
     setFilter(name);
     setBusy(true);
-    setData(await loadReports(name));
+    const myId = ++reqSeq.current;
+    const d = await loadReports(name);
+    if (myId !== reqSeq.current) return; // a newer request superseded this one
+    setData(d);
     setBusy(false);
   };
 

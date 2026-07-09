@@ -19,6 +19,9 @@ const nativeSetItem =
 
 let writeThroughInstalled = false;
 const debounceTimers: Record<string, ReturnType<typeof setTimeout>> = {};
+// Latest not-yet-sent value per key, so a pending debounced write can be
+// flushed immediately when the page is being hidden/unloaded.
+const pendingValues: Record<string, string> = {};
 
 async function putState(key: string, rawValue: string): Promise<void> {
   try {
@@ -35,11 +38,29 @@ async function putState(key: string, rawValue: string): Promise<void> {
 }
 
 function schedulePut(key: string, rawValue: string): void {
+  pendingValues[key] = rawValue;
   if (debounceTimers[key]) clearTimeout(debounceTimers[key]);
   debounceTimers[key] = setTimeout(() => {
     delete debounceTimers[key];
-    void putState(key, rawValue);
+    const v = pendingValues[key];
+    delete pendingValues[key];
+    if (v !== undefined) void putState(key, v);
   }, 400);
+}
+
+// Send every pending debounced write immediately (fetch keepalive lets these
+// complete during unload). Called on pagehide / tab-hidden so a form submitted
+// then closed within the debounce window is not lost.
+function flushPending(): void {
+  for (const key of Object.keys(pendingValues)) {
+    if (debounceTimers[key]) {
+      clearTimeout(debounceTimers[key]);
+      delete debounceTimers[key];
+    }
+    const v = pendingValues[key];
+    delete pendingValues[key];
+    if (v !== undefined) void putState(key, v);
+  }
 }
 
 // Hydrate localStorage from the server, then reconcile local-only keys up to
@@ -50,12 +71,18 @@ export async function hydrate(): Promise<void> {
   const ls = window.localStorage;
 
   let server: Record<string, unknown> = {};
+  // Time-box the hydrate fetch so a hung connection can't leave the portal
+  // stuck on the "SYNCING…" gate forever — fall back to cached localStorage.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
   try {
-    const res = await fetch("/api/state", { cache: "no-store" });
+    const res = await fetch("/api/state", { cache: "no-store", signal: controller.signal });
     if (res.ok) server = await res.json();
   } catch {
-    // No server available: fall back to whatever is already in localStorage.
+    // No server available / timed out: fall back to whatever is in localStorage.
     return;
+  } finally {
+    clearTimeout(timer);
   }
 
   const serverKeys = new Set(Object.keys(server));
@@ -98,4 +125,10 @@ export function installWriteThrough(): void {
       schedulePut(key, value);
     }
   };
+
+  // Drain pending writes before the page goes away.
+  window.addEventListener("pagehide", flushPending);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushPending();
+  });
 }
