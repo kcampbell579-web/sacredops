@@ -8,6 +8,15 @@
 
 const PREFIX = "sacredops_";
 
+// Capture the native, unpatched setItem once at module load (before
+// installWriteThrough() can replace it) so hydrate()'s down-writes never
+// re-trigger a write-through PUT — even on a second mount after the patch is
+// installed (e.g. navigating between /supervisor and /worker).
+const nativeSetItem =
+  typeof window !== "undefined"
+    ? window.localStorage.setItem.bind(window.localStorage)
+    : undefined;
+
 let writeThroughInstalled = false;
 const debounceTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 
@@ -52,12 +61,12 @@ export async function hydrate(): Promise<void> {
   const serverKeys = new Set(Object.keys(server));
 
   // Write server values down into localStorage (server is the shared source
-  // of truth across devices). Use the raw setItem so this does not re-trigger
-  // a write-through PUT.
+  // of truth across devices). Use the native setItem captured at module load
+  // so this does not re-trigger a write-through PUT once the patch is installed.
   for (const [key, value] of Object.entries(server)) {
     const raw = typeof value === "string" ? value : JSON.stringify(value);
     try {
-      ls.setItem(key, raw);
+      (nativeSetItem ?? ls.setItem.bind(ls))(key, raw);
     } catch {
       /* ignore quota errors */
     }

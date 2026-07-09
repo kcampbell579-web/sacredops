@@ -10,14 +10,20 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const out: Record<string, unknown> = {};
 
-  const rows = await prisma.appState.findMany();
+  // Read the AppState rows and all projected keys concurrently — they hit
+  // disjoint tables, and this is on the hot hydrate path.
+  const projectorEntries = Object.entries(projectors);
+  const [rows, projected] = await Promise.all([
+    prisma.appState.findMany(),
+    Promise.all(projectorEntries.map(([, projector]) => projector.read())),
+  ]);
+
   for (const row of rows) {
     if (!isProjectedKey(row.key)) out[row.key] = row.value;
   }
-
-  for (const [key, projector] of Object.entries(projectors)) {
-    out[key] = await projector.read();
-  }
+  projectorEntries.forEach(([key], i) => {
+    out[key] = projected[i];
+  });
 
   return Response.json(out);
 }

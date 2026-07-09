@@ -6,10 +6,10 @@ async function main() {
   console.log("Seeding SacredOps database…");
 
   // Clear existing data (idempotent seeding for local dev)
-  // Note: Inspection/ChecklistItem are the portal's decomposed store (see
-  // lib/projectors.ts), so this relational demo seed intentionally leaves them
-  // alone — seeding them would inject demo inspections into the live portal.
-  await prisma.incident.deleteMany();
+  // Note: the decomposed portal stores (Submission, Inspection/ChecklistItem,
+  // Project, Incident/IncidentCondition — see lib/projectors.ts) are the live
+  // source of truth for the portals, so this relational demo seed intentionally
+  // leaves them alone — touching them would destroy or inject portal data.
   await prisma.permit.deleteMany();
   await prisma.document.deleteMany();
   await prisma.enrollment.deleteMany();

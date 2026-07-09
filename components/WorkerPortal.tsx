@@ -190,6 +190,9 @@ function pushSub(sub){try{const a=loadSubs();a.unshift(sub);window.localStorage.
 const INCKEY="sacredops_incidents";
 function loadIncidents(){try{const v=window.localStorage.getItem(INCKEY);return v?JSON.parse(v):[];}catch(e){return (window.__incidents||[]);}}
 function pushIncident(rec){try{const a=loadIncidents();a.unshift(rec);window.localStorage.setItem(INCKEY,JSON.stringify(a));}catch(e){window.__incidents=[rec,...(window.__incidents||[])];}}
+// Draft persists the in-progress incident form across parent re-renders (the
+// screen components are defined in render, so a re-render remounts them).
+let incidentDraft={};
 const PROJECTS=[
  {id:"iron",name:"Ironwood Bridge Replacement",loc:"Millbrook",div:"Bridge Division",crew:24,pct:92,openInsp:2,status:"ok",contract:"NYSDOT-2024-0417",owner:"NYS DOT",role:"GC"},
  {id:"cedar",name:"Cedar Harbor Outfall Rehab",loc:"Bayport",div:"Marine / Underwater",crew:12,pct:100,openInsp:0,status:"ok",contract:"S3C067-22G",owner:"Cedar Harbor WWTP",role:"Sub"},
@@ -745,8 +748,8 @@ export default function App(){
 
   /* ---------- incident / talks / permits ---------- */
   const Incident=()=>{
-    const[f,setF]=useState({type:"Injury / Illness",proj:myProj.name,by:"John Rivera — Foreman"});
-    const s=(k,v)=>setF(o=>({...o,[k]:v}));
+    const[f,setF]=useState(()=>({type:"Injury / Illness",proj:myProj.name,by:"John Rivera — Foreman",...incidentDraft}));
+    const s=(k,v)=>setF(o=>{const n={...o,[k]:v};incidentDraft=n;return n;});
     const submit=()=>{
       pushIncident({
         id:"inc"+Date.now(),source:"worker",kind:"report",
@@ -754,11 +757,12 @@ export default function App(){
         completedBy:f.by||"",location:f.location||"",description:f.description||"",
         dateTime:f.when||"",date:new Date().toLocaleDateString()
       });
-      setScr(null);show("Incident submitted to supervisor");
+      incidentDraft={};setScr(null);show("Incident submitted to supervisor");
     };
     return(<Screen title="Report an Incident" sub="Injury · near-miss · hazard">
       <Field label="Type"><Sel v={f.type} set={v=>s("type",v)} opts={["Injury / Illness","Near Miss","Hazard Observation","Property Damage"]}/></Field>
       <Field label="Project"><Sel v={f.proj} set={v=>s("proj",v)} opts={PNAMES}/></Field>
+      <Field label="Date & time of incident"><input style={inp} type="datetime-local" value={f.when||""} onChange={e=>s("when",e.target.value)}/></Field>
       <Field label="Location"><input style={inp} value={f.location||""} onChange={e=>s("location",e.target.value)} placeholder="Grid / area on site"/></Field>
       <Field label="Description"><textarea style={{...inp,height:88,resize:"none"}} value={f.description||""} onChange={e=>s("description",e.target.value)} placeholder="What happened?"/></Field>
       <Field label="Reported by"><input style={inp} value={f.by||""} onChange={e=>s("by",e.target.value)}/></Field>

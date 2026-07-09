@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { projectors, isProjectedKey } from "@/lib/projectors";
 
 export const runtime = "nodejs";
@@ -35,11 +36,13 @@ export async function PUT(req: Request, { params }: Ctx) {
     return Response.json({ ok: true });
   }
 
+  // A JSON `null` value must be wrapped as Prisma.JsonNull — the AppState.value
+  // column is a non-nullable Json field, so passing a bare `null` throws.
+  const dbValue = value === null ? Prisma.JsonNull : (value as Prisma.InputJsonValue);
   await prisma.appState.upsert({
     where: { key },
-    // Prisma requires JSON null to be wrapped; use a plain object cast.
-    update: { value: value as never },
-    create: { key, value: value as never },
+    update: { value: dbValue },
+    create: { key, value: dbValue },
   });
 
   return Response.json({ ok: true });
@@ -49,8 +52,9 @@ export async function PUT(req: Request, { params }: Ctx) {
 export async function DELETE(_req: Request, { params }: Ctx) {
   const { key } = await params;
   if (isProjectedKey(key)) {
-    // Clear the projected store by writing an empty collection.
-    await projectors[key].write([]);
+    // Clear the projected store's table(s). (write([]) is a no-op for the
+    // upsert-only projectors, so clear() must be explicit.)
+    await projectors[key].clear();
     return Response.json({ ok: true });
   }
   await prisma.appState.deleteMany({ where: { key } });

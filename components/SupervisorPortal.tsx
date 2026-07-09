@@ -200,6 +200,9 @@ const INCKEY="sacredops_incidents";
 function loadIncidents(){try{const v=window.localStorage.getItem(INCKEY);return v?JSON.parse(v):[];}catch(e){return (window.__incidents||[]);}}
 function pushIncident(rec){try{const a=loadIncidents();a.unshift(rec);window.localStorage.setItem(INCKEY,JSON.stringify(a));}catch(e){window.__incidents=[rec,...(window.__incidents||[])];}}
 const INC_CONDITIONS=["Lighting","Housekeeping","Exclusion Zones Established","PPE","Equipment Working Clean and Properly","Adequate Ventilation","Floor surfaces are kept dry and free of slip hazards.","Mechanical safeguards are in place and in proper working order","Emergency stop switches on machines are identified and in proper working order"];
+// Drafts persist the in-progress investigation report across parent re-renders
+// (screen components are defined in render, so a re-render remounts them).
+let incidentDraft={};let incidentCondDraft={};
 
 
 const PLANS=[
@@ -1296,10 +1299,10 @@ export default function App(){
   );
 
   const Incident=()=>{
-    const[f,setF]=useState({proj:(ALLP[0]&&ALLP[0].name)||"",completedBy:"Kelly McClure — Safety Director"});
-    const s=(k,v)=>setF(o=>({...o,[k]:v}));
-    const[cond,setCond]=useState({});
-    const setC=(i,v)=>setCond(o=>({...o,[i]:o[i]===v?"":v}));
+    const[f,setF]=useState(()=>({proj:(ALLP[0]&&ALLP[0].name)||"",completedBy:"Kelly McClure — Safety Director",...incidentDraft}));
+    const s=(k,v)=>setF(o=>{const n={...o,[k]:v};incidentDraft=n;return n;});
+    const[cond,setCond]=useState(()=>({...incidentCondDraft}));
+    const setC=(i,v)=>setCond(o=>{const n={...o,[i]:o[i]===v?"":v};incidentCondDraft=n;return n;});
     const submit=()=>{
       const rec={
         id:"inc"+Date.now(),source:"supervisor",kind:"investigation",
@@ -1317,7 +1320,7 @@ export default function App(){
         conditions:INC_CONDITIONS.map((c,i)=>[c,cond[i]||""]),
         date:new Date().toLocaleDateString()
       };
-      pushIncident(rec);setScr(null);show("Incident report submitted");
+      pushIncident(rec);incidentDraft={};incidentCondDraft={};setScr(null);show("Incident report submitted");
     };
     return(<Screen title="Incident Investigation Report" sub="Injury · near-miss · damage · investigation">
       <SecHead>Project</SecHead>
