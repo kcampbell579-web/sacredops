@@ -22,6 +22,7 @@ This repository contains two mobile-first portals — a **Supervisor Portal** an
 | `/api/reports/submissions` | Aggregated report over the decomposed submissions table |
 | `/api/reports/inspections` | Aggregated report over the decomposed inspections tables |
 | `/api/reports/projects` | Aggregated report over the decomposed projects table |
+| `/api/reports/incidents` | Aggregated report over the decomposed incidents tables |
 
 ## The portals
 
@@ -91,12 +92,18 @@ Decomposed so far:
   `Jobsite` domain model, so it matches the portal's project-card shape exactly without
   disturbing the seed.
 
+- **`sacredops_incidents` → `Incident` + `IncidentCondition` tables** — incident reports
+  and investigations. The Supervisor Portal's "Report Incident" screen is a full **Incident
+  Investigation Report** (header, general details, involved parties, medical, root cause,
+  preventive measures, and a PASS/FAIL conditions checklist — modeled on the standard
+  investigation form); the Worker Portal has a quick report. Both write the same store.
+  Queryable columns (`source`, `kind`, `project`, `type`, `completedBy`, `dateTime`,
+  `medicalAttention`, `lostTime`), the narrative body in a `details` JSONB column, and each
+  environmental condition as an `IncidentCondition` child row. `GET /api/reports/incidents`
+  breaks down by type/source/project and JOINs to count incidents with failed conditions.
+
 The remaining relational models (`Worker`, `Jobsite`, `Certification`, `Permit`, …) are the
 domain model for further work.
-
-> **Incidents** are not yet a decomposed store: the portals' "Report Incident" screens are
-> currently non-persisting stubs (they only toast). Capturing them would mean wiring that
-> form to a `sacredops_incidents` store first, then projecting it into the `Incident` table.
 
 > The relational demo seed (`prisma/seed.ts`) intentionally does **not** write to the
 > decomposed tables (`Submission`, `Inspection`, `ChecklistItem`) — those are live portal

@@ -120,21 +120,6 @@ enum EnrollmentStatus {
   FAILED
 }
 
-enum IncidentSeverity {
-  NEAR_MISS
-  MINOR
-  SERIOUS
-  CRITICAL
-  FATALITY
-}
-
-enum IncidentStatus {
-  REPORTED
-  INVESTIGATING
-  RESOLVED
-  CLOSED
-}
-
 enum PermitStatus {
   DRAFT
   SUBMITTED
@@ -192,7 +177,6 @@ model Worker {
   assignments    Assignment[]
   certifications Certification[]
   enrollments    Enrollment[]
-  reportedIncidents Incident[]  @relation("ReportedBy")
 
   @@index([trade])
   @@index([status])
@@ -212,7 +196,6 @@ model Jobsite {
   updatedAt DateTime      @updatedAt
 
   assignments Assignment[]
-  incidents   Incident[]
   permits     Permit[]
   documents   Document[]
 
@@ -290,24 +273,45 @@ model Enrollment {
 // Safety & Incidents
 // ---------------------------------------------------------------------------
 
+// Incident reports & investigations. Decomposed store: both portals write the
+// `sacredops_incidents` key, and the server projects that JSON into these rows
+// (see lib/projectors.ts). The worker's quick report (kind="report") and the
+// supervisor's full Incident Investigation Report (kind="investigation") share
+// this table — queryable columns for the common/reportable fields, a `details`
+// JSONB column for the narrative body, and IncidentCondition child rows for the
+// PASS/FAIL conditions checklist.
 model Incident {
-  id          String           @id @default(cuid())
-  jobsiteId   String
-  jobsite     Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
-  reportedById String?
-  reportedBy  Worker?          @relation("ReportedBy", fields: [reportedById], references: [id], onDelete: SetNull)
-  title       String
-  description String
-  severity    IncidentSeverity
-  status      IncidentStatus   @default(REPORTED)
-  occurredAt  DateTime
-  location    String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id              String   @id // client-generated id (e.g. "inc1720...")
+  source          String // supervisor | worker
+  kind            String // report | investigation
+  project         String
+  projectNumber   String?
+  type            String? // Injury / Illness, Near Miss, Hazard Observation, Property Damage
+  completedBy     String?
+  dateTime        String? // date & time of incident (as captured)
+  reportedWhen    String?
+  medicalAttention String?
+  lostTime        String?
+  details         Json? // full narrative body (statements, root cause, preventive, signatures, ...)
+  createdAt       DateTime @default(now())
 
-  @@index([jobsiteId])
-  @@index([severity])
-  @@index([status])
+  conditions IncidentCondition[]
+
+  @@index([project])
+  @@index([type])
+  @@index([source])
+}
+
+model IncidentCondition {
+  id         String   @id @default(cuid())
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  label      String
+  result     String // pass | fail
+  position   Int
+
+  @@index([incidentId])
+  @@index([result])
 }
 
 // Safety inspections & walk-throughs. Decomposed store: the Supervisor Portal

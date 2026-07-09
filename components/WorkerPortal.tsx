@@ -187,6 +187,9 @@ function SigCap({height=84,capRef}){
 const SUBKEY="sacredops_submissions";
 function loadSubs(){try{return JSON.parse(window.localStorage.getItem(SUBKEY))||[];}catch(e){return (window.__subs||[]);}}
 function pushSub(sub){try{const a=loadSubs();a.unshift(sub);window.localStorage.setItem(SUBKEY,JSON.stringify(a));}catch(e){window.__subs=[sub,...(window.__subs||[])];}}
+const INCKEY="sacredops_incidents";
+function loadIncidents(){try{const v=window.localStorage.getItem(INCKEY);return v?JSON.parse(v):[];}catch(e){return (window.__incidents||[]);}}
+function pushIncident(rec){try{const a=loadIncidents();a.unshift(rec);window.localStorage.setItem(INCKEY,JSON.stringify(a));}catch(e){window.__incidents=[rec,...(window.__incidents||[])];}}
 const PROJECTS=[
  {id:"iron",name:"Ironwood Bridge Replacement",loc:"Millbrook",div:"Bridge Division",crew:24,pct:92,openInsp:2,status:"ok",contract:"NYSDOT-2024-0417",owner:"NYS DOT",role:"GC"},
  {id:"cedar",name:"Cedar Harbor Outfall Rehab",loc:"Bayport",div:"Marine / Underwater",crew:12,pct:100,openInsp:0,status:"ok",contract:"S3C067-22G",owner:"Cedar Harbor WWTP",role:"Sub"},
@@ -741,16 +744,28 @@ export default function App(){
   );
 
   /* ---------- incident / talks / permits ---------- */
-  const Incident=()=>(
-    <Screen title="Report an Incident" sub="Injury · near-miss · hazard">
-      <Field label="Type"><select style={inp}><option>Injury / Illness</option><option>Near Miss</option><option>Hazard Observation</option><option>Property Damage</option></select></Field>
-      <Field label="Location"><input style={inp} placeholder="Grid / area on site"/></Field>
-      <Field label="Description"><textarea style={{...inp,height:88,resize:"none"}} placeholder="What happened?"/></Field>
-      <Field label="Reported by"><input style={inp} defaultValue="John Rivera — Foreman"/></Field>
+  const Incident=()=>{
+    const[f,setF]=useState({type:"Injury / Illness",proj:myProj.name,by:"John Rivera — Foreman"});
+    const s=(k,v)=>setF(o=>({...o,[k]:v}));
+    const submit=()=>{
+      pushIncident({
+        id:"inc"+Date.now(),source:"worker",kind:"report",
+        project:f.proj||myProj.name,type:f.type||"Injury / Illness",
+        completedBy:f.by||"",location:f.location||"",description:f.description||"",
+        dateTime:f.when||"",date:new Date().toLocaleDateString()
+      });
+      setScr(null);show("Incident submitted to supervisor");
+    };
+    return(<Screen title="Report an Incident" sub="Injury · near-miss · hazard">
+      <Field label="Type"><Sel v={f.type} set={v=>s("type",v)} opts={["Injury / Illness","Near Miss","Hazard Observation","Property Damage"]}/></Field>
+      <Field label="Project"><Sel v={f.proj} set={v=>s("proj",v)} opts={PNAMES}/></Field>
+      <Field label="Location"><input style={inp} value={f.location||""} onChange={e=>s("location",e.target.value)} placeholder="Grid / area on site"/></Field>
+      <Field label="Description"><textarea style={{...inp,height:88,resize:"none"}} value={f.description||""} onChange={e=>s("description",e.target.value)} placeholder="What happened?"/></Field>
+      <Field label="Reported by"><input style={inp} value={f.by||""} onChange={e=>s("by",e.target.value)}/></Field>
       <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"6px 0 5px",letterSpacing:1,fontFamily:MONO}}>SIGNATURE</div><SigPad/>
-      <button onClick={()=>{setScr(null);show("Incident submitted to supervisor");}} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
-    </Screen>
-  );
+      <button onClick={submit} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
+    </Screen>);
+  };
   const talkList=["Silica Dust & Respirable Hazards","Ladder Safety","Heat Illness Prevention","Struck-By / Caught-Between","Fall Protection Above 6 ft","Hand & Power Tool Safety","Hydrogen Sulfide Awareness"];
   const Talks=()=>(<Screen title="Toolbox Talks" sub="Deliver, then sign the crew in">{talkList.map((t,i)=>(<button key={i} onClick={()=>setScr({t:"talkDetail",name:t})} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"14px 15px",marginBottom:9,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:TX}}>{t}</span><span style={{fontSize:16,color:MU}}>›</span></button>))}</Screen>);
   const TalkDetail=({name})=>(

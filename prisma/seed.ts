@@ -121,18 +121,9 @@ async function main() {
     data: { workerId: ironworker.id, courseId: course.id, status: "COMPLETED", score: 96 },
   });
 
-  // Safety
-  await prisma.incident.create({
-    data: {
-      jobsiteId: granite.id,
-      reportedById: foreman.id,
-      title: "Near miss — dropped tool from scaffold",
-      description: "Hand tool slipped from level 2 scaffold; no injuries. Tethering enforced.",
-      severity: "NEAR_MISS",
-      occurredAt: new Date("2025-06-30T14:20:00Z"),
-      location: "Pier 3 scaffold",
-    },
-  });
+  // Note: Incident/IncidentCondition are the portal's decomposed store (see
+  // lib/projectors.ts), so this relational demo seed leaves them alone.
+
   // Permits & documents
   await prisma.permit.create({
     data: {

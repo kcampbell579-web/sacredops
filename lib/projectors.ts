@@ -198,6 +198,87 @@ projectors.sacredops_custom_projects = {
   },
 };
 
+// Incidents — quick reports and full investigation reports. Shape:
+// { id, source, kind, project, projectNumber, type, completedBy, dateTime,
+//   reportedWhen, medicalAttention, lostTime, conditions:[[label,result]], ...narrative }
+projectors.sacredops_incidents = {
+  read: async () => {
+    const rows = await prisma.incident.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { conditions: { orderBy: { position: "asc" } } },
+    });
+    return rows.map((r) => {
+      const extra =
+        r.details && typeof r.details === "object" && !Array.isArray(r.details)
+          ? (r.details as Record<string, unknown>)
+          : {};
+      return {
+        id: r.id,
+        source: r.source,
+        kind: r.kind,
+        project: r.project,
+        projectNumber: r.projectNumber ?? undefined,
+        type: r.type ?? undefined,
+        completedBy: r.completedBy ?? undefined,
+        dateTime: r.dateTime ?? undefined,
+        reportedWhen: r.reportedWhen ?? undefined,
+        medicalAttention: r.medicalAttention ?? undefined,
+        lostTime: r.lostTime ?? undefined,
+        conditions: r.conditions.map((c) => [c.label, c.result]),
+        ...extra,
+      };
+    });
+  },
+  write: async (value) => {
+    const items = asArray(value);
+    for (const inc of items) {
+      const id = str(inc.id);
+      if (!id) continue;
+      const {
+        id: _id,
+        source,
+        kind,
+        project,
+        projectNumber,
+        type,
+        completedBy,
+        dateTime,
+        reportedWhen,
+        medicalAttention,
+        lostTime,
+        conditions,
+        ...rest
+      } = inc;
+      void _id;
+      const data = {
+        source: str(source) ?? "supervisor",
+        kind: str(kind) ?? "report",
+        project: str(project) ?? "",
+        projectNumber: str(projectNumber) ?? null,
+        type: str(type) ?? null,
+        completedBy: str(completedBy) ?? null,
+        dateTime: str(dateTime) ?? null,
+        reportedWhen: str(reportedWhen) ?? null,
+        medicalAttention: str(medicalAttention) ?? null,
+        lostTime: str(lostTime) ?? null,
+        details: (Object.keys(rest).length ? rest : null) as never,
+      };
+      const condRows = (Array.isArray(conditions) ? conditions : [])
+        .map((pair: unknown, idx: number) => {
+          const p = pair as unknown[];
+          return { incidentId: id, label: str(p?.[0]) ?? "", result: str(p?.[1]) ?? "", position: idx };
+        })
+        .filter((c) => c.label && c.result);
+
+      await prisma.$transaction([
+        prisma.incidentCondition.deleteMany({ where: { incidentId: id } }),
+        prisma.incident.upsert({ where: { id }, update: data, create: { id, ...data } }),
+        prisma.incidentCondition.createMany({ data: condRows }),
+      ]);
+    }
+  },
+};
+
 export function isProjectedKey(key: string): boolean {
   return Object.prototype.hasOwnProperty.call(projectors, key);
 }

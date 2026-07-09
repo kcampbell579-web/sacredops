@@ -196,6 +196,10 @@ const SEED_SUBS=[
  {id:"seed3",project:"Copper Line Transit Center",formTitle:"Site Safety Orientation",worker:"Sam Okafor",date:"Jun 17, 2026",spec:{file:"SiteSafetyOrientation.pdf",title:"Site Safety Orientation — Acknowledgment",meta:[["Project","Copper Line Transit Center"],["Worker","Sam Okafor"],["Trade/company","Carpenter — Local 157"],["Date","Jun 17, 2026"]],sections:[{h:"Acknowledgment",text:"The worker named above has reviewed and understands all site safety topics listed and agrees to follow them while working on this project."}],sigs:[{role:"Worker",name:"Sam Okafor",date:"Jun 17, 2026"}]}},
 ];
 const subCount=(n)=>[...loadSubs(),...SEED_SUBS].filter(x=>x.project===n).length;
+const INCKEY="sacredops_incidents";
+function loadIncidents(){try{const v=window.localStorage.getItem(INCKEY);return v?JSON.parse(v):[];}catch(e){return (window.__incidents||[]);}}
+function pushIncident(rec){try{const a=loadIncidents();a.unshift(rec);window.localStorage.setItem(INCKEY,JSON.stringify(a));}catch(e){window.__incidents=[rec,...(window.__incidents||[])];}}
+const INC_CONDITIONS=["Lighting","Housekeeping","Exclusion Zones Established","PPE","Equipment Working Clean and Properly","Adequate Ventilation","Floor surfaces are kept dry and free of slip hazards.","Mechanical safeguards are in place and in proper working order","Emergency stop switches on machines are identified and in proper working order"];
 
 
 const PLANS=[
@@ -1291,16 +1295,78 @@ export default function App(){
     </Screen>
   );
 
-  const Incident=()=>(
-    <Screen title="Report an Incident" sub="Injury · near-miss · hazard">
-      <Field label="Type"><select style={inp}><option>Injury / Illness</option><option>Near Miss</option><option>Hazard Observation</option><option>Property Damage</option></select></Field>
-      <Field label="Location"><input style={inp} placeholder="Grid / area on site"/></Field>
-      <Field label="Description"><textarea style={{...inp,height:88,resize:"none"}} placeholder="What happened?"/></Field>
-      <Field label="Reported by"><input style={inp} defaultValue="Kelly McClure — Safety Director"/></Field>
-      <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"6px 0 5px",letterSpacing:1,fontFamily:MONO}}>SIGNATURE</div><SigPad/>
-      <button onClick={()=>{setScr(null);show("Incident report submitted");}} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
-    </Screen>
-  );
+  const Incident=()=>{
+    const[f,setF]=useState({proj:(ALLP[0]&&ALLP[0].name)||"",completedBy:"Kelly McClure — Safety Director"});
+    const s=(k,v)=>setF(o=>({...o,[k]:v}));
+    const[cond,setCond]=useState({});
+    const setC=(i,v)=>setCond(o=>({...o,[i]:o[i]===v?"":v}));
+    const submit=()=>{
+      const rec={
+        id:"inc"+Date.now(),source:"supervisor",kind:"investigation",
+        project:f.proj||"",projectNumber:f.projNumber||"",type:f.type||"",
+        completedBy:f.completedBy||"",dateTime:f.dateTime||"",reportedWhen:f.reportedWhen||"",
+        medicalAttention:f.medical||"",lostTime:f.lostTime||"",
+        superintendent:f.superintendent||"",projectManager:f.pm||"",
+        howOccurred:f.how||"",injuriesDamage:f.injuries||"",
+        involvedPersons:f.involved||"",involvedStatement:f.involvedStmt||"",
+        equipmentDamaged:f.equip||"",witness1:f.wit1||"",witness1Statement:f.wit1Stmt||"",
+        treatedWhere:f.treated||"",findings:f.findings||"",clearToWork:f.clear||"",
+        whyHappened:f.why||"",couldPrevent:f.couldPrevent||"",
+        correctiveActions:f.corrective||"",trainingProvided:f.training||"",
+        envConditions:f.env||"",
+        conditions:INC_CONDITIONS.map((c,i)=>[c,cond[i]||""]),
+        date:new Date().toLocaleDateString()
+      };
+      pushIncident(rec);setScr(null);show("Incident report submitted");
+    };
+    return(<Screen title="Incident Investigation Report" sub="Injury · near-miss · damage · investigation">
+      <SecHead>Project</SecHead>
+      <Field label="Project number"><T v={f.projNumber} set={v=>s("projNumber",v)}/></Field>
+      <Field label="Project name"><Sel v={f.proj} set={v=>s("proj",v)} opts={PNAMES}/></Field>
+      <Row2><div style={{flex:1}}><Field label="Superintendent"><T v={f.superintendent} set={v=>s("superintendent",v)}/></Field></div><div style={{flex:1}}><Field label="Project manager"><T v={f.pm} set={v=>s("pm",v)}/></Field></div></Row2>
+      <Field label="Report completed by"><T v={f.completedBy} set={v=>s("completedBy",v)}/></Field>
+      <Field label="Incident type"><Sel v={f.type} set={v=>s("type",v)} opts={["Injury / Illness","Near Miss","Hazard Observation","Property Damage"]}/></Field>
+
+      <SecHead>General incident details</SecHead>
+      <Field label="How did the incident occur?"><TA v={f.how} set={v=>s("how",v)} h={80}/></Field>
+      <Field label="What were the injuries or damage?"><TA v={f.injuries} set={v=>s("injuries",v)} h={80}/></Field>
+      <Row2><div style={{flex:1}}><Field label="Date & time of incident"><T v={f.dateTime} set={v=>s("dateTime",v)}/></Field></div><div style={{flex:1}}><Field label="When reported?"><T v={f.reportedWhen} set={v=>s("reportedWhen",v)}/></Field></div></Row2>
+
+      <SecHead>Involved parties</SecHead>
+      <Field label="Involved person(s)"><T v={f.involved} set={v=>s("involved",v)}/></Field>
+      <Field label="Involved person statement"><TA v={f.involvedStmt} set={v=>s("involvedStmt",v)} h={88}/></Field>
+      <Field label="Equipment damaged"><T v={f.equip} set={v=>s("equip",v)}/></Field>
+      <Field label="Witness (1)"><T v={f.wit1} set={v=>s("wit1",v)}/></Field>
+      <Field label="Witness (1) statement"><TA v={f.wit1Stmt} set={v=>s("wit1Stmt",v)} h={88}/></Field>
+
+      <SecHead>Medical</SecHead>
+      <Field label="Did the injured party receive medical attention?"><Radio v={f.medical} set={v=>s("medical",v)} opts={["Yes","No","N/A"]}/></Field>
+      <Field label="Treated where?"><Radio v={f.treated} set={v=>s("treated",v)} opts={["On site","Urgent care","Hospital"]}/></Field>
+      <Field label="Findings of the injury"><TA v={f.findings} set={v=>s("findings",v)}/></Field>
+      <Field label="Clear-to-work letter received?"><Radio v={f.clear} set={v=>s("clear",v)} opts={["Yes","No"]}/></Field>
+      <Field label="Lost time (days, if any)"><T v={f.lostTime} set={v=>s("lostTime",v)}/></Field>
+
+      <SecHead>Root cause analysis</SecHead>
+      <Field label="Why did the incident happen? Underlying causes"><TA v={f.why} set={v=>s("why",v)} h={80}/></Field>
+      <Field label="What could have prevented it?"><TA v={f.couldPrevent} set={v=>s("couldPrevent",v)} h={80}/></Field>
+
+      <SecHead>Preventive measures</SecHead>
+      <Field label="Corrective actions to prevent recurrence"><TA v={f.corrective} set={v=>s("corrective",v)} h={80}/></Field>
+      <Field label="Training / information provided"><TA v={f.training} set={v=>s("training",v)} h={80}/></Field>
+
+      <SecHead>Conditions & environment</SecHead>
+      <Field label="Environmental conditions (lighting, floor surface, …)"><TA v={f.env} set={v=>s("env",v)}/></Field>
+      {INC_CONDITIONS.map((c,i)=>(
+        <div key={i} style={{display:"flex",alignItems:"center",gap:7,padding:"9px 0",borderBottom:"1px solid "+HL}}>
+          <span style={{flex:1,fontSize:12,color:TX,lineHeight:1.3}}>{c}</span>
+          {["pass","fail"].map(o=>{const on=cond[i]===o;const cc=o==="pass"?SU:DN;return <button key={o} onClick={()=>setC(i,o)} style={{background:on?cc:"rgba(255,255,255,0.05)",color:on?"#04231a":MU,border:"1px solid "+HL,borderRadius:7,padding:"5px 11px",fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:MONO}}>{o.toUpperCase()}</button>;})}
+        </div>
+      ))}
+
+      <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"14px 0 5px",letterSpacing:1,fontFamily:MONO}}>SIGNATURE</div><SigPad/>
+      <button onClick={submit} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
+    </Screen>);
+  };
 
   const DeliverTalk=()=>(<Screen title="Toolbox Talks" sub="Deliver a talk, then sign the crew in live">{LIBRARY.map((t,i)=>(<button key={i} onClick={()=>setScr({t:"deliverTalkDetail",name:t})} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"14px 15px",marginBottom:9,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:TX}}>{t}</span><span style={{fontSize:16,color:MU}}>›</span></button>))}</Screen>);
   const DeliverTalkDetail=({name})=>(
