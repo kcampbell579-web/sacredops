@@ -19,6 +19,7 @@ This repository contains two mobile-first portals — a **Supervisor Portal** an
 | `/worker` | Worker Portal |
 | `/api/state` | `GET` all persisted portal state |
 | `/api/state/[key]` | `GET` / `PUT` / `DELETE` a single state document |
+| `/api/reports/submissions` | Aggregated report over the decomposed submissions table |
 
 ## The portals
 
@@ -55,10 +56,26 @@ Postgres:
 State documents are stored as JSONB in the `AppState` table. This gives real,
 cross-device, shared persistence with no changes to the portal components themselves.
 
-> The normalized relational models (`Worker`, `Jobsite`, `Certification`, `Incident`,
-> `Permit`, …) in `prisma/schema.prisma` are the domain model for future server-side
-> features and reporting; the portals currently persist through the `AppState`
-> document store described above.
+### Decomposed stores (relational + queryable)
+
+Some high-value keys are **decomposed** from opaque JSON blobs into typed relational
+tables via server-side *projectors* (`lib/projectors.ts`). The portals still read/write
+the same `localStorage` key — but the server maps that JSON into rows on `PUT` and
+reconstructs it on `GET`. A projected key is not stored in `AppState`; its table is the
+source of truth.
+
+Decomposed so far:
+
+- **`sacredops_submissions` → `Submission` table** — form submissions (permits,
+  checklists, orientations, JHAs). Queryable columns (`project`, `formTitle`, `worker`,
+  `date`, `createdAt`) with the variable form body kept in a `spec` JSONB column.
+  Writes are upsert-only (submissions accrue and are safe under concurrent devices).
+  Powers `GET /api/reports/submissions`, which aggregates counts by project and form
+  type — the kind of reporting that is impossible over a JSON blob.
+
+The remaining relational models (`Worker`, `Jobsite`, `Certification`, `Incident`,
+`Permit`, …) are the domain model for further decomposition; inspections, projects, and
+incidents are natural next candidates to move from `AppState` into typed tables.
 
 ## Getting started
 
@@ -105,6 +122,7 @@ app/
   supervisor/page.tsx     Mounts the Supervisor Portal (client-only, gated)
   worker/page.tsx         Mounts the Worker Portal (client-only, gated)
   api/state/…             State read/write endpoints (Prisma-backed)
+  api/reports/…           Aggregated reporting over decomposed tables
   globals.css             Tailwind + base styles
 components/
   SupervisorPortal.tsx    Supervisor Portal UI
@@ -113,6 +131,7 @@ components/
 lib/
   prisma.ts               Prisma client singleton
   portalSync.ts           localStorage <-> server sync layer
+  projectors.ts           Map decomposed keys <-> relational tables
 prisma/
   schema.prisma           Data model (AppState + relational domain models)
   seed.ts                 Demo data seed

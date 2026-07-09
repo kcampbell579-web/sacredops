@@ -24,6 +24,25 @@ model AppState {
   updatedAt DateTime @updatedAt
 }
 
+// Form submissions (permits, checklists, orientations, JHAs) created in the
+// Worker Portal and reviewed in the Supervisor Portal. This is the first
+// "decomposed" store: the portals still read/write the `sacredops_submissions`
+// localStorage key, but the server projects that JSON array into these typed,
+// queryable rows (see lib/projectors.ts) instead of an opaque AppState blob.
+model Submission {
+  id        String   @id // client-generated id (e.g. "w1720...", "seed1")
+  project   String
+  formTitle String
+  worker    String?
+  date      String? // human-facing date string as captured in the form
+  spec      Json? // full form body (meta, sections, signatures)
+  createdAt DateTime @default(now())
+
+  @@index([project])
+  @@index([formTitle])
+  @@index([createdAt])
+}
+
 // ---------------------------------------------------------------------------
 // Enums
 // ---------------------------------------------------------------------------
