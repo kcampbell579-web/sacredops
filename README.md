@@ -17,6 +17,7 @@ This repository contains two mobile-first portals — a **Supervisor Portal** an
 | `/` | Role chooser — pick Supervisor or Worker |
 | `/supervisor` | Supervisor Portal |
 | `/worker` | Worker Portal |
+| `/reports` | Analytics dashboard over the decomposed data |
 | `/api/state` | `GET` all persisted portal state |
 | `/api/state/[key]` | `GET` / `PUT` / `DELETE` a single state document |
 | `/api/reports/submissions` | Aggregated report over the decomposed submissions table |
@@ -38,6 +39,13 @@ safety orientation, JSA/JHA builder, SDS library, PDF export).
 A worker-facing app: **Home** (assigned projects, training status, quick access to
 daily briefing, toolbox talks, incident reporting, forms), **Schedule**, **Alerts**,
 and **Profile**.
+
+### Reports dashboard (`/reports`)
+A read-only analytics view (reachable from the role chooser) that visualizes the
+`/api/reports/*` endpoints — KPI tiles plus labeled single-hue magnitude bars for
+submissions, inspections (pass/flag, flagged-by-project), projects (crew by role,
+status), and incidents (by type/source/project). Because it reads the decomposed
+relational tables, it reflects live portal activity.
 
 The two portals **share data** — e.g. a worker's form submissions (`sacredops_submissions`),
 pay (`sacredops_pay`), and safety locations (`sacredops_safety_locations`) are visible
@@ -153,6 +161,7 @@ app/
   page.tsx                Role chooser (Supervisor / Worker)
   supervisor/page.tsx     Mounts the Supervisor Portal (client-only, gated)
   worker/page.tsx         Mounts the Worker Portal (client-only, gated)
+  reports/page.tsx        Analytics dashboard over the decomposed tables
   api/state/…             State read/write endpoints (Prisma-backed)
   api/reports/…           Aggregated reporting over decomposed tables
   globals.css             Tailwind + base styles

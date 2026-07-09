@@ -89,7 +89,29 @@ export default function Home() {
           </div>
         </Link>
 
-        <div style={{ marginTop: 26, fontSize: 11, color: MU, fontFamily: MONO, letterSpacing: 0.3, textAlign: "center" }}>
+        <Link
+          href="/reports"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            marginTop: 16,
+            textDecoration: "none",
+            color: MU,
+            fontSize: 12,
+            fontWeight: 700,
+            fontFamily: MONO,
+            letterSpacing: 0.5,
+            border: "1px solid " + HL,
+            borderRadius: 12,
+            padding: "12px",
+          }}
+        >
+          <span style={{ color: AC }}>▚</span> VIEW REPORTS DASHBOARD
+        </Link>
+
+        <div style={{ marginTop: 20, fontSize: 11, color: MU, fontFamily: MONO, letterSpacing: 0.3, textAlign: "center" }}>
           Data syncs securely across devices
         </div>
       </div>
