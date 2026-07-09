@@ -12,6 +12,19 @@ datasource db {
 }
 
 // ---------------------------------------------------------------------------
+// Portal persistence
+// ---------------------------------------------------------------------------
+// The Supervisor Portal stores its working data as JSON documents keyed by
+// name (all keys are prefixed "sacredops_"). AppState is the durable,
+// cross-device backing store that the client syncs localStorage against.
+
+model AppState {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
 // Enums
 // ---------------------------------------------------------------------------
 
