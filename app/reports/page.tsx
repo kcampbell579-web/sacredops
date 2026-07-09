@@ -109,10 +109,39 @@ function Bars({
   );
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({
+  title,
+  exportHref,
+  children,
+}: {
+  title: string;
+  exportHref?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div style={{ ...glass, padding: 18 }}>
-      <div style={{ fontSize: 14, fontWeight: 800, color: TX, marginBottom: 14 }}>{title}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: TX }}>{title}</div>
+        {exportHref && (
+          <a
+            href={exportHref}
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: MU,
+              textDecoration: "none",
+              fontFamily: MONO,
+              letterSpacing: 0.5,
+              border: "1px solid " + HL,
+              borderRadius: 8,
+              padding: "4px 9px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            CSV ↓
+          </a>
+        )}
+      </div>
       {children}
     </div>
   );
@@ -187,6 +216,9 @@ export default function ReportsPage() {
   const proj = data.projects || {};
   const inc = data.incidents || {};
 
+  const exp = (store: string) =>
+    "/api/export/" + store + (filter ? "?project=" + encodeURIComponent(filter) : "");
+
   const inspItems = (insp.items && insp.items.byResult) || [];
   const flagCount = inspItems.find((x: any) => x.result === "flag")?.count ?? 0;
   const passCount = inspItems.find((x: any) => x.result === "pass")?.count ?? 0;
@@ -254,7 +286,7 @@ export default function ReportsPage() {
         {/* Grid of report cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
           {/* Submissions */}
-          <Card title="Submissions by form type">
+          <Card title="Submissions by form type" exportHref={exp("submissions")}>
             <Bars rows={(sub.byFormTitle ?? []).map((r: any) => ({ label: r.formTitle, value: r.count }))} />
             <div style={{ marginTop: 16 }}>
               <Eyebrow>By project</Eyebrow>
@@ -263,7 +295,7 @@ export default function ReportsPage() {
           </Card>
 
           {/* Inspections */}
-          <Card title="Inspections">
+          <Card title="Inspections" exportHref={exp("inspections")}>
             <Eyebrow>Checklist items</Eyebrow>
             <Bars
               rows={[
@@ -285,7 +317,7 @@ export default function ReportsPage() {
           </Card>
 
           {/* Projects */}
-          <Card title="Projects">
+          <Card title="Projects" exportHref={exp("projects")}>
             <Eyebrow>Crew by role</Eyebrow>
             <Bars rows={(proj.byRole ?? []).map((r: any) => ({ label: r.role || "—", value: r.crew }))} />
             <div style={{ marginTop: 16 }}>
@@ -295,7 +327,7 @@ export default function ReportsPage() {
           </Card>
 
           {/* Incidents */}
-          <Card title="Incidents">
+          <Card title="Incidents" exportHref={exp("incidents")}>
             <Eyebrow>By type</Eyebrow>
             <Bars rows={(inc.byType ?? []).map((r: any) => ({ label: r.type || "Unspecified", value: r.count, color: DN }))} />
             <div style={{ marginTop: 16 }}>

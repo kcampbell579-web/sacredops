@@ -18,6 +18,7 @@ This repository contains two mobile-first portals — a **Supervisor Portal** an
 | `/supervisor` | Supervisor Portal |
 | `/worker` | Worker Portal |
 | `/reports` | Analytics dashboard over the decomposed data |
+| `/api/export/[store]` | CSV export of a decomposed store (honors `?project=`) |
 | `/api/state` | `GET` all persisted portal state |
 | `/api/state/[key]` | `GET` / `PUT` / `DELETE` a single state document |
 | `/api/reports/submissions` | Aggregated report over the decomposed submissions table |
@@ -47,6 +48,8 @@ submissions, inspections (pass/flag, flagged-by-project), projects (crew by role
 status), and incidents (by type/source/project). A **project filter** drills every
 chart and KPI down to a single project (each report endpoint accepts `?project=`).
 Because it reads the decomposed relational tables, it reflects live portal activity.
+Each card has a **CSV export** link (`/api/export/[store]`) that streams the full set
+of rows for that store as RFC 4180 CSV, respecting the active project filter.
 
 The two portals **share data** — e.g. a worker's form submissions (`sacredops_submissions`),
 pay (`sacredops_pay`), and safety locations (`sacredops_safety_locations`) are visible
