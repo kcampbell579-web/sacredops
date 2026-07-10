@@ -63,6 +63,25 @@ export default function AccountBar() {
       <span style={{ color: MU, letterSpacing: 0.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         <span style={{ color: AC }}>●</span> {me.companyName} · {me.name}
       </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        {me.role === "ADMIN" && (
+          <a
+            href="/admin"
+            style={{
+              color: AC,
+              textDecoration: "none",
+              fontWeight: 700,
+              border: "1px solid " + AC + "55",
+              borderRadius: 8,
+              padding: "5px 10px",
+              fontSize: 10.5,
+              fontFamily: MONO,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Team & Roles
+          </a>
+        )}
       <button
         onClick={logout}
         style={{
@@ -80,6 +99,7 @@ export default function AccountBar() {
       >
         Log out
       </button>
+      </div>
     </div>
   );
 }

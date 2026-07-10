@@ -99,6 +99,13 @@ export async function requireCompanyId(): Promise<string | null> {
   return user?.companyId ?? null;
 }
 
+// Convenience for admin-only API routes: returns the session user only when
+// they are an ADMIN, otherwise null (caller responds 401/403).
+export async function requireAdmin(): Promise<SessionUser | null> {
+  const user = await getSessionUser();
+  return user && user.role === "ADMIN" ? user : null;
+}
+
 export async function destroySession(): Promise<void> {
   const jar = await cookies();
   const token = jar.get(COOKIE)?.value;
