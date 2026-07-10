@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { requireCompanyId } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,6 +22,9 @@ function toCsv(headers: string[], rows: unknown[][]): string {
 // GET /api/export/:store[?project=<name>]
 // Streams the full decomposed table as CSV (not just the dashboard's top-10).
 export async function GET(req: Request, { params }: Ctx) {
+  const companyId = await requireCompanyId();
+  if (!companyId) return new Response("Unauthorized", { status: 401 });
+
   const { store } = await params;
   const project = new URL(req.url).searchParams.get("project") || undefined;
 
@@ -29,14 +33,14 @@ export async function GET(req: Request, { params }: Ctx) {
 
   if (store === "submissions") {
     const data = await prisma.submission.findMany({
-      where: { project },
+      where: { companyId, project },
       orderBy: { createdAt: "desc" },
     });
     headers = ["id", "project", "formTitle", "worker", "date", "createdAt"];
     rows = data.map((r) => [r.id, r.project, r.formTitle, r.worker, r.date, r.createdAt.toISOString()]);
   } else if (store === "inspections") {
     const data = await prisma.inspection.findMany({
-      where: { project },
+      where: { companyId, project },
       orderBy: { createdAt: "desc" },
       include: { items: true },
     });
@@ -48,14 +52,14 @@ export async function GET(req: Request, { params }: Ctx) {
     });
   } else if (store === "projects") {
     const data = await prisma.project.findMany({
-      where: project ? { name: project } : {},
+      where: project ? { companyId, name: project } : { companyId },
       orderBy: { createdAt: "desc" },
     });
     headers = ["id", "name", "role", "crew", "pct", "openInsp", "status", "createdAt"];
     rows = data.map((r) => [r.id, r.name, r.role, r.crew, r.pct, r.openInsp, r.status, r.createdAt.toISOString()]);
   } else if (store === "incidents") {
     const data = await prisma.incident.findMany({
-      where: { project },
+      where: { companyId, project },
       orderBy: { createdAt: "desc" },
       include: { conditions: true },
     });

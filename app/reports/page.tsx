@@ -179,6 +179,19 @@ export default function ReportsPage() {
 
   useEffect(() => {
     (async () => {
+      // Require a logged-in user (reports are company-scoped).
+      try {
+        const me = await fetch("/api/auth/me", { cache: "no-store" });
+        const user = me.ok ? (await me.json()).user : null;
+        if (!user) {
+          window.location.href = "/login?next=%2Freports";
+          return;
+        }
+      } catch {
+        window.location.href = "/login?next=%2Freports";
+        return;
+      }
+
       const myId = ++reqSeq.current;
       const d = await loadReports("");
       if (myId !== reqSeq.current) return;

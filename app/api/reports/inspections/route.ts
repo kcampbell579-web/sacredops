@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { requireCompanyId } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,9 +12,12 @@ export const dynamic = "force-dynamic";
 //
 // Optional filter: ?project=<name>
 export async function GET(req: Request) {
+  const companyId = await requireCompanyId();
+  if (!companyId) return Response.json({ error: "unauthorized" }, { status: 401 });
+
   const { searchParams } = new URL(req.url);
   const project = searchParams.get("project") || undefined;
-  const where = { project };
+  const where = { companyId, project };
 
   const [total, byStatus, byType, itemsByResult, flaggedByProject, recent] =
     await Promise.all([
@@ -31,15 +35,16 @@ export async function GET(req: Request) {
       }),
       prisma.checklistItem.groupBy({
         by: ["result"],
-        where: project ? { inspection: { project } } : {},
+        where: { companyId, ...(project ? { inspection: { project } } : {}) },
         _count: { _all: true },
       }),
-      // Flagged items per project — a JOIN across the two decomposed tables.
+      // Flagged items per project — a JOIN across the two decomposed tables,
+      // scoped to this company on both sides of the join.
       prisma.$queryRaw<{ project: string; count: number }[]>`
         SELECT i."project" AS project, COUNT(*)::int AS count
         FROM "ChecklistItem" c
-        JOIN "Inspection" i ON c."inspectionId" = i."id"
-        WHERE c."result" = 'flag'
+        JOIN "Inspection" i ON c."inspectionId" = i."id" AND c."companyId" = i."companyId"
+        WHERE c."result" = 'flag' AND c."companyId" = ${companyId}
         ${project ? Prisma.sql`AND i."project" = ${project}` : Prisma.empty}
         GROUP BY i."project"
         ORDER BY count DESC

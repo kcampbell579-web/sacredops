@@ -1,21 +1,23 @@
 import { prisma } from "@/lib/prisma";
 import { projectors, isProjectedKey } from "@/lib/projectors";
+import { requireCompanyId } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// GET /api/state — return all persisted portal state as { key: value }.
-// Projected keys (e.g. sacredops_submissions) are reconstructed from their
-// relational tables; everything else comes from the AppState document store.
+// GET /api/state — all persisted portal state for the logged-in company as
+// { key: value }. Projected keys are reconstructed from their relational
+// tables; everything else comes from the AppState document store. Requires a
+// session; data is always scoped to the caller's companyId.
 export async function GET() {
-  const out: Record<string, unknown> = {};
+  const companyId = await requireCompanyId();
+  if (!companyId) return Response.json({ error: "unauthorized" }, { status: 401 });
 
-  // Read the AppState rows and all projected keys concurrently — they hit
-  // disjoint tables, and this is on the hot hydrate path.
+  const out: Record<string, unknown> = {};
   const projectorEntries = Object.entries(projectors);
   const [rows, projected] = await Promise.all([
-    prisma.appState.findMany(),
-    Promise.all(projectorEntries.map(([, projector]) => projector.read())),
+    prisma.appState.findMany({ where: { companyId } }),
+    Promise.all(projectorEntries.map(([, projector]) => projector.read(companyId))),
   ]);
 
   for (const row of rows) {

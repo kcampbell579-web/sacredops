@@ -14,10 +14,13 @@ This repository contains two mobile-first portals — a **Supervisor Portal** an
 
 | Route | Description |
 | --- | --- |
-| `/` | Role chooser — pick Supervisor or Worker |
-| `/supervisor` | Supervisor Portal |
-| `/worker` | Worker Portal |
-| `/reports` | Analytics dashboard over the decomposed data |
+| `/login` | Log in (supervisor), join with a company code (worker), or create a company |
+| `/` | Role chooser — pick Supervisor or Worker (shows the signed-in company + log out) |
+| `/supervisor` | Supervisor Portal (login required) |
+| `/worker` | Worker Portal (login required) |
+| `/reports` | Analytics dashboard over the decomposed data (login required) |
+| `/api/auth/*` | `signup-company`, `login`, `join`, `logout`, `me` |
+| `/api/health` | Liveness + DB connectivity check |
 | `/api/export/[store]` | CSV export of a decomposed store (honors `?project=`) |
 | `/api/state` | `GET` all persisted portal state |
 | `/api/state/[key]` | `GET` / `PUT` / `DELETE` a single state document |
@@ -54,6 +57,24 @@ of rows for that store as RFC 4180 CSV, respecting the active project filter.
 The two portals **share data** — e.g. a worker's form submissions (`sacredops_submissions`),
 pay (`sacredops_pay`), and safety locations (`sacredops_safety_locations`) are visible
 to the supervisor — because both sync against the same server-side store.
+
+## Accounts & companies (multi-tenant)
+
+Every **Company** is an isolated tenant with a random **join code**. People sign in
+three ways (`/login`):
+
+- **Create a company** — the first admin signs up (name, email, password) and is shown
+  the company's join code to share with their crew.
+- **Supervisor / admin** — email + password.
+- **Worker** — enters the **company code + their name + a 4-digit PIN** (low-friction,
+  no email). First join sets the PIN; afterwards it must match.
+
+Isolation is enforced **server-side**, not by the URL: every portal/report/export
+request is scoped to the logged-in user's `companyId`, and the decomposed tables use a
+composite `(companyId, id)` primary key so one company's client-generated id can never
+overwrite another's. Sessions are opaque tokens in an httpOnly cookie (`lib/auth.ts`).
+Passwords and PINs are scrypt-hashed. Guessing another company's URL just yields a login
+screen; guessing a code yields nothing without a valid account.
 
 ## How persistence works
 

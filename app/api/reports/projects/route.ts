@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { requireCompanyId } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,9 +10,12 @@ export const dynamic = "force-dynamic";
 //
 // Optional filter: ?project=<name>
 export async function GET(req: Request) {
+  const companyId = await requireCompanyId();
+  if (!companyId) return Response.json({ error: "unauthorized" }, { status: 401 });
+
   const { searchParams } = new URL(req.url);
   const name = searchParams.get("project") || undefined;
-  const where = name ? { name } : {};
+  const where = name ? { companyId, name } : { companyId };
 
   const [total, agg, byRole, byStatus, recent] = await Promise.all([
     prisma.project.count({ where }),

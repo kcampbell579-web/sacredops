@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AccountBar from "@/components/AccountBar";
 
 const AC = "#04A466";
 const TX = "#F4F7F5";
@@ -41,6 +42,7 @@ export default function Home() {
       }}
     >
       <div style={{ width: "100%", maxWidth: 430 }}>
+        <AccountBar />
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
           <div
             style={{

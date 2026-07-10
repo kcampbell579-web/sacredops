@@ -12,16 +12,72 @@ datasource db {
 }
 
 // ---------------------------------------------------------------------------
+// Accounts & tenancy
+// ---------------------------------------------------------------------------
+// Every company is an isolated tenant. All portal data is tagged with a
+// companyId, and the server only ever reads/writes rows for the logged-in
+// user's company — so no URL or code trick exposes another company's data.
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  joinCode  String   @unique // workers enter this to join (long & random)
+  createdAt DateTime @default(now())
+
+  users User[]
+}
+
+enum Role {
+  ADMIN
+  SUPERVISOR
+  WORKER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role         Role     @default(WORKER)
+  name         String
+  // Admins/supervisors sign in with email + password.
+  email        String?  @unique
+  passwordHash String?
+  // Workers sign in with the company code + their name + a 4-digit PIN.
+  pinHash      String?
+  createdAt    DateTime @default(now())
+
+  sessions Session[]
+
+  // A worker is identified by name within their company.
+  @@unique([companyId, name])
+  @@index([companyId])
+}
+
+model Session {
+  id        String   @id // opaque random token stored in an httpOnly cookie
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
 // Portal persistence
 // ---------------------------------------------------------------------------
 // The Supervisor Portal stores its working data as JSON documents keyed by
 // name (all keys are prefixed "sacredops_"). AppState is the durable,
 // cross-device backing store that the client syncs localStorage against.
+// Scoped per company via a composite (companyId, key) primary key.
 
 model AppState {
-  key       String   @id
+  companyId String
+  key       String
   value     Json
   updatedAt DateTime @updatedAt
+
+  @@id([companyId, key])
 }
 
 // Projects created in the Supervisor Portal's "New Project" flow. Decomposed
@@ -30,7 +86,8 @@ model AppState {
 // dedicated table (not the aspirational, relation-heavy `Jobsite` model) so it
 // matches the portal's actual project-card shape without disturbing the seed.
 model Project {
-  id        String   @id // client-generated id (e.g. "p1720...")
+  id        String // client-generated id (e.g. "p1720...")
+  companyId String
   name      String
   loc       String?
   div       String? // division / discipline
@@ -44,6 +101,7 @@ model Project {
   details   Json? // any additional fields captured
   createdAt DateTime @default(now())
 
+  @@id([companyId, id])
   @@index([role])
   @@index([status])
 }
@@ -54,7 +112,8 @@ model Project {
 // localStorage key, but the server projects that JSON array into these typed,
 // queryable rows (see lib/projectors.ts) instead of an opaque AppState blob.
 model Submission {
-  id        String   @id // client-generated id (e.g. "w1720...", "seed1")
+  id        String // client-generated id (e.g. "w1720...", "seed1")
+  companyId String
   project   String
   formTitle String
   worker    String?
@@ -62,6 +121,7 @@ model Submission {
   spec      Json? // full form body (meta, sections, signatures)
   createdAt DateTime @default(now())
 
+  @@id([companyId, id])
   @@index([project])
   @@index([formTitle])
   @@index([createdAt])
@@ -281,7 +341,8 @@ model Enrollment {
 // JSONB column for the narrative body, and IncidentCondition child rows for the
 // PASS/FAIL conditions checklist.
 model Incident {
-  id              String   @id // client-generated id (e.g. "inc1720...")
+  id              String // client-generated id (e.g. "inc1720...")
+  companyId       String
   source          String // supervisor | worker
   kind            String // report | investigation
   project         String
@@ -297,6 +358,7 @@ model Incident {
 
   conditions IncidentCondition[]
 
+  @@id([companyId, id])
   @@index([project])
   @@index([type])
   @@index([source])
@@ -304,13 +366,14 @@ model Incident {
 
 model IncidentCondition {
   id         String   @id @default(cuid())
+  companyId  String
   incidentId String
-  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  incident   Incident @relation(fields: [companyId, incidentId], references: [companyId, id], onDelete: Cascade)
   label      String
   result     String // pass | fail
   position   Int
 
-  @@index([incidentId])
+  @@index([companyId, incidentId])
   @@index([result])
 }
 
@@ -320,7 +383,8 @@ model IncidentCondition {
 // (custom projects don't live in the Jobsite table), status is "pass"|"open"|
 // "fail", and `details` preserves the richer form body (fullSections/fullObs).
 model Inspection {
-  id        String   @id // client-generated id (e.g. "i1", "ni...", "wt...")
+  id        String // client-generated id (e.g. "i1", "ni...", "wt...")
+  companyId String
   project   String
   type      String // Scaffold, Fall Protection, Crane / Rigging, ...
   by        String? // inspector
@@ -332,6 +396,7 @@ model Inspection {
 
   items ChecklistItem[]
 
+  @@id([companyId, id])
   @@index([project])
   @@index([status])
   @@index([type])
@@ -339,13 +404,14 @@ model Inspection {
 
 model ChecklistItem {
   id           String     @id @default(cuid())
+  companyId    String
   inspectionId String
-  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  inspection   Inspection @relation(fields: [companyId, inspectionId], references: [companyId, id], onDelete: Cascade)
   label        String
   result       String // pass | flag
   position     Int // preserves item order within the inspection
 
-  @@index([inspectionId])
+  @@index([companyId, inspectionId])
   @@index([result])
 }
 

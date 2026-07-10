@@ -8,22 +8,26 @@ product work on top of that.
 
 - ✅ Two working portals (Supervisor + Worker) and a reports dashboard.
 - ✅ Data persists to Postgres and is queryable/exportable.
-- ⚠️ **One shared dataset** — everyone sees the same data. No logins.
-- ⚠️ No billing, no accounts, no per-company separation.
+- ✅ **Accounts + per-company isolation** — everyone logs in; each company's data is
+  separate (join code for workers, email/password for supervisors).
+- ⚠️ No billing yet.
 
-So today it's a great **demo**, not yet a **product you can sell**.
+So today it's a real, multi-tenant app — the main thing left before selling is **billing**.
 
 ## The gap to "purchasable" (in priority order)
 
-### 1. Accounts + multi-tenancy — the #1 blocker
-Every company (tenant) must have its own isolated data; users log in.
-- Add an `Organization` and `User` model; tag every record with `orgId`.
-- Gate the portals and reports behind login; sign-up creates an Organization.
-- Two build options:
-  - **Managed auth (recommended, fastest):** Clerk / Auth0 / Supabase Auth —
-    handles login, password reset, social login, and sessions for you.
-  - **Roll your own:** email/password with hashed passwords + sessions. No
-    extra service, but more code and you own security/reset flows.
+### 1. Accounts + multi-tenancy — ✅ DONE
+Every company is an isolated tenant with a join code; everyone logs in.
+- `Company` / `User` / `Session` models; every portal record tagged with `companyId`
+  and a composite `(companyId, id)` primary key so ids can't collide across tenants.
+- Portals and reports are gated behind login; server scopes every request to the
+  caller's company.
+- Supervisors/admins use email + password; workers use company code + name + PIN.
+- Built in-house with scrypt hashing + httpOnly session cookies (`lib/auth.ts`) — no
+  external auth service required. (Could later swap to Clerk/Auth0 if you want social
+  login / SSO / password-reset emails out of the box.)
+- **Remaining polish:** password-reset email, admin screen to view/rotate the join code
+  and remove workers, and roles/permissions beyond the current admin/supervisor/worker.
 
 ### 2. Billing
 Take recurring payment.
