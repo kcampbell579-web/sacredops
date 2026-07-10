@@ -580,82 +580,80 @@ export default function App(){
       ["Company Plans","M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z",()=>setScr({t:"forms"})],
       ["Safety Locations","M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10zM12 8v3M12 14h.01",()=>setScr({t:"safetylocs"})],
     ];
+    const card={background:"#141619",border:"1px solid rgba(255,255,255,0.06)"};
+    const H=(t)=>(<div style={{fontSize:14,fontWeight:700,color:TX,letterSpacing:-0.1}}>{t}</div>);
     return(<div>
-      <div style={{padding:"14px 14px 0"}}>
+      <div style={{padding:"16px 16px 0"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <Brand size={24}/>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <button onClick={()=>setTab("notif")} style={{...glass,borderRadius:11,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",position:"relative"}}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={TX} strokeWidth="1.8" strokeLinecap="round"><path d="M12 3a6 6 0 016 6c0 7 3 7 3 7H3s3 0 3-7a6 6 0 016-6zM10 21h4"/></svg><span style={{position:"absolute",top:-3,right:-3,minWidth:15,height:15,borderRadius:8,background:DN,color:"#fff",fontSize:8.5,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px"}}>2</span></button>
-            <button onClick={()=>setTab("profile")} style={{width:32,height:32,borderRadius:16,background:"linear-gradient(135deg,"+AC+","+DG+")",border:"1.5px solid rgba(255,255,255,0.25)",color:"#fff",fontSize:11,fontWeight:800,cursor:"pointer"}}>JR</button>
+          <Brand size={23}/>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <button onClick={()=>setTab("notif")} style={{...card,borderRadius:12,width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",position:"relative"}}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={TX} strokeWidth="1.8" strokeLinecap="round"><path d="M12 3a6 6 0 016 6c0 7 3 7 3 7H3s3 0 3-7a6 6 0 016-6zM10 21h4"/></svg><span style={{position:"absolute",top:-4,right:-4,minWidth:16,height:16,borderRadius:8,background:DN,color:"#fff",fontSize:8.5,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px",border:"2px solid "+BG0}}>2</span></button>
+            <button onClick={()=>setTab("profile")} style={{width:36,height:36,borderRadius:18,background:AC,border:"none",color:"#04231a",fontSize:12,fontWeight:800,cursor:"pointer"}}>JR</button>
           </div>
         </div>
-        <div style={{marginTop:16}}>
-          <div style={{fontSize:21,fontWeight:800,color:TX,letterSpacing:-0.4}}>{greetWord()}, John</div>
-          <div style={{fontSize:11.5,color:MU,marginTop:2}}>{myProj.name} · {myProj.div}</div>
+        <div style={{marginTop:22}}>
+          <div style={{fontSize:26,fontWeight:800,color:TX,letterSpacing:-0.8,lineHeight:1.1}}>{greetWord()}, John</div>
+          <div style={{fontSize:12.5,color:MU,marginTop:5}}>{myProj.name} · {myProj.div}</div>
         </div>
       </div>
 
-      <div style={{padding:"16px 14px 4px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-        <div style={{...glass,borderRadius:16,padding:"12px 10px"}}>
-          <div style={{fontSize:9,fontWeight:700,color:SU,letterSpacing:0.5,fontFamily:MONO}}>TRAINING</div>
-          <div style={{fontSize:15,fontWeight:800,color:TX,marginTop:4}}>Current</div>
-          <div style={{fontSize:8.5,color:MU,fontFamily:MONO,marginTop:2}}>ALL CERTS OK</div>
+      <div style={{padding:"20px 16px 0",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+        <div style={{...card,borderRadius:16,padding:"13px 12px",minHeight:80,display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+          <div style={{fontSize:10.5,fontWeight:600,color:MU}}>Training</div>
+          <div><div style={{fontSize:17,fontWeight:800,color:TX,lineHeight:1}}>Current</div><div style={{fontSize:10,color:SU,marginTop:4}}>Certs OK</div></div>
         </div>
-        <div style={{...glass,borderRadius:16,padding:"12px 10px"}}>
-          <div style={{fontSize:9,fontWeight:700,color:WN,letterSpacing:0.5,fontFamily:MONO}}>WEATHER</div>
-          <div style={{fontSize:22,fontWeight:800,color:TX,marginTop:4,lineHeight:1}}>82°</div>
-          <div style={{fontSize:8.5,color:MU,fontFamily:MONO,marginTop:2}}>CLEAR</div>
+        <div style={{...card,borderRadius:16,padding:"13px 12px",minHeight:80,display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+          <div style={{fontSize:10.5,fontWeight:600,color:MU}}>Weather</div>
+          <div><div style={{fontSize:23,fontWeight:800,color:TX,lineHeight:1}}>82°</div><div style={{fontSize:10,color:MU,marginTop:4}}>Clear</div></div>
         </div>
-        <button onClick={()=>setScr({t:"reminders"})} style={{...glass,borderRadius:16,padding:"12px 10px",textAlign:"left",cursor:"pointer",border:"none"}}>
-          <div style={{fontSize:9,fontWeight:700,color:WN,letterSpacing:0.5,fontFamily:MONO}}>REMINDERS</div>
-          <div style={{fontSize:22,fontWeight:800,color:TX,marginTop:4,lineHeight:1}}>{rem.length}</div>
-          <div style={{fontSize:8.5,color:MU,fontFamily:MONO,marginTop:2}}>TAP TO MANAGE</div>
+        <button onClick={()=>setScr({t:"reminders"})} style={{...card,borderRadius:16,padding:"13px 12px",minHeight:80,display:"flex",flexDirection:"column",justifyContent:"space-between",textAlign:"left",cursor:"pointer"}}>
+          <div style={{fontSize:10.5,fontWeight:600,color:MU}}>Reminders</div>
+          <div><div style={{fontSize:23,fontWeight:800,color:TX,lineHeight:1}}>{rem.length}</div><div style={{fontSize:10,color:AC,marginTop:4}}>Manage ›</div></div>
         </button>
       </div>
 
-      <div style={{padding:"18px 14px 4px"}}>
+      <div style={{padding:"24px 16px 0"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <span style={{fontSize:10,fontWeight:700,letterSpacing:2.5,color:MU,fontFamily:MONO}}>MY PROJECTS</span>
-          {MY_PROJECT_IDS.length>1&&<button onClick={()=>setScr({t:"myprojects"})} style={{background:"none",border:"none",color:AC,fontSize:10.5,fontWeight:800,cursor:"pointer"}}>View all ›</button>}
+          {H("My projects")}
+          {MY_PROJECT_IDS.length>1&&<button onClick={()=>setScr({t:"myprojects"})} style={{background:"none",border:"none",color:AC,fontSize:11.5,fontWeight:700,cursor:"pointer"}}>View all ›</button>}
         </div>
         {PROJECTS.filter(p=>MY_PROJECT_IDS.includes(p.id)).map(p=>{const active=p.id===curProj;return(
-        <button key={p.id} onClick={()=>{setCurProj(p.id);show("Switched to "+p.name);}} style={{...glass,width:"100%",textAlign:"left",borderRadius:18,padding:14,marginBottom:12,cursor:"pointer",border:"1px solid "+(active?AC:HL)}}>
-          <div style={{display:"flex",gap:12}}>
-            <Thumb div={p.div} tag={active?null:p.role}/>
+        <button key={p.id} onClick={()=>{setCurProj(p.id);show("Switched to "+p.name);}} style={{...card,width:"100%",textAlign:"left",borderRadius:16,padding:15,marginBottom:11,cursor:"pointer",border:"1px solid "+(active?AC:"rgba(255,255,255,0.06)")}}>
+          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+            <Thumb div={p.div} tag={null} size={46}/>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:6}}>
-                <div style={{minWidth:0}}><div style={{fontSize:13.5,fontWeight:800,color:TX,lineHeight:1.2}}>{p.name}</div><div style={{fontSize:10.5,color:MU,marginTop:2}}>{p.loc}{p.div?" · "+p.div:""}</div></div>
-                {active?<span style={{fontSize:8.5,fontWeight:800,letterSpacing:0.5,color:SU,background:SU+"22",padding:"3px 8px",borderRadius:20,fontFamily:MONO,flexShrink:0}}>ACTIVE</span>:<Pill c={MU}>SWITCH</Pill>}
-              </div>
+              <div style={{fontSize:14,fontWeight:800,color:TX,lineHeight:1.2}}>{p.name}</div>
+              <div style={{fontSize:11,color:MU,marginTop:3}}>{p.loc}{p.div?" · "+p.div:""}</div>
             </div>
+            {active?<span style={{fontSize:8.5,fontWeight:800,letterSpacing:0.3,color:"#04231a",background:AC,padding:"4px 9px",borderRadius:20,flexShrink:0}}>ACTIVE</span>:<span style={{fontSize:8.5,fontWeight:700,letterSpacing:0.3,color:MU,background:"rgba(255,255,255,0.06)",padding:"4px 9px",borderRadius:20,flexShrink:0}}>SWITCH</span>}
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:14,marginTop:12}}>
-            <Ring pct={p.pct} size={46} color={p.pct>=90?SU:WN}/>
-            <div style={{display:"flex",gap:16,flex:1}}>
-              <Metric v={p.crew} k="crew"/><Metric v={p.pct+"%"} k="signed in" c={p.pct>=90?SU:WN}/><Metric v={p.openInsp} k="inspect." c={p.openInsp?WN:SU}/>
+          <div style={{display:"flex",alignItems:"center",gap:16,marginTop:14}}>
+            <Ring pct={p.pct} size={44} stroke={5} color={AC}/>
+            <div style={{display:"flex",justifyContent:"space-between",flex:1}}>
+              <Metric v={p.crew} k="crew"/><Metric v={p.pct+"%"} k="signed in"/><Metric v={p.openInsp} k="inspections" c={p.openInsp?WN:TX}/>
             </div>
           </div>
         </button>);})}
       </div>
 
-      <div style={{padding:"18px 14px 4px"}}>
-        <Eyebrow>Quick access</Eyebrow>
+      <div style={{padding:"24px 16px 0"}}>
+        <div style={{marginBottom:12}}>{H("Quick access")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:9}}>
-          {QA.map(([label,d,onClick],i)=>(<button key={i} onClick={onClick} style={{...glass,borderRadius:15,padding:"12px 5px 10px",display:"flex",flexDirection:"column",alignItems:"center",gap:7,cursor:"pointer"}}>
-            <div style={{width:34,height:34,borderRadius:10,background:AC+"1e",display:"flex",alignItems:"center",justifyContent:"center"}}><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg></div>
-            <span style={{fontSize:8,fontWeight:700,color:TX,textAlign:"center",lineHeight:1.2}}>{label}</span>
+          {QA.map(([label,d,onClick],i)=>(<button key={i} onClick={onClick} style={{...card,borderRadius:14,padding:"13px 4px 11px",display:"flex",flexDirection:"column",alignItems:"center",gap:8,cursor:"pointer"}}>
+            <div style={{width:36,height:36,borderRadius:11,background:AC+"1a",display:"flex",alignItems:"center",justifyContent:"center"}}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg></div>
+            <span style={{fontSize:8.5,fontWeight:600,color:MU,textAlign:"center",lineHeight:1.25}}>{label}</span>
           </button>))}
         </div>
       </div>
 
-      <div style={{padding:"18px 14px 4px"}}>
-        <Eyebrow>Today on site</Eyebrow>
-        <div style={{...glass,borderRadius:16,padding:"14px 15px"}}>
-          {FEED.map((f,i)=>(<div key={i} style={{display:"flex",gap:11,paddingBottom:i<FEED.length-1?12:0,marginBottom:i<FEED.length-1?12:0,borderBottom:i<FEED.length-1?"1px solid "+HL:"none"}}>
-            <div style={{width:22,height:22,borderRadius:11,background:f[3]+"22",border:"1.5px solid "+f[3],color:f[3],fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{f[4]}</div>
+      <div style={{padding:"24px 16px 0"}}>
+        <div style={{marginBottom:12}}>{H("Today on site")}</div>
+        <div style={{...card,borderRadius:16,padding:"4px 15px"}}>
+          {FEED.map((f,i)=>(<div key={i} style={{display:"flex",gap:12,alignItems:"center",padding:"12px 0",borderBottom:i<FEED.length-1?"1px solid rgba(255,255,255,0.05)":"none"}}>
+            <div style={{width:22,height:22,borderRadius:11,background:f[3]+"1e",color:f[3],fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{f[4]}</div>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{display:"flex",justifyContent:"space-between",gap:8}}><span style={{fontSize:12,fontWeight:700,color:TX}}>{f[1]}</span><span style={{fontSize:9,color:MU,fontFamily:MONO,flexShrink:0}}>{f[0]}</span></div>
-              <div style={{fontSize:10.5,color:MU,marginTop:1}}>{f[2]}</div>
+              <div style={{display:"flex",justifyContent:"space-between",gap:8}}><span style={{fontSize:12.5,fontWeight:600,color:TX}}>{f[1]}</span><span style={{fontSize:9.5,color:MU,flexShrink:0}}>{f[0]}</span></div>
+              <div style={{fontSize:10.5,color:MU,marginTop:2}}>{f[2]}</div>
             </div>
           </div>))}
         </div>
@@ -852,12 +850,12 @@ export default function App(){
   const nav=[["home","Home","M3 11l9-8 9 8M5 10v10h14V10"],["schedule","Schedule","M4 5h16v16H4zM4 9h16M8 3v4M16 3v4"],["notif","Alerts","M12 3a6 6 0 016 6c0 7 3 7 3 7H3s3 0 3-7a6 6 0 016-6zM10 21h4"],["profile","Profile","M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0"]];
 
   return (
-    <div style={{maxWidth:430,margin:"0 auto",minHeight:"100vh",background:BG0,fontFamily:SANS,color:TX,position:"relative",paddingBottom:70}}>
+    <div style={{maxWidth:430,margin:"0 auto",minHeight:"100vh",background:BG0,fontFamily:SANS,color:TX,position:"relative",paddingBottom:96}}>
       {body}
       {toast&&<div style={{position:"fixed",bottom:84,left:"50%",transform:"translateX(-50%)",background:"rgba(4,164,102,0.95)",color:"#04231a",padding:"11px 20px",borderRadius:12,fontSize:11.5,fontWeight:800,letterSpacing:0.3,boxShadow:"0 8px 30px #04a46655",zIndex:300,whiteSpace:"nowrap"}}>{toast}</div>}
       {zoom&&<div onClick={()=>setZoom(false)} style={{position:"fixed",inset:0,background:"#000000ee",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:12}}><img src={POSTER} alt="OSHA poster" style={{maxWidth:"100%",maxHeight:"92vh",borderRadius:8}}/></div>}
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(13,13,13,0.9)",backdropFilter:"blur(14px)",borderTop:"1px solid "+HL,display:"flex",justifyContent:"space-around",padding:"8px 0 13px",zIndex:200}}>
-        {nav.map(n=>{const on=tab===n[0]&&!scr;return(<button key={n[0]} onClick={()=>{setTab(n[0]);setScr(null);}} style={{background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"3px 12px",position:"relative"}}><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke={on?AC:MU} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={n[2]}/></svg>{n[0]==="notif"&&<div style={{position:"absolute",top:-2,right:8,width:15,height:15,borderRadius:8,background:DN,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8.5,fontWeight:800,color:"#fff"}}>2</div>}<span style={{fontSize:8.5,fontWeight:800,color:on?AC:MU,letterSpacing:0.5,fontFamily:MONO}}>{n[1].toUpperCase()}</span></button>);})}
+        {nav.map(n=>{const on=tab===n[0]&&!scr;return(<button key={n[0]} onClick={()=>{setTab(n[0]);setScr(null);}} style={{background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,padding:"3px 14px",position:"relative"}}><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke={on?AC:MU} strokeWidth={on?2:1.8} strokeLinecap="round" strokeLinejoin="round"><path d={n[2]}/></svg>{n[0]==="notif"&&<div style={{position:"absolute",top:-2,right:9,width:15,height:15,borderRadius:8,background:DN,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8.5,fontWeight:800,color:"#fff",border:"2px solid rgba(13,13,13,0.9)"}}>2</div>}<span style={{fontSize:9.5,fontWeight:on?700:500,color:on?AC:MU,letterSpacing:0}}>{n[1]}</span></button>);})}
       </div>
     </div>
   );
