@@ -58,6 +58,7 @@ export default function LoginPage() {
           companyName: f.companyName || "",
           name: f.name || "",
           email: f.email || "",
+          phone: f.phone || "",
           password: f.password || "",
         };
       }
@@ -195,7 +196,7 @@ export default function LoginPage() {
 
             {mode === "worker" && (
               <>
-                {field("joinCode", "Company code", { placeholder: "ACME-7F3K-9QLP" })}
+                {field("joinCode", "Company code", { placeholder: "SACR-OPS1-DEMO" })}
                 {field("name", "Your name", { placeholder: "John Rivera" })}
                 {field("pin", "4-digit PIN", { type: "password", inputMode: "numeric", maxLength: 4, placeholder: "••••" })}
               </>
@@ -211,6 +212,7 @@ export default function LoginPage() {
                 {field("companyName", "Company name", { placeholder: "Acme Construction" })}
                 {field("name", "Your name", { placeholder: "Kelly McClure" })}
                 {field("email", "Email", { type: "email", placeholder: "you@company.com" })}
+                {field("phone", "Phone number", { type: "tel", inputMode: "tel", placeholder: "(555) 123-4567" })}
                 {field("password", "Password (8+ characters)", { type: "password", placeholder: "••••••••" })}
               </>
             )}

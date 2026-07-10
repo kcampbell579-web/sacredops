@@ -53,6 +53,21 @@ enum Role {
   WORKER
 }
 
+// Sales leads. Every "new company" signup is captured here (name, email,
+// phone, company) so the platform owner can follow up and sell. Standalone —
+// not tied to auth — so it survives even if the account is later changed.
+model Lead {
+  id          String   @id @default(cuid())
+  companyName String
+  name        String
+  email       String
+  phone       String?
+  companyId   String? // the company created at signup, for reference
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 model User {
   id           String   @id @default(cuid())
   companyId    String

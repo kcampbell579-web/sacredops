@@ -5,9 +5,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/auth/signup-company — create a new company + its first admin.
-// { companyName, name, email, password }
+// { companyName, name, email, phone, password }
 export async function POST(req: Request) {
-  const { companyName, name, email, password } = await req.json().catch(() => ({}));
+  const { companyName, name, email, phone, password } = await req.json().catch(() => ({}));
   if (!companyName || !name || !email || !password) {
     return Response.json({ error: "All fields are required." }, { status: 400 });
   }
@@ -39,6 +39,21 @@ export async function POST(req: Request) {
       passwordHash: await hashSecret(String(password)),
     },
   });
+
+  // Capture the signup as a sales lead (best-effort — never block signup on it).
+  try {
+    await prisma.lead.create({
+      data: {
+        companyName: String(companyName).trim(),
+        name: String(name).trim(),
+        email: normEmail,
+        phone: phone ? String(phone).trim() : null,
+        companyId: company.id,
+      },
+    });
+  } catch {
+    /* ignore lead-capture failures */
+  }
 
   await createSession(user.id);
   return Response.json({
