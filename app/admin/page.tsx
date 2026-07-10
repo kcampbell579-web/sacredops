@@ -20,6 +20,8 @@ type Member = {
   createdAt: string;
 };
 
+type Invite = { id: string; name: string; email: string; role: string; token: string };
+
 const ROLE_META: Record<string, { label: string; color: string; blurb: string }> = {
   ADMIN: { label: "Admin", color: AC, blurb: "Full access · manage members & roles" },
   SUPERVISOR: { label: "Supervisor", color: WN, blurb: "Supervisor Portal · projects, forms, reports" },
@@ -35,6 +37,13 @@ export default function AdminPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState("");
   const [copied, setCopied] = useState(false);
+  const [invites, setInvites] = useState<Invite[]>([]);
+  const [inv, setInv] = useState<{ name: string; email: string; role: string }>({ name: "", email: "", role: "SUPERVISOR" });
+  const [inviteBusy, setInviteBusy] = useState(false);
+  const [copiedToken, setCopiedToken] = useState("");
+
+  const inviteLink = (token: string) =>
+    (typeof window !== "undefined" ? window.location.origin : "") + "/invite/" + token;
 
   const flash = (m: string) => {
     setToast(m);
@@ -53,10 +62,75 @@ export default function AdminPage() {
       setCompany(data.company);
       setMeId(data.me?.id || "");
       setMembers(data.users || []);
+      try {
+        const ir = await fetch("/api/admin/invites", { cache: "no-store" });
+        if (ir.ok) setInvites((await ir.json()).invites || []);
+      } catch {
+        /* ignore */
+      }
     } catch {
       flash("Couldn't load members.");
     }
     setLoading(false);
+  }
+
+  async function sendInvite() {
+    const email = inv.email.trim();
+    const name = inv.name.trim();
+    if (!name || !email) {
+      flash("Enter a name and email.");
+      return;
+    }
+    setInviteBusy(true);
+    try {
+      const res = await fetch("/api/admin/invites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, role: inv.role }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        flash(data.error || "Couldn't create invite.");
+      } else {
+        setInvites((xs) => [data.invite, ...xs.filter((x) => x.email !== data.invite.email)]);
+        setInv({ name: "", email: "", role: "SUPERVISOR" });
+        copyInvite(data.invite.token);
+        flash("Invite link created & copied — send it to them.");
+      }
+    } catch {
+      flash("Network error.");
+    }
+    setInviteBusy(false);
+  }
+
+  function copyInvite(token: string) {
+    try {
+      navigator.clipboard?.writeText(inviteLink(token));
+      setCopiedToken(token);
+      window.setTimeout(() => setCopiedToken(""), 1800);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  async function revokeInvite(id: string) {
+    setBusy(id);
+    try {
+      const res = await fetch("/api/admin/invites", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inviteId: id }),
+      });
+      if (res.ok) {
+        setInvites((xs) => xs.filter((x) => x.id !== id));
+        flash("Invite revoked.");
+      } else {
+        flash("Couldn't revoke invite.");
+      }
+    } catch {
+      flash("Network error.");
+    }
+    setBusy(null);
   }
 
   useEffect(() => {
@@ -224,6 +298,76 @@ export default function AdminPage() {
           </p>
         </div>
 
+        {/* Invite by email (supervisors / admins) */}
+        <div style={{ border: "1px solid " + HL, background: "rgba(255,255,255,0.03)", borderRadius: 16, padding: "16px 18px", marginBottom: 24 }}>
+          <div style={{ fontSize: 9.5, fontWeight: 800, color: MU, letterSpacing: 1, fontFamily: MONO, marginBottom: 4 }}>
+            INVITE BY EMAIL
+          </div>
+          <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "0 0 12px" }}>
+            For supervisors & admins who should log in with an <b>email + password</b>. You'll get a
+            link to send them; they set their own password. (Workers don't need this — they self-join
+            with the company code.)
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <input
+              value={inv.name}
+              onChange={(e) => setInv((o) => ({ ...o, name: e.target.value }))}
+              placeholder="Full name"
+              style={{ ...field, flex: "1 1 140px" }}
+            />
+            <input
+              value={inv.email}
+              onChange={(e) => setInv((o) => ({ ...o, email: e.target.value }))}
+              placeholder="email@company.com"
+              type="email"
+              style={{ ...field, flex: "1 1 170px" }}
+            />
+            <select
+              value={inv.role}
+              onChange={(e) => setInv((o) => ({ ...o, role: e.target.value }))}
+              style={{ ...field, cursor: "pointer", flex: "0 0 auto" }}
+            >
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+            <button
+              onClick={sendInvite}
+              disabled={inviteBusy}
+              style={{ background: AC, color: "#04231a", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 11.5, fontWeight: 800, cursor: inviteBusy ? "default" : "pointer", opacity: inviteBusy ? 0.6 : 1 }}
+            >
+              {inviteBusy ? "…" : "CREATE INVITE"}
+            </button>
+          </div>
+
+          {invites.length > 0 && (
+            <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ fontSize: 9.5, fontWeight: 800, color: MU, letterSpacing: 1, fontFamily: MONO }}>
+                PENDING INVITES
+              </div>
+              {invites.map((i) => (
+                <div
+                  key={i.id}
+                  style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", border: "1px solid " + HL, borderRadius: 11, padding: "9px 12px", opacity: busy === i.id ? 0.5 : 1 }}
+                >
+                  <div style={{ minWidth: 0, flex: "1 1 160px" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700 }}>
+                      {i.name}{" "}
+                      <span style={{ fontSize: 9.5, color: i.role === "ADMIN" ? AC : WN, fontFamily: MONO }}>· {i.role === "ADMIN" ? "ADMIN" : "SUPERVISOR"}</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: MU, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.email}</div>
+                  </div>
+                  <button onClick={() => copyInvite(i.token)} style={ghost}>
+                    {copiedToken === i.token ? "Copied ✓" : "Copy link"}
+                  </button>
+                  <button onClick={() => revokeInvite(i.id)} disabled={busy === i.id} style={{ ...ghost, color: DN, borderColor: DN + "44" }}>
+                    Revoke
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Member list */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {members.map((m) => {
@@ -355,4 +499,15 @@ const ghost: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 700,
   cursor: "pointer",
+};
+
+const field: React.CSSProperties = {
+  boxSizing: "border-box",
+  background: "rgba(255,255,255,0.05)",
+  color: TX,
+  border: "1px solid " + HL,
+  borderRadius: 9,
+  padding: "9px 11px",
+  fontSize: 12.5,
+  outline: "none",
 };

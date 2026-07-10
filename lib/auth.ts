@@ -43,6 +43,11 @@ export function generateJoinCode(companyName: string): string {
   return `${prefix}-${group()}-${group()}`;
 }
 
+// A long, URL-safe random token for invite links.
+export function generateToken(): string {
+  return randomBytes(24).toString("hex");
+}
+
 // ---------------------------------------------------------------------------
 // Sessions (opaque token in an httpOnly cookie)
 // ---------------------------------------------------------------------------

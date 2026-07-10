@@ -24,7 +24,27 @@ model Company {
   joinCode  String   @unique // workers enter this to join (long & random)
   createdAt DateTime @default(now())
 
-  users User[]
+  users   User[]
+  invites Invite[]
+}
+
+// Email invitations for admins/supervisors. An admin creates an invite for a
+// person's email + role; the invitee opens the tokenized link, sets a password,
+// and their email+password account is created with the assigned role. Workers
+// don't need invites (they self-join with the company code + a PIN).
+model Invite {
+  id         String    @id @default(cuid())
+  companyId  String
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  email      String
+  name       String
+  role       Role      @default(SUPERVISOR)
+  token      String    @unique // random; embedded in the invite link
+  invitedBy  String? // admin's name, for display
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([companyId])
 }
 
 enum Role {
