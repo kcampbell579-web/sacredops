@@ -1,0 +1,454 @@
+// SacredOps — construction operations platform
+// Prisma schema covering Staffing, Certifications & Training,
+// Safety & Incidents, and Permits & Documents.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Accounts & tenancy
+// ---------------------------------------------------------------------------
+// Every company is an isolated tenant. All portal data is tagged with a
+// companyId, and the server only ever reads/writes rows for the logged-in
+// user's company — so no URL or code trick exposes another company's data.
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  joinCode  String   @unique // workers enter this to join (long & random)
+  createdAt DateTime @default(now())
+
+  users User[]
+}
+
+enum Role {
+  ADMIN
+  SUPERVISOR
+  WORKER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role         Role     @default(WORKER)
+  name         String
+  // Admins/supervisors sign in with email + password.
+  email        String?  @unique
+  passwordHash String?
+  // Workers sign in with the company code + their name + a 4-digit PIN.
+  pinHash      String?
+  createdAt    DateTime @default(now())
+
+  sessions Session[]
+
+  // A worker is identified by name within their company.
+  @@unique([companyId, name])
+  @@index([companyId])
+}
+
+model Session {
+  id        String   @id // opaque random token stored in an httpOnly cookie
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Portal persistence
+// ---------------------------------------------------------------------------
+// The Supervisor Portal stores its working data as JSON documents keyed by
+// name (all keys are prefixed "sacredops_"). AppState is the durable,
+// cross-device backing store that the client syncs localStorage against.
+// Scoped per company via a composite (companyId, key) primary key.
+
+model AppState {
+  companyId String
+  key       String
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@id([companyId, key])
+}
+
+// Projects created in the Supervisor Portal's "New Project" flow. Decomposed
+// store: the portal reads/writes the `sacredops_custom_projects` key, and the
+// server projects that JSON into these rows (see lib/projectors.ts). This is a
+// dedicated table (not the aspirational, relation-heavy `Jobsite` model) so it
+// matches the portal's actual project-card shape without disturbing the seed.
+model Project {
+  id        String // client-generated id (e.g. "p1720...")
+  companyId String
+  name      String
+  loc       String?
+  div       String? // division / discipline
+  contract  String?
+  owner     String? // owner / agency
+  role      String? // GC | Sub
+  crew      Int      @default(0)
+  pct       Int      @default(0) // completion %
+  openInsp  Int      @default(0) // open inspection items
+  status    String? // ok | attention | ...
+  details   Json? // any additional fields captured
+  createdAt DateTime @default(now())
+
+  @@id([companyId, id])
+  @@index([role])
+  @@index([status])
+}
+
+// Form submissions (permits, checklists, orientations, JHAs) created in the
+// Worker Portal and reviewed in the Supervisor Portal. This is the first
+// "decomposed" store: the portals still read/write the `sacredops_submissions`
+// localStorage key, but the server projects that JSON array into these typed,
+// queryable rows (see lib/projectors.ts) instead of an opaque AppState blob.
+model Submission {
+  id        String // client-generated id (e.g. "w1720...", "seed1")
+  companyId String
+  project   String
+  formTitle String
+  worker    String?
+  date      String? // human-facing date string as captured in the form
+  spec      Json? // full form body (meta, sections, signatures)
+  createdAt DateTime @default(now())
+
+  @@id([companyId, id])
+  @@index([project])
+  @@index([formTitle])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Trade {
+  LABORER
+  CARPENTER
+  ELECTRICIAN
+  PLUMBER
+  IRONWORKER
+  OPERATOR
+  MASON
+  WELDER
+  PAINTER
+  ROOFER
+  HVAC
+  FOREMAN
+  SUPERINTENDENT
+}
+
+enum WorkerStatus {
+  ACTIVE
+  ON_LEAVE
+  INACTIVE
+}
+
+enum JobsiteStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+}
+
+enum AssignmentStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum CertificationStatus {
+  VALID
+  EXPIRING_SOON
+  EXPIRED
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum PermitStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum DocumentCategory {
+  DRAWING
+  CONTRACT
+  SAFETY_PLAN
+  RFI
+  SUBMITTAL
+  PHOTO
+  OTHER
+}
+
+// ---------------------------------------------------------------------------
+// Organizations: unions & training providers
+// ---------------------------------------------------------------------------
+
+model Union {
+  id        String   @id @default(cuid())
+  name      String
+  local     String? // e.g. "Local 3"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workers Worker[]
+}
+
+// ---------------------------------------------------------------------------
+// Staffing & Workers
+// ---------------------------------------------------------------------------
+
+model Worker {
+  id         String       @id @default(cuid())
+  firstName  String
+  lastName   String
+  email      String?      @unique
+  phone      String?
+  trade      Trade
+  status     WorkerStatus @default(ACTIVE)
+  hireDate   DateTime     @default(now())
+  hourlyRate Decimal?     @db.Decimal(10, 2)
+  notes      String?
+
+  unionId String?
+  union   Union?  @relation(fields: [unionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments    Assignment[]
+  certifications Certification[]
+  enrollments    Enrollment[]
+
+  @@index([trade])
+  @@index([status])
+}
+
+model Jobsite {
+  id        String        @id @default(cuid())
+  name      String
+  code      String        @unique // internal project code
+  address   String?
+  city      String?
+  state     String?
+  status    JobsiteStatus @default(ACTIVE)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  assignments Assignment[]
+  permits     Permit[]
+  documents   Document[]
+
+  @@index([status])
+}
+
+model Assignment {
+  id        String           @id @default(cuid())
+  workerId  String
+  worker    Worker           @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  jobsiteId String
+  jobsite   Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  role      String? // role on this jobsite
+  status    AssignmentStatus @default(SCHEDULED)
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([workerId])
+  @@index([jobsiteId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Certifications & Training
+// ---------------------------------------------------------------------------
+
+model Certification {
+  id           String    @id @default(cuid())
+  workerId     String
+  worker       Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  name         String // e.g. "OSHA 30", "Confined Space Entry"
+  issuingBody  String?
+  credentialId String?
+  issuedDate   DateTime
+  expiresDate  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([workerId])
+  @@index([expiresDate])
+}
+
+model TrainingCourse {
+  id            String   @id @default(cuid())
+  title         String
+  provider      String?
+  description   String?
+  durationHours Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id          String           @id @default(cuid())
+  workerId    String
+  worker      Worker           @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      TrainingCourse   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status      EnrollmentStatus @default(ENROLLED)
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+  score       Int?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([workerId, courseId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Safety & Incidents
+// ---------------------------------------------------------------------------
+
+// Incident reports & investigations. Decomposed store: both portals write the
+// `sacredops_incidents` key, and the server projects that JSON into these rows
+// (see lib/projectors.ts). The worker's quick report (kind="report") and the
+// supervisor's full Incident Investigation Report (kind="investigation") share
+// this table — queryable columns for the common/reportable fields, a `details`
+// JSONB column for the narrative body, and IncidentCondition child rows for the
+// PASS/FAIL conditions checklist.
+model Incident {
+  id              String // client-generated id (e.g. "inc1720...")
+  companyId       String
+  source          String // supervisor | worker
+  kind            String // report | investigation
+  project         String
+  projectNumber   String?
+  type            String? // Injury / Illness, Near Miss, Hazard Observation, Property Damage
+  completedBy     String?
+  dateTime        String? // date & time of incident (as captured)
+  reportedWhen    String?
+  medicalAttention String?
+  lostTime        String?
+  details         Json? // full narrative body (statements, root cause, preventive, signatures, ...)
+  createdAt       DateTime @default(now())
+
+  conditions IncidentCondition[]
+
+  @@id([companyId, id])
+  @@index([project])
+  @@index([type])
+  @@index([source])
+}
+
+model IncidentCondition {
+  id         String   @id @default(cuid())
+  companyId  String
+  incidentId String
+  incident   Incident @relation(fields: [companyId, incidentId], references: [companyId, id], onDelete: Cascade)
+  label      String
+  result     String // pass | fail
+  position   Int
+
+  @@index([companyId, incidentId])
+  @@index([result])
+}
+
+// Safety inspections & walk-throughs. Decomposed store: the Supervisor Portal
+// reads/writes the `sacredops_inspections` key, and the server projects that
+// JSON into these rows (see lib/projectors.ts). `project` is the project name
+// (custom projects don't live in the Jobsite table), status is "pass"|"open"|
+// "fail", and `details` preserves the richer form body (fullSections/fullObs).
+model Inspection {
+  id        String // client-generated id (e.g. "i1", "ni...", "wt...")
+  companyId String
+  project   String
+  type      String // Scaffold, Fall Protection, Crane / Rigging, ...
+  by        String? // inspector
+  date      String? // human-facing date string as captured
+  status    String // pass | open | fail
+  note      String?
+  details   Json? // extra form body (fullSections / fullObs)
+  createdAt DateTime @default(now())
+
+  items ChecklistItem[]
+
+  @@id([companyId, id])
+  @@index([project])
+  @@index([status])
+  @@index([type])
+}
+
+model ChecklistItem {
+  id           String     @id @default(cuid())
+  companyId    String
+  inspectionId String
+  inspection   Inspection @relation(fields: [companyId, inspectionId], references: [companyId, id], onDelete: Cascade)
+  label        String
+  result       String // pass | flag
+  position     Int // preserves item order within the inspection
+
+  @@index([companyId, inspectionId])
+  @@index([result])
+}
+
+// ---------------------------------------------------------------------------
+// Permits & Documents
+// ---------------------------------------------------------------------------
+
+model Permit {
+  id          String       @id @default(cuid())
+  jobsiteId   String
+  jobsite     Jobsite      @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  type        String // e.g. "Building", "Electrical", "Excavation"
+  permitNumber String?
+  issuingAuthority String?
+  status      PermitStatus @default(DRAFT)
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([jobsiteId])
+  @@index([status])
+}
+
+model Document {
+  id          String           @id @default(cuid())
+  jobsiteId   String
+  jobsite     Jobsite          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+  name        String
+  category    DocumentCategory @default(OTHER)
+  url         String? // link to stored file
+  version     String?
+  uploadedBy  String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([jobsiteId])
+  @@index([category])
+}
