@@ -530,7 +530,7 @@ export default function App(){
   };
   const SafetyLocs=()=>{
     const locs=(loadSafetyLocs()[myProj.id])||{};
-    const openDirections=(v)=>{if(!v)return;if(v.mobile){show("Located in the foreman's vehicle — ask your foreman");return;}window.open("https://maps.google.com/?daddr="+v.lat+","+v.lng,"_blank");};
+    const openDirections=(v)=>{if(!v)return;if(v.mobile){show("Located in the foreman's vehicle — ask your foreman");return;}if(v.link){window.open(v.link,"_blank");return;}window.open("https://maps.google.com/?daddr="+v.lat+","+v.lng,"_blank");};
     return(<Screen title="Safety Locations" sub={myProj.name}>
       {SAFETY_CATS.map(([key,label,path])=>{const v=locs[key];const set=!!v;return(
         <button key={key} onClick={()=>openDirections(v)} disabled={!set} style={{...glass,width:"100%",textAlign:"left",borderRadius:16,padding:14,marginBottom:11,display:"flex",alignItems:"center",gap:12,cursor:set?"pointer":"default",opacity:set?1:0.6}}>

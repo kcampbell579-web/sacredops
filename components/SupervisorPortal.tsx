@@ -649,10 +649,15 @@ export default function App(){
   const ProjDetail=({p})=>{
     const[locs,setLocs]=useState(()=>loadSafetyLocs());
     const[editKey,setEditKey]=useState(null);
+    const[linkDraft,setLinkDraft]=useState("");
     const myLocs=locs[p.id]||{};
-    const setLoc=(key,val)=>{const next={...locs,[p.id]:{...(locs[p.id]||{}),[key]:val}};setLocs(next);saveSafetyLocs(next);setEditKey(null);show("Saved");};
+    const setLoc=(key,val)=>{const next={...locs,[p.id]:{...(locs[p.id]||{}),[key]:val}};setLocs(next);saveSafetyLocs(next);setEditKey(null);setLinkDraft("");show("Saved");};
     const useMyLocation=(key)=>{if(!(typeof navigator!=="undefined"&&navigator.geolocation)){show("Location not available");return;}navigator.geolocation.getCurrentPosition(pos=>setLoc(key,{lat:pos.coords.latitude,lng:pos.coords.longitude}),()=>show("Could not get location — enable location access"),{timeout:8000});};
-    const statusText=(v)=>!v?"Not set":v.mobile?"In foreman van / vehicle":"Pin set · "+v.lat.toFixed(4)+", "+v.lng.toFixed(4);
+    // Open Google Maps in satellite view, centered on the site address.
+    const satelliteUrl="https://maps.google.com/?q="+encodeURIComponent(p.loc||p.name||"")+"&t=k&z=18";
+    const locUrl=(v)=>v&&v.link?v.link:(v&&v.lat!=null?"https://maps.google.com/?q="+v.lat+","+v.lng:null);
+    const openLoc=(v)=>{const u=locUrl(v);if(u)window.open(u,"_blank","noopener");};
+    const statusText=(v)=>!v?"Not set":v.mobile?"In foreman van / vehicle":v.link?"Pin dropped · tap OPEN for directions":v.lat!=null?"Pin set · "+v.lat.toFixed(4)+", "+v.lng.toFixed(4):"Set";
     return(<Screen title={p.name} sub={p.loc+(p.div?" · "+p.div:"")}>
     {(p.contract||p.role)&&<div style={{...glass,borderRadius:14,padding:"12px 14px",marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
       <div><div style={{fontSize:9,color:MU,fontFamily:MONO,letterSpacing:1}}>BID / CONTRACT #</div><div style={{fontSize:13,fontWeight:800,color:TX,marginTop:2}}>{p.contract||"—"}</div>{p.owner&&<div style={{fontSize:10.5,color:MU,marginTop:2}}>{p.owner}</div>}</div>
@@ -667,11 +672,16 @@ export default function App(){
         <div style={{display:"flex",alignItems:"center",gap:11}}>
           <div style={{width:34,height:34,borderRadius:10,background:AC+"18",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={path}/></svg></div>
           <div style={{flex:1,minWidth:0}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{label}</div><div style={{fontSize:10.5,color:v?SU:MU,marginTop:1}}>{statusText(v)}</div></div>
-          <button onClick={()=>setEditKey(editKey===key?null:key)} style={{background:"none",border:"1px solid "+AC+"66",color:AC,borderRadius:9,padding:"6px 11px",fontSize:10,fontWeight:800,cursor:"pointer",flexShrink:0}}>{v?"EDIT":"SET"}</button>
+          {locUrl(v)&&<button onClick={()=>openLoc(v)} style={{background:AC+"18",border:"1px solid "+AC+"66",color:AC,borderRadius:9,padding:"6px 10px",fontSize:10,fontWeight:800,cursor:"pointer",flexShrink:0}}>OPEN</button>}
+          <button onClick={()=>{setEditKey(editKey===key?null:key);setLinkDraft("");}} style={{background:"none",border:"1px solid "+AC+"66",color:AC,borderRadius:9,padding:"6px 11px",fontSize:10,fontWeight:800,cursor:"pointer",flexShrink:0}}>{v?"EDIT":"SET"}</button>
         </div>
         {editKey===key&&(<div style={{marginTop:11,paddingTop:11,borderTop:"1px solid "+HL}}>
-          <button onClick={()=>useMyLocation(key)} style={{width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer",marginBottom:8}}>📍 USE MY CURRENT LOCATION</button>
-          <button onClick={()=>setLoc(key,{mobile:true})} style={{width:"100%",background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>IN FOREMAN VAN / VEHICLE (MOBILE SITE)</button>
+          <div style={{fontSize:10.5,color:MU,lineHeight:1.5,marginBottom:9}}>1. Open the map (satellite), find the exact spot &amp; drop a pin. 2. Tap <b style={{color:TX}}>Share → Copy link</b>. 3. Paste it below.</div>
+          <a href={satelliteUrl} target="_blank" rel="noopener noreferrer" style={{display:"block",textAlign:"center",textDecoration:"none",width:"100%",boxSizing:"border-box",background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer",marginBottom:9}}>🛰 OPEN GOOGLE MAPS (SATELLITE)</a>
+          <input value={linkDraft} onChange={e=>setLinkDraft(e.target.value)} placeholder="Paste the Google Maps pin link…" style={{...inp,marginBottom:8}}/>
+          <button onClick={()=>{const u=(linkDraft||"").trim();if(!/^https?:\/\//i.test(u)){show("Paste the copied map link first");return;}setLoc(key,{link:u});}} style={{width:"100%",background:SU,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer",marginBottom:8}}>SAVE PIN LINK</button>
+          <button onClick={()=>useMyLocation(key)} style={{width:"100%",background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer",marginBottom:8}}>📍 Or use my current location</button>
+          <button onClick={()=>setLoc(key,{mobile:true})} style={{width:"100%",background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>In foreman van / vehicle (mobile site)</button>
         </div>)}
       </div>);})}
     <div style={{...glass,borderRadius:12,padding:"11px 13px",marginBottom:8,fontSize:10.5,color:MU,lineHeight:1.5}}>Workers tap these on their project to get walking/driving directions, or see "in the vehicle" for mobile sites.</div>
