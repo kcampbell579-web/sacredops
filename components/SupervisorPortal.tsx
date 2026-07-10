@@ -1332,9 +1332,11 @@ export default function App(){
     const s=(k,v)=>setF(o=>{const n={...o,[k]:v};incidentDraft=n;return n;});
     const[cond,setCond]=useState(()=>({...incidentCondDraft}));
     const setC=(i,v)=>setCond(o=>{const n={...o,[i]:o[i]===v?"":v};incidentCondDraft=n;return n;});
+    const sigRef=useRef(null);
     const submit=()=>{
       const rec={
         id:"inc"+Date.now(),source:"supervisor",kind:"investigation",
+        signature:(sigRef.current&&sigRef.current())||"",
         project:f.proj||"",projectNumber:f.projNumber||"",type:f.type||"",
         completedBy:f.completedBy||"",dateTime:f.dateTime||"",reportedWhen:f.reportedWhen||"",
         medicalAttention:f.medical||"",lostTime:f.lostTime||"",
@@ -1395,28 +1397,36 @@ export default function App(){
         </div>
       ))}
 
-      <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"14px 0 5px",letterSpacing:1,fontFamily:MONO}}>SIGNATURE</div><SigPad/>
+      <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"14px 0 5px",letterSpacing:1,fontFamily:MONO}}>SIGNATURE</div><SigPad capRef={sigRef}/>
       <button onClick={submit} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
     </Screen>);
   };
 
   const DeliverTalk=()=>(<Screen title="Toolbox Talks" sub="Deliver a talk, then sign the crew in live">{LIBRARY.map((t,i)=>(<button key={i} onClick={()=>setScr({t:"deliverTalkDetail",name:t})} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"14px 15px",marginBottom:9,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:TX}}>{t}</span><span style={{fontSize:16,color:MU}}>›</span></button>))}</Screen>);
-  const DeliverTalkDetail=({name})=>(
-    <Screen title={name} sub="Toolbox talk · sign-in required">
+  const DeliverTalkDetail=({name})=>{
+    const talkSigRef=useRef(null);
+    const isSig=(st)=>typeof st==="string"&&st.startsWith("data:");
+    const submit=()=>{
+      const sigs=WORKERS.map((w,i)=>{const st=signed[name+i];return isSig(st)?{role:w.r,name:w.n,date:new Date().toLocaleDateString(),img:st}:null;}).filter(Boolean);
+      const count=WORKERS.filter((w,i)=>{const st=signed[name+i];return st&&st!=="open";}).length;
+      buildPDF({file:"ToolboxTalk.pdf",title:"Toolbox Talk — "+name,meta:[["Date",new Date().toLocaleDateString()],["Crew signed",count+" of "+WORKERS.length]],sections:[{h:"Topic reviewed",text:"Hazards for today's task, controls in place, required PPE, and the emergency plan were reviewed with the crew who signed below."}],sigs:sigs},()=>{setScr(null);show("Toolbox talk submitted — signed PDF downloaded");},()=>show("Need internet to build PDF"));
+    };
+    return(<Screen title={name} sub="Toolbox talk · sign-in required">
       <div style={{...glass,borderRadius:14,padding:14,fontSize:12.5,color:TX,lineHeight:1.5,marginBottom:16}}>Review the hazards for today's task, controls in place, required PPE, and the emergency plan. Confirm every crew member understands before work begins.</div>
       <div style={{fontSize:10.5,fontWeight:800,color:AC,letterSpacing:1,marginBottom:8,fontFamily:MONO}}>CREW SIGN-IN</div>
-      {WORKERS.map((w,i)=>{const done=signed[name+i];return(
+      {WORKERS.map((w,i)=>{const st=signed[name+i];const done=st&&st!=="open";return(
         <div key={i} style={{...glass,border:"1px solid "+(done?AC+"66":HL),borderRadius:14,padding:12,marginBottom:9,background:done?AC+"12":glass.background}}>
           <div style={{display:"flex",alignItems:"center",gap:11}}>
             <div style={{width:34,height:34,borderRadius:17,background:AC+"22",border:"1.5px solid "+AC,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:AC}}>{done?"✓":w.n.split(" ").map(x=>x[0]).join("")}</div>
             <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:TX}}>{w.n}</div><div style={{fontSize:10.5,color:MU}}>{w.r} · {w.l}</div></div>
-            {done?<span style={{fontSize:9.5,fontWeight:800,color:AC,fontFamily:MONO}}>SIGNED ✓</span>:<button onClick={()=>setSigned(s=>({...s,[name+i]:"open"}))} style={{background:AC,color:"#04231a",border:"none",borderRadius:9,padding:"7px 14px",fontSize:10.5,fontWeight:800,cursor:"pointer"}}>SIGN</button>}
+            {done?<span style={{fontSize:9.5,fontWeight:800,color:AC,fontFamily:MONO}}>SIGNED ✓</span>:st==="open"?null:<button onClick={()=>setSigned(s=>({...s,[name+i]:"open"}))} style={{background:AC,color:"#04231a",border:"none",borderRadius:9,padding:"7px 14px",fontSize:10.5,fontWeight:800,cursor:"pointer"}}>SIGN</button>}
           </div>
-          {done==="open"&&<div style={{marginTop:10}}><SigPad height={68}/><button onClick={()=>setSigned(s=>({...s,[name+i]:true}))} style={{marginTop:8,width:"100%",background:DG,color:TX,border:"1px solid "+HL,borderRadius:9,padding:"9px",fontSize:11,fontWeight:800,cursor:"pointer"}}>CONFIRM SIGNATURE</button></div>}
+          {st==="open"&&<div style={{marginTop:10}}><div style={{fontSize:10,color:MU,marginBottom:5}}>{w.n} — sign below</div><SigPad height={68} capRef={talkSigRef}/><button onClick={()=>{const img=talkSigRef.current&&talkSigRef.current();setSigned(s=>({...s,[name+i]:img||true}));}} style={{marginTop:8,width:"100%",background:DG,color:TX,border:"1px solid "+HL,borderRadius:9,padding:"9px",fontSize:11,fontWeight:800,cursor:"pointer"}}>CONFIRM SIGNATURE</button></div>}
+          {isSig(st)&&<img src={st} alt="signature" style={{marginTop:8,height:38,background:"#fff",borderRadius:6,padding:"2px 4px"}}/>}
         </div>);})}
-      <button onClick={()=>{setScr(null);show("Toolbox talk submitted");}} style={{marginTop:8,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT TOOLBOX TALK</button>
-    </Screen>
-  );
+      <button onClick={submit} style={{marginTop:8,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT & DOWNLOAD SIGNED PDF</button>
+    </Screen>);
+  };
 
   const EquipScan=()=>(<Screen title="Equipment Inspection" sub="Scan the QR sticker on the machine">
     <div style={{...glass,borderRadius:18,padding:"26px 16px",textAlign:"center",marginBottom:16}}>

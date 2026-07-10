@@ -750,11 +750,13 @@ export default function App(){
   const Incident=()=>{
     const[f,setF]=useState(()=>({type:"Injury / Illness",proj:myProj.name,by:"John Rivera — Foreman",...incidentDraft}));
     const s=(k,v)=>setF(o=>{const n={...o,[k]:v};incidentDraft=n;return n;});
+    const sigRef=useRef(null);
     const submit=()=>{
       pushIncident({
         id:"inc"+Date.now(),source:"worker",kind:"report",
         project:f.proj||myProj.name,type:f.type||"Injury / Illness",
         completedBy:f.by||"",location:f.location||"",description:f.description||"",
+        signature:(sigRef.current&&sigRef.current())||"",
         dateTime:f.when||"",date:new Date().toLocaleDateString()
       });
       incidentDraft={};setScr(null);show("Incident submitted to supervisor");
