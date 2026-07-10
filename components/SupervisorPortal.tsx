@@ -331,6 +331,9 @@ const EXKEY="sacredops_expenses";
 function loadExpenses(){try{const v=window.localStorage.getItem(EXKEY);return v?JSON.parse(v):null;}catch(e){return (window.__expenses||null);}}
 function saveExpenses(a){try{window.localStorage.setItem(EXKEY,JSON.stringify(a));}catch(e){window.__expenses=a;}}
 const EXCATS=["Materials","Equipment Rental","Fuel","Permits & Fees","Subcontractor","Safety Supplies","Other"];
+// Read an image file, downscale it (max 1000px) and re-encode as a compact JPEG
+// data URL so receipts stay small enough to store and sync.
+function compressImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{try{const max=1000;let w=img.width,h=img.height;if(w>h&&w>max){h=Math.round(h*max/w);w=max;}else if(h>=w&&h>max){w=Math.round(w*max/h);h=max;}const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.drawImage(img,0,0,w,h);resolve(c.toDataURL("image/jpeg",0.6));}catch(e){reject(e);}};img.onerror=reject;img.src=reader.result;};reader.onerror=reject;reader.readAsDataURL(file);});}
 const DLKEY="sacredops_dailylogs";
 function loadDailyLogs(){try{const v=window.localStorage.getItem(DLKEY);return v?JSON.parse(v):null;}catch(e){return (window.__dailylogs||null);}}
 function saveDailyLogs(a){try{window.localStorage.setItem(DLKEY,JSON.stringify(a));}catch(e){window.__dailylogs=a;}}
@@ -1173,15 +1176,18 @@ export default function App(){
     const[items,setItems]=useState(()=>{const s=loadExpenses();return s&&s.length?s:SEED_EXPENSES;});
     const[showAdd,setShowAdd]=useState(false);
     const[ne,setNe]=useState({project:PROJECTS[0].name,category:EXCATS[0]});const setNeF=(k,v)=>setNe(o=>({...o,[k]:v}));
+    const fileRef=useRef(null);const[receiptView,setReceiptView]=useState(null);
+    const pickReceipt=()=>fileRef.current&&fileRef.current.click();
+    const onReceipt=async(ev)=>{const f=ev.target.files&&ev.target.files[0];if(f){try{setNeF("receipt",await compressImage(f));}catch(e){show("Couldn't read that image");}}ev.target.value="";};
     const persist=(next)=>{setItems(next);saveExpenses(next);};
-    const addItem=()=>{if(!ne.vendor||!ne.amount)return;const e={id:"ex"+Date.now(),date:ne.date||new Date().toLocaleDateString(),project:ne.project||PROJECTS[0].name,category:ne.category||EXCATS[0],vendor:ne.vendor,amount:parseFloat(ne.amount)||0,notes:ne.notes||""};persist([e,...items]);setNe({project:PROJECTS[0].name,category:EXCATS[0]});setShowAdd(false);};
+    const addItem=()=>{if(!ne.vendor||!ne.amount)return;const e={id:"ex"+Date.now(),date:ne.date||new Date().toLocaleDateString(),project:ne.project||PROJECTS[0].name,category:ne.category||EXCATS[0],vendor:ne.vendor,amount:parseFloat(ne.amount)||0,notes:ne.notes||"",receipt:ne.receipt||""};persist([e,...items]);setNe({project:PROJECTS[0].name,category:EXCATS[0]});setShowAdd(false);};
     const delItem=(id)=>persist(items.filter(x=>x.id!==id));
     const list=items.filter(e=>inFilter(e.project));
     const money=(x)=>"$"+(x||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
     const total=list.reduce((a,e)=>a+e.amount,0);
     const byCat=EXCATS.map(c=>({c,sum:list.filter(e=>e.category===c).reduce((a,e)=>a+e.amount,0)})).filter(x=>x.sum>0);
     const catColor=(c)=>({"Materials":AC,"Equipment Rental":WN,"Fuel":DN,"Permits & Fees":SU,"Subcontractor":AC,"Safety Supplies":WN,"Other":MU}[c]||MU);
-    const csv=()=>{const R=[["Date","Project","Category","Vendor","Amount","Notes"]];list.forEach(e=>R.push([e.date,e.project,e.category,e.vendor,e.amount.toFixed(2),e.notes]));R.push(["","","","TOTAL",total.toFixed(2),""]);const s=R.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");const a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(s);a.download="Expenses.csv";a.click();show("CSV exported for accounting");};
+    const csv=()=>{const R=[["Date","Project","Category","Vendor","Amount","Notes","Receipt"]];list.forEach(e=>R.push([e.date,e.project,e.category,e.vendor,e.amount.toFixed(2),e.notes,e.receipt?"Yes":"No"]));R.push(["","","","TOTAL",total.toFixed(2),"",""]);const s=R.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");const a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(s);a.download="Expenses.csv";a.click();show("CSV exported for accounting");};
     const pdf=()=>buildPDF({file:"ExpenseReport.pdf",title:"Job Cost / Expense Report",meta:[["Scope",filter],["Entries",list.length],["Total",money(total)]],sections:[{h:"Expenses",cols:["Date","Project","Category","Vendor","Amount"],widths:[62,120,84,110,68],rows:[...list.map(e=>[e.date,e.project,e.category,e.vendor,money(e.amount)]),["","","","TOTAL",money(total)]]}]},()=>show("Expense report PDF downloaded"),()=>show("Need internet to build PDF"));
     return(<div><Header title="Expense Tracker" sub="Job costs — export for accounting"/><ProjFilter/>
       <div style={{padding:"12px 14px 4px"}}>
@@ -1206,6 +1212,17 @@ export default function App(){
           <Row2><div style={{flex:2}}><T v={ne.vendor} set={v=>setNeF("vendor",v)} ph="Vendor / paid to"/></div><div style={{flex:1}}><T v={ne.amount} set={v=>setNeF("amount",v)} ph="$ amount"/></div></Row2>
           <div style={{height:8}}/>
           <TA v={ne.notes} set={v=>setNeF("notes",v)} ph="Notes (optional)" h={50}/>
+          <div style={{height:8}}/>
+          <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onReceipt} style={{display:"none"}}/>
+          {ne.receipt?(
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <img src={ne.receipt} alt="receipt" onClick={()=>setReceiptView(ne.receipt)} style={{width:52,height:52,objectFit:"cover",borderRadius:8,border:"1px solid "+HL,cursor:"pointer"}}/>
+              <span style={{fontSize:11,color:SU,fontWeight:700}}>Receipt attached</span>
+              <button onClick={()=>setNeF("receipt","")} style={{marginLeft:"auto",background:"none",border:"1px solid "+HL,color:MU,borderRadius:8,padding:"6px 10px",fontSize:10,fontWeight:700,cursor:"pointer"}}>Remove</button>
+            </div>
+          ):(
+            <button onClick={pickReceipt} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px dashed "+HL,color:MU,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:700,cursor:"pointer"}}>📷 Attach receipt photo</button>
+          )}
           <div style={{display:"flex",gap:8,marginTop:10}}>
             <button onClick={addItem} style={{flex:1,background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>SAVE</button>
             <button onClick={()=>{setShowAdd(false);setNe({project:PROJECTS[0].name,category:EXCATS[0]});}} style={{flex:1,background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>CANCEL</button>
@@ -1224,9 +1241,11 @@ export default function App(){
             <button onClick={()=>delItem(e.id)} style={{background:"none",border:"1px solid "+HL,color:MU,borderRadius:8,width:26,height:26,cursor:"pointer",fontSize:14}}>×</button>
           </div>
           {e.notes&&<div style={{fontSize:11,color:MU,marginTop:7}}>{e.notes}</div>}
+          {e.receipt&&<img src={e.receipt} alt="receipt" onClick={()=>setReceiptView(e.receipt)} style={{marginTop:8,width:46,height:46,objectFit:"cover",borderRadius:8,border:"1px solid "+HL,cursor:"pointer"}}/>}
         </div>))}
         {list.length===0&&<Empty/>}
       </div>
+      {receiptView&&<div onClick={()=>setReceiptView(null)} style={{position:"fixed",inset:0,background:"#000000ee",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:14}}><img src={receiptView} alt="receipt" style={{maxWidth:"100%",maxHeight:"92vh",borderRadius:8}}/></div>}
     </div>);
   };
 
