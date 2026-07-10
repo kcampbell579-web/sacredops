@@ -54,6 +54,77 @@ async function buildPDF({file,title,meta,sections,sigs},onDone,onErr){
   d.save(file);onDone&&onDone();
 }
 
+/* ---- landscape Gantt-style 6-week look-ahead ---- */
+// weeks: [{label, sub}]  (label="Week 1", sub="Jul 7 – Jul 13")
+// rows:  [{name, sub, week, color:[r,g,b]}]  week = 0-based column index
+async function buildLookAheadPDF({project,weeks,rows},onDone,onErr){
+  let jsPDF; try{jsPDF=await loadJsPDF();}catch(e){onErr&&onErr();return;}
+  const d=new jsPDF({unit:"pt",format:"letter",orientation:"landscape"});
+  const W=792,H=612,M=32;
+  // header band
+  d.setFillColor(0,59,34);d.rect(0,0,W,54,"F");
+  d.setTextColor(255,255,255);d.setFont("helvetica","bold");d.setFontSize(17);d.text("SACRED OPS",M,28);
+  d.setFontSize(7);d.setTextColor(180,220,200);d.text("BUILD SAFER  ·  WORK SMARTER",M,41);
+  d.setFontSize(8);d.setTextColor(220,235,228);d.text("Generated "+new Date().toLocaleString(),W-M,26,{align:"right"});
+  d.setFontSize(9.5);d.setTextColor(255,255,255);d.text("6-WEEK LOOK-AHEAD",W-M,41,{align:"right"});
+  let y=76;
+  d.setTextColor(20,20,20);d.setFont("helvetica","bold");d.setFontSize(14);d.text(project||"All Projects",M,y);
+  y+=6;d.setDrawColor(4,164,102);d.setLineWidth(2);d.line(M,y,W-M,y);y+=16;
+  // grid geometry
+  const leftW=228;const gridX=M+leftW;const gridW=(W-M)-gridX;
+  const nW=weeks.length||6;const colW=gridW/nW;
+  const headH=30;const rowH=22;
+  const colX=(i)=>gridX+i*colW;
+  // header row
+  d.setFillColor(24,57,43);d.rect(M,y,W-2*M,headH,"F");
+  d.setTextColor(255,255,255);d.setFont("helvetica","bold");d.setFontSize(9);
+  d.text("ACTIVITY",M+8,y+18);
+  weeks.forEach((w,i)=>{
+    const cx=colX(i);
+    d.setDrawColor(255,255,255);d.setLineWidth(0.4);d.line(cx,y+4,cx,y+headH-4);
+    d.setFont("helvetica","bold");d.setFontSize(8.5);d.setTextColor(255,255,255);
+    d.text(String(w.label||("Week "+(i+1))),cx+colW/2,y+13,{align:"center"});
+    d.setFont("helvetica","normal");d.setFontSize(6.8);d.setTextColor(190,222,205);
+    d.text(String(w.sub||""),cx+colW/2,y+24,{align:"center"});
+  });
+  y+=headH;
+  // rows
+  const bottom=H-46;
+  const drawGridLines=(y0,y1)=>{d.setDrawColor(222,228,224);d.setLineWidth(0.5);for(let i=1;i<nW;i++){const cx=colX(i);d.line(cx,y0,cx,y1);}d.setDrawColor(200,205,202);d.setLineWidth(0.8);d.line(gridX,y0,gridX,y1);};
+  const headerRepeat=()=>{
+    d.addPage();y=40;
+    d.setFillColor(24,57,43);d.rect(M,y,W-2*M,headH,"F");
+    d.setTextColor(255,255,255);d.setFont("helvetica","bold");d.setFontSize(9);d.text("ACTIVITY",M+8,y+18);
+    weeks.forEach((w,i)=>{const cx=colX(i);d.setDrawColor(255,255,255);d.setLineWidth(0.4);d.line(cx,y+4,cx,y+headH-4);d.setFont("helvetica","bold");d.setFontSize(8.5);d.setTextColor(255,255,255);d.text(String(w.label||("Week "+(i+1))),cx+colW/2,y+13,{align:"center"});d.setFont("helvetica","normal");d.setFontSize(6.8);d.setTextColor(190,222,205);d.text(String(w.sub||""),cx+colW/2,y+24,{align:"center"});});
+    y+=headH;
+  };
+  (rows||[]).forEach((r,ri)=>{
+    if(y+rowH>bottom){headerRepeat();}
+    if(ri%2){d.setFillColor(245,248,246);d.rect(M,y,W-2*M,rowH,"F");}
+    drawGridLines(y,y+rowH);
+    // activity name + sub
+    d.setTextColor(25,25,25);d.setFont("helvetica","bold");d.setFontSize(8.7);
+    const nm=d.splitTextToSize(String(r.name||""),leftW-14);
+    d.text(nm[0]||"",M+8,y+ (r.sub?11:14));
+    if(r.sub){d.setFont("helvetica","normal");d.setFontSize(7);d.setTextColor(120,128,124);d.text(d.splitTextToSize(String(r.sub),leftW-14)[0]||"",M+8,y+18);}
+    // bar in the activity's week column
+    const wi=Math.max(0,Math.min(nW-1,r.week||0));const col=r.color||[41,196,109];
+    const bx=colX(wi)+4;const bw=colW-8;const by=y+rowH/2-5;
+    d.setFillColor(col[0],col[1],col[2]);
+    if(d.roundedRect){d.roundedRect(bx,by,bw,10,3,3,"F");}else{d.rect(bx,by,bw,10,"F");}
+    y+=rowH;
+  });
+  // outer border of grid
+  d.setDrawColor(200,205,202);d.setLineWidth(0.8);
+  // legend
+  const ly=Math.min(y+18,H-24);
+  d.setFont("helvetica","bold");d.setFontSize(7.5);d.setTextColor(90,90,90);d.text("STATUS",M,ly);
+  const leg=[["On Track",[41,196,109]],["At Risk",[244,180,0]],["Blocked / Critical",[229,57,53]]];
+  let lx=M+42;
+  leg.forEach(([lab,c])=>{d.setFillColor(c[0],c[1],c[2]);if(d.roundedRect){d.roundedRect(lx,ly-7,14,8,2,2,"F");}else{d.rect(lx,ly-7,14,8,"F");}d.setTextColor(60,60,60);d.setFont("helvetica","normal");d.setFontSize(7.5);d.text(lab,lx+18,ly);lx+=18+d.getTextWidth(lab)+22;});
+  d.save(file);onDone&&onDone();
+}
+
 /* ================= DATA ================= */
 const CREW=[
  {n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Marcus Bell",r:"Iron Worker",l:"Local 580"},
@@ -1077,7 +1148,7 @@ export default function App(){
     const[ns,setNs]=useState({status:"Active"});const setNsF=(k,v)=>setNs(o=>({...o,[k]:v}));
 
     const persistSched=(next)=>{setSched(next);saveSched(next);};
-    const addActivity=(wkKey)=>{if(!na.activity)return;const mode=na.mode||"Internal Crew";const isSub=mode==="Subcontractor";const subObj=isSub?subcos.find(s=>s.name===na.sub):null;const e={id:"sc"+Date.now(),project:schedProj,weekKey:wkKey,activity:na.activity,trade:isSub?(subObj?subObj.trade:""):(na.trade||""),sub:isSub?(na.sub||""):"",crewSize:na.crewSize||"",notes:na.notes||""};persistSched([...sched,e]);setNa({});setAddWk(null);};
+    const addActivity=(wkKey)=>{if(!na.activity)return;const mode=na.mode||"Internal Crew";const isSub=mode==="Subcontractor";const subObj=isSub?subcos.find(s=>s.name===na.sub):null;const e={id:"sc"+Date.now(),project:schedProj,weekKey:wkKey,activity:na.activity,trade:isSub?(subObj?subObj.trade:""):(na.trade||""),sub:isSub?(na.sub||""):"",crewSize:na.crewSize||"",status:na.status||"On Track",notes:na.notes||""};persistSched([...sched,e]);setNa({});setAddWk(null);};
     const delActivity=(id)=>persistSched(sched.filter(x=>x.id!==id));
     const forWeek=(wkKey)=>sched.filter(s=>s.project===schedProj && s.weekKey===wkKey);
 
@@ -1086,8 +1157,16 @@ export default function App(){
     const delSubco=(id)=>persistSubs(subcos.filter(x=>x.id!==id));
     const scStatus=(st)=>st==="Active"?SU:st==="Pending"?WN:DN;
 
-    const pdfLookAhead=()=>{const secs=weeks.map(w=>{const items=forWeek(w.key);return {h:"Week "+(w.idx+1)+" — "+weekLabel(w.start)+" to "+weekLabel(w.end),rows:items.length?items.map(it=>[it.activity+(it.trade?" ("+it.trade+")":"")+(it.crewSize?" · Crew "+it.crewSize:""),it.sub||"—",it.notes||""]):[["Nothing scheduled","",""]]};});
-      buildPDF({file:"SixWeekLookAhead.pdf",title:"6-Week Look-Ahead — "+schedProj,meta:[["Project",schedProj],["Generated",new Date().toLocaleDateString()]],sections:secs.map(s=>({h:s.h,rows:s.rows}))},()=>show("Look-ahead PDF downloaded"),()=>show("Need internet to build PDF"));};
+    const statusColor=(st)=>st==="At Risk"?[244,180,0]:(st==="Blocked"||st==="Blocked / Critical"||st==="Critical")?[229,57,53]:[41,196,109];
+    const pdfLookAhead=()=>{
+      const wcols=weeks.map(w=>({label:"Week "+(w.idx+1),sub:weekLabel(w.start)+" – "+weekLabel(w.end),key:w.key}));
+      const rows=[];
+      weeks.forEach((w,wi)=>{forWeek(w.key).forEach(it=>{
+        const sub=[it.trade,it.sub,it.crewSize?"Crew "+it.crewSize:""].filter(Boolean).join(" · ");
+        rows.push({name:it.activity,sub,week:wi,color:statusColor(it.status)});
+      });});
+      if(!rows.length)rows.push({name:"Nothing scheduled",sub:"",week:0,color:[190,196,193]});
+      buildLookAheadPDF({project:schedProj,weeks:wcols,rows},()=>show("Look-ahead PDF downloaded"),()=>show("Need internet to build PDF"));};
     const pdfSubs=()=>{buildPDF({file:"Subcontractors.pdf",title:"Subcontractor Directory",meta:[["Generated",new Date().toLocaleDateString()]],sections:[{h:"Subcontractors",cols:["Company","Trade","Contact","Phone","Status"],widths:[118,90,90,84,72],rows:subcos.map(s=>[s.name,s.trade,s.contact,s.phone,s.status])}]},()=>show("Subcontractor list downloaded"),()=>show("Need internet to build PDF"));};
 
     const seg=(on)=>({flex:1,padding:"10px 0",borderRadius:11,border:"1px solid "+(on?AC:HL),background:on?AC+"1e":"rgba(255,255,255,0.04)",color:on?AC:MU,fontSize:10.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer",fontFamily:MONO});
@@ -1113,9 +1192,11 @@ export default function App(){
               <div style={{height:1,background:HL,margin:"10px 0"}}/>
               {items.length===0&&<div style={{fontSize:11.5,color:MU,marginBottom:8}}>Nothing scheduled yet.</div>}
               {items.map(it=>(<div key={it.id} style={{background:"rgba(255,255,255,0.04)",border:"1px solid "+HL,borderRadius:11,padding:"10px 11px",marginBottom:8,display:"flex",gap:10,alignItems:"flex-start"}}>
+                <div style={{width:4,alignSelf:"stretch",borderRadius:4,flexShrink:0,background:it.status==="At Risk"?WN:(it.status==="Blocked / Critical"||it.status==="Blocked")?DN:SU}}/>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontSize:12.5,fontWeight:700,color:TX}}>{it.activity}</div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:5}}>
+                    {it.status&&it.status!=="On Track"&&<span style={{fontSize:9.5,color:it.status==="At Risk"?WN:DN,background:(it.status==="At Risk"?WN:DN)+"18",borderRadius:20,padding:"2px 8px",fontFamily:MONO}}>{it.status.toUpperCase()}</span>}
                     {it.trade&&<span style={{fontSize:9.5,color:AC,background:AC+"18",borderRadius:20,padding:"2px 8px",fontFamily:MONO}}>{it.trade}</span>}
                     {it.sub&&<span style={{fontSize:9.5,color:WN,background:WN+"18",borderRadius:20,padding:"2px 8px",fontFamily:MONO}}>{it.sub}</span>}
                     {it.crewSize&&<span style={{fontSize:9.5,color:SU,background:SU+"18",borderRadius:20,padding:"2px 8px",fontFamily:MONO}}>CREW {it.crewSize}</span>}
@@ -1134,6 +1215,8 @@ export default function App(){
                 ):(
                   <Row2><div style={{flex:1}}><Sel v={na.sub} set={v=>setNaF("sub",v)} opts={subcos.map(s=>s.name)}/></div><div style={{flex:1}}><T v={na.crewSize} set={v=>setNaF("crewSize",v)} ph="Est. crew size"/></div></Row2>
                 )}
+                <div style={{height:7}}/>
+                <L>Status</L><Radio v={na.status||"On Track"} set={v=>setNaF("status",v)} opts={["On Track","At Risk","Blocked / Critical"]}/>
                 <div style={{height:7}}/>
                 <TA v={na.notes} set={v=>setNaF("notes",v)} ph="Notes (optional)" h={50}/>
                 <div style={{display:"flex",gap:8,marginTop:9}}>
