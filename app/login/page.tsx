@@ -23,7 +23,7 @@ const inp: React.CSSProperties = {
   marginBottom: 10,
 };
 
-type Mode = "worker" | "supervisor" | "signup";
+type Mode = "worker" | "supervisor" | "signup" | "solo";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("worker");
@@ -37,7 +37,7 @@ export default function LoginPage() {
     const params = new URLSearchParams(window.location.search);
     setNext(params.get("next") || "/");
     const m = params.get("mode");
-    if (m === "signup" || m === "supervisor" || m === "worker") setMode(m as Mode);
+    if (m === "signup" || m === "supervisor" || m === "worker" || m === "solo") setMode(m as Mode);
   }, []);
 
   const s = (k: string, v: string) => setF((o) => ({ ...o, [k]: v }));
@@ -54,6 +54,9 @@ export default function LoginPage() {
       } else if (mode === "supervisor") {
         url = "/api/auth/login";
         body = { email: f.email || "", password: f.password || "" };
+      } else if (mode === "solo") {
+        url = "/api/auth/solo-signup";
+        body = { name: f.name || "", email: f.email || "", password: f.password || "" };
       } else {
         url = "/api/auth/signup-company";
         body = {
@@ -190,10 +193,11 @@ export default function LoginPage() {
           <>
             <p style={{ color: MU, fontSize: 12.5, margin: "0 0 18px" }}>Log in to your company.</p>
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+            <div style={{ display: "flex", gap: 7, marginBottom: 18, flexWrap: "wrap" }}>
               {tab("worker", "Worker")}
-              {tab("supervisor", "Supervisor")}
-              {tab("signup", "New company")}
+              {tab("supervisor", "Email")}
+              {tab("signup", "Company")}
+              {tab("solo", "Just me")}
             </div>
 
             {mode === "worker" && (
@@ -215,6 +219,17 @@ export default function LoginPage() {
                 {field("name", "Your name", { placeholder: "Kelly McClure" })}
                 {field("email", "Email", { type: "email", placeholder: "you@company.com" })}
                 {field("phone", "Phone number", { type: "tel", inputMode: "tel", placeholder: "(555) 123-4567" })}
+                {field("password", "Password (8+ characters)", { type: "password", placeholder: "••••••••" })}
+              </>
+            )}
+            {mode === "solo" && (
+              <>
+                <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "-6px 0 14px" }}>
+                  Make your own portal to track your résumé, training and certs — no company code needed.
+                  You can join or request a company later from your profile.
+                </p>
+                {field("name", "Your name", { placeholder: "John Rivera" })}
+                {field("email", "Email", { type: "email", placeholder: "you@email.com" })}
                 {field("password", "Password (8+ characters)", { type: "password", placeholder: "••••••••" })}
               </>
             )}
@@ -241,7 +256,7 @@ export default function LoginPage() {
                 letterSpacing: 0.5,
               }}
             >
-              {busy ? "…" : mode === "worker" ? "JOIN / LOG IN" : mode === "supervisor" ? "LOG IN" : "CREATE COMPANY"}
+              {busy ? "…" : mode === "worker" ? "JOIN / LOG IN" : mode === "supervisor" ? "LOG IN" : mode === "solo" ? "CREATE MY PORTAL" : "CREATE COMPANY"}
             </button>
           </>
         )}

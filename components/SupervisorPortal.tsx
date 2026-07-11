@@ -516,6 +516,15 @@ const REMKEY="sacredops_reminders_sup";
 const SEED_REM=[{id:"r1",text:"Forklift inspection due",pri:"High"},{id:"r2",text:"Order spill kit",pri:"Medium"},{id:"r3",text:"Safety meeting at 2 PM",pri:"Low"},{id:"r4",text:"Call DOT inspector",pri:"Medium"}];
 function loadReminders(){try{const v=window.localStorage.getItem(REMKEY);return v?JSON.parse(v):SEED_REM;}catch(e){return (window.__remSup||SEED_REM);}}
 function saveReminders(a){try{window.localStorage.setItem(REMKEY,JSON.stringify(a));}catch(e){window.__remSup=a;}}
+// Shared supervisor→worker to-do list. Both portals read/write this key, so an
+// assignment made here shows up in the assigned worker's portal (same company).
+const TODOKEY="sacredops_worker_todos";
+const SEED_TODOS=[
+ {id:"t1",worker:"John Rivera",text:"Re-tag Pier 4 scaffold after this morning's flag",pri:"High",project:"Ironwood Bridge Replacement",done:false,by:"Kelly"},
+ {id:"t2",worker:"Marcus Bell",text:"Pick up replacement harness from the trailer",pri:"Medium",project:"Ironwood Bridge Replacement",done:false,by:"Kelly"},
+];
+function loadTodos(){try{const v=window.localStorage.getItem(TODOKEY);return v?JSON.parse(v):SEED_TODOS;}catch(e){return (window.__todos||SEED_TODOS);}}
+function saveTodos(a){try{window.localStorage.setItem(TODOKEY,JSON.stringify(a));}catch(e){window.__todos=a;}}
 const SLKEY="sacredops_safety_locations";
 function loadSafetyLocs(){try{const v=window.localStorage.getItem(SLKEY);return v?JSON.parse(v):{};}catch(e){return (window.__safetyLocs||{});}}
 function saveSafetyLocs(m){try{window.localStorage.setItem(SLKEY,JSON.stringify(m));}catch(e){window.__safetyLocs=m;}}
@@ -729,13 +738,66 @@ export default function App(){
     const locUrl=(v)=>v&&v.link?v.link:(v&&v.lat!=null?"https://maps.google.com/?q="+v.lat+","+v.lng:null);
     const openLoc=(v)=>{const u=locUrl(v);if(u)window.open(u,"_blank","noopener");};
     const statusText=(v)=>!v?"Not set":v.mobile?"In foreman van / vehicle":v.link?"Pin dropped · tap OPEN for directions":v.lat!=null?"Pin set · "+v.lat.toFixed(4)+", "+v.lng.toFixed(4):"Set";
+    const ic=projIcon(p.div);
+    const subs=[...loadSubs(),...SEED_SUBS].filter(x=>x.project===p.name);
+    const formsPending=subs.length;
+    const today=new Date().toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+    const tiles=[
+      ["Attendance","Sign In / Out",AC,"M9 11a3 3 0 100-6 3 3 0 000 6zM3.5 20a6 6 0 0111 0M16 10l2 2 4-4",()=>{setAttSite(p.name);setScr({t:"attendance"});}],
+      ["Sign-In Sheets","View / Manage",SU,"M6 3h10l3 3v15H6zM9 8h6M9 12h6M9 16h4",()=>{setFilter(p.name);setTab("signins");setScr(null);}],
+      ["Toolbox Talks","Create / View","#F5842B","M4 5h16v10H8l-4 4zM8 9h8M8 12h5",()=>{setFilter(p.name);setTab("talks");setScr(null);}],
+      ["Inspections","Create / View",WN,"M9 4h6v3H9zM7 5H5v16h14V5h-2M9 13l2 2 4-4",()=>{setFilter(p.name);setTab("insp");setScr(null);}],
+      ["Schedule","Look-Ahead","#38BDF8","M4 5h16v16H4zM4 9h16M8 3v4M16 3v4",()=>{setSchedProj(p.name);setTab("schedule");setScr(null);}],
+      ["Forms","All Forms","#A78BFA","M6 3h10l3 3v15H6zM9 12h6M9 16h4",()=>{setTab("forms");setScr(null);}],
+      ["Payroll","Run / View","#22D3EE","M12 2a10 10 0 100 20 10 10 0 000-20M12 6v12M9.5 9a2.2 2.2 0 012-2h1.6a2 2 0 010 4h-2.1a2 2 0 000 4H14",()=>setScr({t:"payroll"})],
+      ["Assign To-Do","To your crew",AC,"M9 11a3 3 0 100-6 3 3 0 000 6zM4 20a5 5 0 019-3M15 15l2 2 4-4",()=>setScr({t:"assignTodo",proj:p.name})],
+    ];
+    const inCrew=ROSTER.filter(r=>r.site===p.name&&r.status==="in");
+    const talksFor=TALKS.filter(t=>t.proj===p.name);const inspFor=ALLINSPS.filter(i=>i.proj===p.name);
+    const FIC={check:"M5 12l4 4L19 6",chat:"M4 6h16v9H9l-4 4z",alert:"M12 3l9 16H3zM12 9v4M12 17h.01",doc:"M6 3h10l3 3v15H6z"};
+    const feed=[];
+    if(inCrew[0])feed.push({c:SU,ic:"check",title:inCrew[0].name+" clocked in",sub:"Site access · 6:58 AM",time:"just now"});
+    if(talksFor[0])feed.push({c:"#F5842B",ic:"chat",title:"Toolbox talk completed",sub:talksFor[0].name+" · "+talksFor[0].att+"/"+talksFor[0].total+" signed",time:"18m ago"});
+    if(inspFor[0])feed.push({c:inspFor[0].status==="pass"?SU:WN,ic:inspFor[0].status==="pass"?"check":"alert",title:"Inspection "+(inspFor[0].status==="pass"?"passed":"flagged")+" — "+inspFor[0].type,sub:inspFor[0].by,time:"28m ago"});
+    if(inCrew[1])feed.push({c:SU,ic:"check",title:inCrew[1].name+" clocked in",sub:"Site access · 7:04 AM",time:"41m ago"});
+    if(formsPending)feed.push({c:AC,ic:"doc",title:formsPending+" form"+(formsPending>1?"s":"")+" submitted by crew",sub:"Tap a submission below to review",time:"1h ago"});
+    feed.push({c:DN,ic:"alert",title:"Daily JHA missing",sub:"Needs submission · "+p.name,time:"1h ago"});
     return(<Screen title={p.name} sub={p.loc+(p.div?" · "+p.div:"")}>
-    {(p.contract||p.role)&&<div style={{...glass,borderRadius:14,padding:"12px 14px",marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <div><div style={{fontSize:9,color:MU,fontFamily:MONO,letterSpacing:1}}>BID / CONTRACT #</div><div style={{fontSize:13,fontWeight:800,color:TX,marginTop:2}}>{p.contract||"—"}</div>{p.owner&&<div style={{fontSize:10.5,color:MU,marginTop:2}}>{p.owner}</div>}</div>
-      {p.role&&<Pill c={p.role==="GC"?AC:WN}>{p.role.toUpperCase()}</Pill>}
-    </div>}
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:16}}>{[[p.crew,"CREW",AC],[p.pct+"%","SIGNED IN",p.pct>=90?SU:WN],[p.openInsp,"OPEN INSP.",p.openInsp?WN:SU]].map((k,i)=>(<div key={i} style={{...glass,borderRadius:14,padding:"12px 6px",textAlign:"center"}}><div style={{fontSize:20,fontWeight:800,color:k[2],lineHeight:1}}>{k[0]}</div><div style={{fontSize:8,fontWeight:700,color:MU,marginTop:5,fontFamily:MONO}}>{k[1]}</div></div>))}</div>
-    <Eyebrow>Jump to</Eyebrow>{[["Sign-in sheets",()=>{setFilter(p.name);setTab("signins");setScr(null);}],["Toolbox talks",()=>{setFilter(p.name);setTab("talks");setScr(null);}],["Inspections",()=>{setFilter(p.name);setTab("insp");setScr(null);}],["Attendance — live IN / OUT",()=>{setAttSite(p.name);setScr({t:"attendance"});}],["6-Week look-ahead",()=>{setSchedProj(p.name);setTab("schedule");setScr(null);}],["Payroll register",()=>setScr({t:"payroll"})],["Expense tracker",()=>{setFilter(p.name);setScr({t:"expenses"});}],["Daily log",()=>{setFilter(p.name);setScr({t:"dailylog"});}],["Forms & permits",()=>{setTab("forms");setScr(null);}]].map((r,i)=>(<button key={i} onClick={r[1]} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"14px 15px",marginBottom:9,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:TX}}>{r[0]}</span><span style={{fontSize:16,color:AC}}>›</span></button>))}
+    <div style={{position:"relative",overflow:"hidden",borderRadius:18,marginBottom:16,padding:"16px 16px 15px",background:"linear-gradient(150deg,"+ic.grad[0]+","+ic.grad[1]+")",border:"1px solid rgba(255,255,255,0.09)"}}>
+      <div style={{position:"absolute",top:-40,right:-20,width:150,height:150,borderRadius:"50%",background:AC,filter:"blur(60px)",opacity:0.25}}/>
+      <div style={{position:"relative"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+          <div style={{minWidth:0}}><div style={{fontSize:19,fontWeight:800,color:"#fff",letterSpacing:-0.3,lineHeight:1.1}}>{p.name}</div><div style={{fontSize:11.5,color:AC,fontWeight:700,marginTop:4}}>{p.loc}{p.div?" · "+p.div:""}</div></div>
+          {p.role&&<Pill c={p.role==="GC"?AC:WN}>{p.role.toUpperCase()}</Pill>}
+        </div>
+        <div style={{display:"flex",gap:16,marginTop:12,fontSize:11,color:"rgba(255,255,255,0.8)",fontWeight:600}}>
+          <span>🗓 {today}</span><span>⛅ 78°F</span>{p.contract&&<span style={{fontFamily:MONO,fontSize:10,color:"rgba(255,255,255,0.6)"}}>{p.contract}</span>}
+        </div>
+      </div>
+    </div>
+    <div style={{...glass,borderRadius:16,padding:"14px 6px",marginBottom:18,display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr"}}>
+      {[[p.crew,"CREW","On site",AC],[p.pct+"%","SIGNED IN","Live now",p.pct>=90?SU:WN],[p.openInsp,"OPEN INSP.","Due today",p.openInsp?WN:SU],[formsPending,"FORMS","Pending",formsPending?TX:MU]].map((k,i)=>(
+        <div key={i} style={{textAlign:"center",borderRight:i<3?"1px solid "+HL:"none",padding:"0 4px"}}>
+          <div style={{fontSize:20,fontWeight:800,color:k[3],lineHeight:1}}>{k[0]}</div>
+          <div style={{fontSize:7.5,fontWeight:800,color:MU,marginTop:6,fontFamily:MONO,letterSpacing:0.3}}>{k[1]}</div>
+          <div style={{fontSize:8.5,color:MU,marginTop:2}}>{k[2]}</div>
+        </div>))}
+    </div>
+    <Eyebrow>Operations</Eyebrow>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginBottom:20}}>
+      {tiles.map((t,i)=>(<button key={i} onClick={t[4]} style={{...glass,borderRadius:14,padding:"12px 4px 10px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:7,textAlign:"center",border:"1px solid "+t[2]+"33"}}>
+        <div style={{width:38,height:38,borderRadius:11,background:t[2]+"1c",border:"1px solid "+t[2]+"44",display:"flex",alignItems:"center",justifyContent:"center"}}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke={t[2]} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d={t[3]}/></svg></div>
+        <div><div style={{fontSize:9,fontWeight:800,color:TX,lineHeight:1.15}}>{t[0]}</div><div style={{fontSize:7.5,color:MU,marginTop:2}}>{t[1]}</div></div>
+      </button>))}
+    </div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><span style={{fontSize:10,fontWeight:700,letterSpacing:2.5,color:MU,fontFamily:MONO}}>OPERATIONS FEED</span><span style={{fontSize:9,color:AC,fontFamily:MONO}}>LIVE</span></div>
+    <div style={{...glass,borderRadius:16,padding:"6px 14px",marginBottom:18}}>
+      {feed.map((e,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:i<feed.length-1?"1px solid "+HL:"none"}}>
+        <div style={{width:30,height:30,borderRadius:15,background:e.c+"1e",border:"1px solid "+e.c+"55",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke={e.c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={FIC[e.ic]}/></svg></div>
+        <div style={{flex:1,minWidth:0}}><div style={{fontSize:12.5,fontWeight:700,color:TX,lineHeight:1.2}}>{e.title}</div><div style={{fontSize:10.5,color:MU,marginTop:2}}>{e.sub}</div></div>
+        <span style={{fontSize:9.5,color:MU,fontFamily:MONO,flexShrink:0}}>{e.time}</span>
+      </div>))}
+    </div>
 
     <div style={{marginTop:8}}><Eyebrow>Safety locations</Eyebrow></div>
     {SAFETY_CATS.map(([key,label,path])=>{const v=myLocs[key];return(
@@ -1633,6 +1695,46 @@ export default function App(){
     </Screen>);
   };
 
+  const AssignTodoScr=({proj})=>{
+    const[items,setItems]=useState(()=>loadTodos());
+    const[nt,setNt]=useState({pri:"Medium",project:proj||PROJECTS[0].name});
+    const setF=(k,v)=>setNt(o=>({...o,[k]:v}));
+    const persist=(next)=>{setItems(next);saveTodos(next);};
+    const crewNames=Array.from(new Set([...ROSTER.filter(r=>!nt.project||r.site===nt.project).map(r=>r.name),...CREW.map(c=>c.n)]));
+    const add=()=>{if(!nt.worker||!nt.text){show("Pick a worker and enter a task");return;}persist([{id:"t"+Date.now(),worker:nt.worker,text:nt.text,pri:nt.pri||"Medium",project:nt.project||"",done:false,by:"Kelly"},...items]);setNt({pri:"Medium",project:nt.project});show("To-do assigned to "+nt.worker);};
+    const del=(id)=>persist(items.filter(x=>x.id!==id));
+    const priColor=(p)=>p==="High"?DN:p==="Medium"?WN:SU;
+    const open=items.filter(x=>!x.done);const done=items.filter(x=>x.done);
+    return(<Screen title="Assign To-Do" sub="Push tasks & reminders to your crew">
+      <div style={{...glass,borderRadius:16,padding:13,marginBottom:16}}>
+        <L>Assign to</L><Sel v={nt.worker} set={v=>setF("worker",v)} opts={crewNames}/>
+        <div style={{height:9}}/>
+        <L>Task</L><T v={nt.text} set={v=>setF("text",v)} ph="What do you need them to do?"/>
+        <div style={{height:9}}/>
+        <Row2><div style={{flex:1}}><L>Project</L><Sel v={nt.project} set={v=>setF("project",v)} opts={PNAMES}/></div></Row2>
+        <div style={{height:9}}/>
+        <L>Priority</L><Radio v={nt.pri||"Medium"} set={v=>setF("pri",v)} opts={["Low","Medium","High"]}/>
+        <button onClick={add} style={{marginTop:12,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:11,padding:"13px",fontSize:12.5,fontWeight:800,cursor:"pointer"}}>ASSIGN TO WORKER</button>
+      </div>
+      <Eyebrow>{"Assigned · open ("+open.length+")"}</Eyebrow>
+      {open.length===0&&<div style={{fontSize:12,color:MU,marginBottom:10}}>No open to-dos. Assign one above.</div>}
+      {open.map(t=>(<div key={t.id} style={{...glass,borderRadius:14,padding:"12px 13px",marginBottom:9}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <span style={{width:8,height:8,borderRadius:4,background:priColor(t.pri),flexShrink:0}}/>
+          <div style={{flex:1,minWidth:0}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{t.text}</div><div style={{fontSize:10,color:MU,marginTop:2}}>{t.worker}{t.project?" · "+t.project:""}</div></div>
+          <span style={{fontSize:8.5,fontWeight:800,color:priColor(t.pri),background:priColor(t.pri)+"18",padding:"3px 8px",borderRadius:20,fontFamily:MONO}}>{t.pri.toUpperCase()}</span>
+          <button onClick={()=>del(t.id)} style={{background:"none",border:"1px solid "+HL,color:MU,borderRadius:8,width:26,height:26,cursor:"pointer",flexShrink:0,fontSize:14}}>×</button>
+        </div>
+      </div>))}
+      {done.length>0&&<><div style={{marginTop:8}}><Eyebrow>{"Completed ("+done.length+")"}</Eyebrow></div>
+      {done.map(t=>(<div key={t.id} style={{...glass,borderRadius:14,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:10,opacity:0.6}}>
+        <span style={{color:SU,fontSize:14,flexShrink:0}}>✓</span>
+        <div style={{flex:1,minWidth:0}}><div style={{fontSize:12,fontWeight:600,color:MU,textDecoration:"line-through"}}>{t.text}</div><div style={{fontSize:10,color:MU,marginTop:1}}>{t.worker} · done</div></div>
+        <button onClick={()=>del(t.id)} style={{background:"none",border:"1px solid "+HL,color:MU,borderRadius:8,width:26,height:26,cursor:"pointer",flexShrink:0,fontSize:14}}>×</button>
+      </div>))}</>}
+    </Screen>);
+  };
+
   /* ================= ROUTER ================= */
   let body;
   if(scr){
@@ -1646,6 +1748,7 @@ export default function App(){
     else if(scr.t==="plan")body=<PlanView p={PLANS.find(x=>x.id===scr.id)}/>;
     else if(scr.t==="equip")body=<EquipQR/>;
     else if(scr.t==="reminders")body=<RemindersScr/>;
+    else if(scr.t==="assignTodo")body=<AssignTodoScr proj={scr.proj}/>;
     else if(scr.t==="equipscan")body=<EquipScan/>;
     else if(scr.t==="walkthrough")body=<WalkThrough/>;
     else if(scr.t==="sds")body=<SdsList/>;

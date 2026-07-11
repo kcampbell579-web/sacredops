@@ -311,6 +311,12 @@ const REMKEY_W="sacredops_reminders_worker";
 const SEED_REM_W=[{id:"rw1",text:"Scaffold Competent cert — expires 21d",pri:"Medium"},{id:"rw2",text:"OSHA 30 renewal due Q3",pri:"Low"}];
 function loadRemindersW(){try{const v=window.localStorage.getItem(REMKEY_W);return v?JSON.parse(v):SEED_REM_W;}catch(e){return (window.__remW||SEED_REM_W);}}
 function saveRemindersW(a){try{window.localStorage.setItem(REMKEY_W,JSON.stringify(a));}catch(e){window.__remW=a;}}
+// To-dos assigned by a supervisor (shared key with the Supervisor Portal).
+const TODOKEY="sacredops_worker_todos";
+const SEED_TODOS_W=[{id:"t1",worker:"John Rivera",text:"Re-tag Pier 4 scaffold after this morning's flag",pri:"High",project:"Ironwood Bridge Replacement",done:false,by:"Kelly"}];
+function loadTodos(){try{const v=window.localStorage.getItem(TODOKEY);return v?JSON.parse(v):SEED_TODOS_W;}catch(e){return (window.__todos||SEED_TODOS_W);}}
+function saveTodos(a){try{window.localStorage.setItem(TODOKEY,JSON.stringify(a));}catch(e){window.__todos=a;}}
+const ME_NAME="John Rivera";
 const SLKEY="sacredops_safety_locations";
 function loadSafetyLocs(){try{const v=window.localStorage.getItem(SLKEY);return v?JSON.parse(v):{};}catch(e){return (window.__safetyLocs||{});}}
 const SAFETY_CATS=[["assembly","Assembly Point","M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10zM12 8v3M12 14h.01"],["fire","Fire Extinguishers","M12 3c3 4 1 6 0 8 3-1 4-4 4-4 2 5-2 10-4 10s-6-3-4-8c1 2 3 2 3 2s-2-4 1-8z"],["spill","Spill Kits","M12 3s5 6 5 10a5 5 0 01-10 0c0-4 5-10 5-10z"],["firstaid","First Aid",'M4 7h16v12H4zM9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M9 13h6M12 10v6']];
@@ -559,6 +565,10 @@ export default function App(){
   const KPI=[["Open incidents","0",SU],["Active permits","2",AC],["Certs expiring","1",WN],["SDS on file","6",AC]];
   const Home=()=>{
     const[rem,setRem]=useState(()=>loadRemindersW());
+    const[todos,setTodos]=useState(()=>loadTodos());
+    const myTasks=todos.filter(t=>t.worker===ME_NAME&&!t.done);
+    const toggleTask=(id)=>{const next=todos.map(t=>t.id===id?{...t,done:!t.done}:t);setTodos(next);saveTodos(next);show("Task marked done");};
+    const taskColor=(p)=>p==="High"?DN:p==="Medium"?WN:SU;
     const FEED=[
       ["6:30 AM","Crew muster & stretch-and-flex","Bridge Division",SU,"✓"],
       ["7:00 AM","Silica dust toolbox talk","Signed in — 8 of 8 crew",SU,"✓"],
@@ -611,6 +621,21 @@ export default function App(){
           <div><div style={{fontSize:23,fontWeight:800,color:TX,lineHeight:1}}>{rem.length}</div><div style={{fontSize:10,color:AC,marginTop:4}}>Manage ›</div></div>
         </button>
       </div>
+
+      {myTasks.length>0&&<div style={{padding:"24px 16px 0"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+          {H("My tasks")}
+          <span style={{fontSize:9.5,fontWeight:800,color:AC,fontFamily:MONO}}>FROM SUPERVISOR</span>
+        </div>
+        {myTasks.map(t=>(<div key={t.id} style={{...card,borderRadius:14,padding:"13px 14px",marginBottom:10,display:"flex",alignItems:"center",gap:12}}>
+          <button onClick={()=>toggleTask(t.id)} aria-label="Mark done" style={{width:26,height:26,borderRadius:14,flexShrink:0,cursor:"pointer",background:"transparent",border:"2px solid "+taskColor(t.pri),display:"flex",alignItems:"center",justifyContent:"center"}}/>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:13,fontWeight:700,color:TX,lineHeight:1.25}}>{t.text}</div>
+            <div style={{fontSize:10.5,color:MU,marginTop:3}}>{t.project||"General"}{t.by?" · assigned by "+t.by:""}</div>
+          </div>
+          <span style={{fontSize:8.5,fontWeight:800,color:taskColor(t.pri),background:taskColor(t.pri)+"18",padding:"3px 8px",borderRadius:20,fontFamily:MONO,flexShrink:0}}>{t.pri.toUpperCase()}</span>
+        </div>))}
+      </div>}
 
       <div style={{padding:"24px 16px 0"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
@@ -796,8 +821,36 @@ export default function App(){
   /* ---------- tabs ---------- */
   const Schedule=()=>(<Padded title="Schedule">{[["MON","Jun 30","Crew muster 6:30 · silica talk",SU],["TUE","Jul 1","Scaffold inspection · OSHA 10 refresher",AC],["WED","Jul 2","Weekly safety meeting 7:00",WN],["THU","Jul 3","Concrete pour · air monitoring",SU],["FRI","Jul 4","Holiday — no work",MU]].map((d,i)=>(<div key={i} style={{...glass,display:"flex",gap:12,borderRadius:14,padding:12,marginBottom:9}}><div style={{width:46,textAlign:"center"}}><div style={{fontSize:10,fontWeight:800,color:d[3],letterSpacing:1,fontFamily:MONO}}>{d[0]}</div><div style={{fontSize:11,color:MU}}>{d[1]}</div></div><div style={{flex:1,fontSize:12.5,color:TX,borderLeft:"2px solid "+d[3],paddingLeft:11}}>{d[2]}</div></div>))}</Padded>);
   const Notif=()=>(<Padded title="Notifications">{[["Certification expiring","Your OSHA 30 card expires in 21 days.",DN,1],["New toolbox talk","Silica dust talk assigned for today.",AC,1],["Permit approved","Hot Work — Bay 3 is now active.",SU,0],["Schedule update","Safety meeting moved to Wed 7:00.",WN,0],["Safety alert","High winds forecast — secure loose materials.",WN,0]].map((n,i)=>(<div key={i} style={{...glass,border:"1px solid "+(n[3]?n[2]+"55":HL),borderRadius:14,padding:12,marginBottom:9,display:"flex",gap:10}}>{n[3]?<div style={{width:8,height:8,borderRadius:4,background:n[2],marginTop:5,flexShrink:0}}/>:<div style={{width:8,flexShrink:0}}/>}<div><div style={{fontSize:13,fontWeight:700,color:TX}}>{n[0]}</div><div style={{fontSize:11.5,color:MU,marginTop:1}}>{n[1]}</div></div></div>))}</Padded>);
+  const CompanyLink=()=>{
+    const[open,setOpen]=useState(false);const[sent,setSent]=useState(false);const[busy,setBusy]=useState(false);
+    const[f,setF]=useState({});const set=(k,v)=>setF(o=>({...o,[k]:v}));
+    const submit=async()=>{
+      if(!f.company||!f.name){show("Enter the company and your name");return;}
+      setBusy(true);
+      try{await fetch("/api/leads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({companyName:"Join request · "+f.company,name:f.name,email:f.email||"",phone:f.phone||""})});}catch(e){}
+      setBusy(false);setSent(true);show("Request sent to SacredOps");
+    };
+    return(<div style={{...glass,borderRadius:14,padding:13,marginBottom:14,border:"1px solid "+AC+"3a"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10}}>
+        <div style={{minWidth:0}}><div style={{fontSize:12.5,fontWeight:800,color:TX}}>Your company</div><div style={{fontSize:11,color:MU,marginTop:2}}>Join or request a company to link your portal</div></div>
+        {!open&&!sent&&<button onClick={()=>setOpen(true)} style={{background:AC,color:"#04231a",border:"none",borderRadius:9,padding:"8px 14px",fontSize:11,fontWeight:800,cursor:"pointer",flexShrink:0}}>ADD</button>}
+      </div>
+      {sent&&<div style={{marginTop:10,fontSize:11.5,color:SU,lineHeight:1.5}}>✓ Request sent. We'll connect you with the company — if you already have a <b style={{color:TX}}>company code</b>, log out and use the Worker tab to join instantly.</div>}
+      {open&&!sent&&<div style={{marginTop:12,paddingTop:12,borderTop:"1px solid "+HL}}>
+        <div style={{marginBottom:8}}><L>Company name or code</L><T v={f.company} set={v=>set("company",v)} ph="Acme Construction / ACME-7F3K-9QLP"/></div>
+        <div style={{marginBottom:8}}><L>Your name</L><T v={f.name} set={v=>set("name",v)} ph="John Rivera"/></div>
+        <Row2><div style={{flex:1}}><L>Email</L><T v={f.email} set={v=>set("email",v)} ph="you@email.com"/></div><div style={{flex:1}}><L>Phone</L><T v={f.phone} set={v=>set("phone",v)} ph="(555) 123-4567"/></div></Row2>
+        <div style={{display:"flex",gap:8,marginTop:11}}>
+          <button onClick={submit} disabled={busy} style={{flex:1,background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer",opacity:busy?0.6:1}}>{busy?"…":"SEND REQUEST"}</button>
+          <button onClick={()=>setOpen(false)} style={{flex:1,background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>CANCEL</button>
+        </div>
+        <div style={{fontSize:10.5,color:MU,marginTop:9,lineHeight:1.5}}>Have a code already? Log out and use the <b style={{color:TX}}>Worker</b> tab with the code, your name &amp; a PIN.</div>
+      </div>}
+    </div>);
+  };
   const Profile=()=>(<Padded title="My Profile">
     <div style={{...glass,borderRadius:14,padding:12,fontSize:11.5,color:MU,marginBottom:14}}>Your profile is portable — use it across multiple contractors and job sites.</div>
+    <CompanyLink/>
     <div style={{fontSize:10.5,fontWeight:800,color:AC,letterSpacing:1,marginBottom:8,fontFamily:MONO}}>MY DOCUMENTS</div>
     {[["W-4 Form","Uploaded",SU],["Driver's License","Uploaded",SU],["OSHA 30 Card","Uploaded",SU],["DOT Medical Card","Missing",DN],["Social Security Card","Uploaded",SU]].map((d,i)=>(<div key={i} style={{...glass,display:"flex",justifyContent:"space-between",alignItems:"center",borderRadius:12,padding:"11px 13px",marginBottom:8}}><span style={{fontSize:12.5,fontWeight:600,color:TX}}>{d[0]}</span><span style={{fontSize:9.5,fontWeight:800,color:d[2],background:d[2]+"22",padding:"4px 9px",borderRadius:20,fontFamily:MONO}}>{d[1].toUpperCase()}</span></div>))}
     <div style={{fontSize:10.5,fontWeight:800,color:AC,letterSpacing:1,margin:"16px 0 8px",fontFamily:MONO}}>CERTIFICATIONS</div>
