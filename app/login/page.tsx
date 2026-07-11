@@ -32,12 +32,18 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [next, setNext] = useState("/");
   const [createdCode, setCreatedCode] = useState<string | null>(null);
+  // On worker.sacredops.app we show a worker-only sign-up (no demo, no company).
+  const [workerOnly, setWorkerOnly] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setNext(params.get("next") || "/");
+    const isWorkerHost = window.location.hostname.split(":")[0].startsWith("worker.");
+    const wo = isWorkerHost || params.get("worker") === "1";
+    setWorkerOnly(wo);
     const m = params.get("mode");
     if (m === "signup" || m === "supervisor" || m === "worker" || m === "solo") setMode(m as Mode);
+    else if (wo) setMode("solo");
   }, []);
 
   const s = (k: string, v: string) => setF((o) => ({ ...o, [k]: v }));
@@ -191,13 +197,25 @@ export default function LoginPage() {
           </div>
         ) : (
           <>
-            <p style={{ color: MU, fontSize: 12.5, margin: "0 0 18px" }}>Log in to your company.</p>
+            <p style={{ color: MU, fontSize: 12.5, margin: "0 0 18px" }}>
+              {workerOnly ? "Your personal worker portal — track your résumé, training & certs." : "Log in to your company."}
+            </p>
 
             <div style={{ display: "flex", gap: 7, marginBottom: 18, flexWrap: "wrap" }}>
-              {tab("worker", "Worker")}
-              {tab("supervisor", "Email")}
-              {tab("signup", "Company")}
-              {tab("solo", "Just me")}
+              {workerOnly ? (
+                <>
+                  {tab("solo", "Sign up")}
+                  {tab("worker", "Have a code")}
+                  {tab("supervisor", "Log in")}
+                </>
+              ) : (
+                <>
+                  {tab("worker", "Worker")}
+                  {tab("supervisor", "Email")}
+                  {tab("signup", "Company")}
+                  {tab("solo", "Just me")}
+                </>
+              )}
             </div>
 
             {mode === "worker" && (
