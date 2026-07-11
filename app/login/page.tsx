@@ -36,6 +36,8 @@ export default function LoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setNext(params.get("next") || "/");
+    const m = params.get("mode");
+    if (m === "signup" || m === "supervisor" || m === "worker") setMode(m as Mode);
   }, []);
 
   const s = (k: string, v: string) => setF((o) => ({ ...o, [k]: v }));

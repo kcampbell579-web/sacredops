@@ -4,6 +4,46 @@ import { getSessionUser } from "@/lib/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// The marketing site (sacredops.app / Wix) posts the "Book a demo" form here
+// from another origin, so allow cross-origin POSTs.
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS });
+}
+
+// POST /api/leads — PUBLIC lead capture from the marketing site's demo form.
+// { name, companyName, email, phone } — no account is created; this just
+// records the lead so it shows up in the owner's /leads dashboard.
+export async function POST(req: Request) {
+  const { name, companyName, company, email, phone } = await req.json().catch(() => ({}));
+  const cleanEmail = String(email || "").trim().toLowerCase();
+  const cleanName = String(name || "").trim();
+  if (!cleanName || !cleanEmail) {
+    return Response.json({ error: "Name and email are required." }, { status: 400, headers: CORS });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+    return Response.json({ error: "Enter a valid email address." }, { status: 400, headers: CORS });
+  }
+  try {
+    await prisma.lead.create({
+      data: {
+        companyName: String(companyName || company || "").trim() || "—",
+        name: cleanName,
+        email: cleanEmail,
+        phone: phone ? String(phone).trim() : null,
+      },
+    });
+  } catch {
+    return Response.json({ error: "Couldn't save your request. Please try again." }, { status: 500, headers: CORS });
+  }
+  return Response.json({ ok: true }, { headers: CORS });
+}
+
 // Only the platform owner(s) may view leads. Set OWNER_EMAILS in the Vercel
 // project (comma-separated, e.g. "kcampbell579@gmail.com"). Fails closed: if
 // the env var is missing/empty, nobody is treated as an owner.
