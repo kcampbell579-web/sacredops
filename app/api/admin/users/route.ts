@@ -22,7 +22,14 @@ export async function GET() {
   ]);
 
   return Response.json({
-    company: { name: company?.name || "", joinCode: company?.joinCode || "", subdomain: company?.subdomain || "" },
+    company: {
+      name: company?.name || "",
+      joinCode: company?.joinCode || "",
+      subdomain: company?.subdomain || "",
+      plan: company?.plan || "starter",
+      hasSubscription: !!company?.stripeCustomerId,
+      billingConfigured: !!process.env.STRIPE_SECRET_KEY,
+    },
     me: { id: admin.id },
     users: users.map((u) => ({
       id: u.id,

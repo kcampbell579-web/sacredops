@@ -31,7 +31,8 @@ const ROLE_META: Record<string, { label: string; color: string; blurb: string }>
 export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [forbidden, setForbidden] = useState(false);
-  const [company, setCompany] = useState<{ name: string; joinCode: string; subdomain: string }>({ name: "", joinCode: "", subdomain: "" });
+  const [company, setCompany] = useState<{ name: string; joinCode: string; subdomain: string; plan: string; hasSubscription: boolean; billingConfigured: boolean }>({ name: "", joinCode: "", subdomain: "", plan: "starter", hasSubscription: false, billingConfigured: false });
+  const [billBusy, setBillBusy] = useState(false);
   const [subEdit, setSubEdit] = useState(false);
   const [subDraft, setSubDraft] = useState("");
   const [subBusy, setSubBusy] = useState(false);
@@ -138,6 +139,14 @@ export default function AdminPage() {
 
   useEffect(() => {
     load();
+    const b = new URLSearchParams(window.location.search).get("billing");
+    if (b === "success") {
+      flash("Payment received — your plan updates within a minute.");
+      window.setTimeout(load, 4000);
+    } else if (b === "cancel") {
+      flash("Checkout canceled — no charge.");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function changeRole(id: string, role: string) {
@@ -213,6 +222,26 @@ export default function AdminPage() {
     } catch {
       /* ignore */
     }
+  }
+
+  async function billing(path: "checkout" | "portal", body?: Record<string, string>) {
+    setBillBusy(true);
+    try {
+      const res = await fetch("/api/billing/" + path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      flash(data.error || "Billing isn't available yet.");
+    } catch {
+      flash("Network error.");
+    }
+    setBillBusy(false);
   }
 
   async function saveSubdomain() {
@@ -361,6 +390,39 @@ export default function AdminPage() {
             Give your crew a branded address — at <b>{company.subdomain || "yourname"}.sacredops.app</b> they
             just enter their name &amp; PIN, no company code. <b>Tell us</b> when you pick one so we can point the
             web address at your app (it isn&apos;t live until that&apos;s done).
+          </p>
+        </div>
+
+        {/* Plan & billing */}
+        <div style={{ border: "1px solid " + HL, background: "rgba(255,255,255,0.03)", borderRadius: 16, padding: "16px 18px", marginBottom: 24 }}>
+          <div style={{ fontSize: 9.5, fontWeight: 800, color: MU, letterSpacing: 1, fontFamily: MONO, marginBottom: 8 }}>
+            PLAN &amp; BILLING
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 16, fontWeight: 800, textTransform: "capitalize" }}>{company.plan}</span>
+            <span style={{ fontSize: 9.5, fontWeight: 800, fontFamily: MONO, color: company.plan === "starter" ? MU : AC, background: (company.plan === "starter" ? MU : AC) + "1e", border: "1px solid " + (company.plan === "starter" ? MU : AC) + "55", borderRadius: 20, padding: "3px 9px" }}>
+              {company.plan === "starter" ? "FREE" : "ACTIVE"}
+            </span>
+            <div style={{ flex: 1 }} />
+            {company.hasSubscription ? (
+              <button onClick={() => billing("portal")} disabled={billBusy} style={{ background: "transparent", color: TX, border: "1px solid " + HL, borderRadius: 9, padding: "9px 14px", fontSize: 11.5, fontWeight: 700, cursor: "pointer" }}>
+                Manage billing
+              </button>
+            ) : (
+              <>
+                <button onClick={() => billing("checkout", { plan: "pro" })} disabled={billBusy} style={{ background: AC, color: "#04231a", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 11.5, fontWeight: 800, cursor: "pointer", opacity: billBusy ? 0.6 : 1 }}>
+                  Upgrade to Pro
+                </button>
+                <button onClick={() => billing("checkout", { plan: "enterprise" })} disabled={billBusy} style={{ background: "transparent", color: AC, border: "1px solid " + AC + "66", borderRadius: 9, padding: "9px 14px", fontSize: 11.5, fontWeight: 700, cursor: "pointer" }}>
+                  Enterprise
+                </button>
+              </>
+            )}
+          </div>
+          <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "10px 0 0" }}>
+            {company.billingConfigured
+              ? "Upgrade unlocks the Scheduler, Reports, Payroll and more. Cancel anytime from Manage billing."
+              : "Online upgrades are coming soon — contact your SacredOps rep to change your plan."}
           </p>
         </div>
 

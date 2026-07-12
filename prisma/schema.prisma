@@ -23,9 +23,11 @@ model Company {
   name      String
   joinCode  String   @unique // workers enter this to join (long & random)
   subdomain String?  @unique // e.g. "acme" → acme.sacredops.app auto-scopes login
-  plan      String   @default("starter") // starter | pro | enterprise
-  features  Json? // per-company feature overrides on top of the plan defaults
-  createdAt DateTime @default(now())
+  plan             String   @default("starter") // starter | pro | enterprise
+  features         Json? // per-company feature overrides on top of the plan defaults
+  stripeCustomerId String?  @unique // set once they check out
+  stripeSubId      String? // active subscription id
+  createdAt        DateTime @default(now())
 
   users   User[]
   invites Invite[]
