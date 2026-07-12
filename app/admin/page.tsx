@@ -413,9 +413,12 @@ export default function AdminPage() {
                 <button onClick={() => billing("checkout", { plan: "pro" })} disabled={billBusy} style={{ background: AC, color: "#04231a", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 11.5, fontWeight: 800, cursor: "pointer", opacity: billBusy ? 0.6 : 1 }}>
                   Upgrade to Pro
                 </button>
-                <button onClick={() => billing("checkout", { plan: "enterprise" })} disabled={billBusy} style={{ background: "transparent", color: AC, border: "1px solid " + AC + "66", borderRadius: 9, padding: "9px 14px", fontSize: 11.5, fontWeight: 700, cursor: "pointer" }}>
-                  Enterprise
+                <button onClick={() => billing("checkout", { plan: "business" })} disabled={billBusy} style={{ background: "transparent", color: AC, border: "1px solid " + AC + "66", borderRadius: 9, padding: "9px 14px", fontSize: 11.5, fontWeight: 700, cursor: "pointer" }}>
+                  Business
                 </button>
+                <a href="mailto:sales@sacredops.app?subject=Enterprise%20plan" style={{ color: MU, border: "1px solid " + HL, borderRadius: 9, padding: "9px 14px", fontSize: 11.5, fontWeight: 700, textDecoration: "none" }}>
+                  Enterprise
+                </a>
               </>
             )}
           </div>

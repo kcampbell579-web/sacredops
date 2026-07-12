@@ -13,6 +13,7 @@ export function getStripe(): Stripe | null {
 // deploy. Starter is free and has no price.
 export function priceForPlan(plan: string): string | null {
   if (plan === "pro") return process.env.STRIPE_PRICE_PRO || null;
+  if (plan === "business") return process.env.STRIPE_PRICE_BUSINESS || null;
   if (plan === "enterprise") return process.env.STRIPE_PRICE_ENTERPRISE || null;
   return null;
 }
@@ -20,6 +21,7 @@ export function priceForPlan(plan: string): string | null {
 export function planForPrice(priceId: string | null | undefined): string | null {
   if (!priceId) return null;
   if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
+  if (priceId === process.env.STRIPE_PRICE_BUSINESS) return "business";
   if (priceId === process.env.STRIPE_PRICE_ENTERPRISE) return "enterprise";
   return null;
 }

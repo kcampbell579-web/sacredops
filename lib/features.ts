@@ -20,10 +20,13 @@ export const FEATURE_LIST: { key: FeatureKey; label: string; blurb: string }[] =
   { key: "dailylog", label: "Daily Log", blurb: "Project daily notes" },
 ];
 
-export type PlanKey = "starter" | "pro" | "enterprise";
+export type PlanKey = "starter" | "pro" | "business" | "enterprise";
 
-// Which flagged features each plan turns on by default. (Core features — sign-in,
-// toolbox talks, inspections, forms, safety locations — are always available.)
+// Which flagged features each plan turns on by default. Cumulative ladder:
+// Starter = core only · Pro adds day-to-day ops · Business adds oversight ·
+// Enterprise adds subcontractor management. (Core features — both portals,
+// forms→PDF, SDS, OSHA board, toolbox talks, sign-ins, inspections — are always
+// available on every plan.)
 export const PLANS: Record<PlanKey, { label: string; features: Record<FeatureKey, boolean> }> = {
   starter: {
     label: "Starter",
@@ -31,7 +34,11 @@ export const PLANS: Record<PlanKey, { label: string; features: Record<FeatureKey
   },
   pro: {
     label: "Pro",
-    features: { scheduler: true, reports: true, payroll: true, expenses: true, subcontractors: true, dailylog: true },
+    features: { scheduler: true, reports: false, payroll: false, expenses: true, subcontractors: false, dailylog: true },
+  },
+  business: {
+    label: "Business",
+    features: { scheduler: true, reports: true, payroll: true, expenses: true, subcontractors: false, dailylog: true },
   },
   enterprise: {
     label: "Enterprise",
