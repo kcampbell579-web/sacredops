@@ -400,8 +400,8 @@ export default function AdminPage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <span style={{ fontSize: 16, fontWeight: 800, textTransform: "capitalize" }}>{company.plan}</span>
-            <span style={{ fontSize: 9.5, fontWeight: 800, fontFamily: MONO, color: company.plan === "starter" ? MU : AC, background: (company.plan === "starter" ? MU : AC) + "1e", border: "1px solid " + (company.plan === "starter" ? MU : AC) + "55", borderRadius: 20, padding: "3px 9px" }}>
-              {company.plan === "starter" ? "FREE" : "ACTIVE"}
+            <span style={{ fontSize: 9.5, fontWeight: 800, fontFamily: MONO, color: company.hasSubscription ? AC : WN, background: (company.hasSubscription ? AC : WN) + "1e", border: "1px solid " + (company.hasSubscription ? AC : WN) + "55", borderRadius: 20, padding: "3px 9px" }}>
+              {company.hasSubscription ? "ACTIVE" : "TRIAL"}
             </span>
             <div style={{ flex: 1 }} />
             {company.hasSubscription ? (
@@ -410,8 +410,11 @@ export default function AdminPage() {
               </button>
             ) : (
               <>
+                <button onClick={() => billing("checkout", { plan: "starter" })} disabled={billBusy} style={{ background: "transparent", color: AC, border: "1px solid " + AC + "66", borderRadius: 9, padding: "9px 14px", fontSize: 11.5, fontWeight: 700, cursor: "pointer" }}>
+                  Starter
+                </button>
                 <button onClick={() => billing("checkout", { plan: "pro" })} disabled={billBusy} style={{ background: AC, color: "#04231a", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 11.5, fontWeight: 800, cursor: "pointer", opacity: billBusy ? 0.6 : 1 }}>
-                  Upgrade to Pro
+                  Pro
                 </button>
                 <button onClick={() => billing("checkout", { plan: "business" })} disabled={billBusy} style={{ background: "transparent", color: AC, border: "1px solid " + AC + "66", borderRadius: 9, padding: "9px 14px", fontSize: 11.5, fontWeight: 700, cursor: "pointer" }}>
                   Business

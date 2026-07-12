@@ -12,6 +12,7 @@ export function getStripe(): Stripe | null {
 // Plan ↔ Stripe price mapping, driven by env so you can swap prices without a
 // deploy. Starter is free and has no price.
 export function priceForPlan(plan: string): string | null {
+  if (plan === "starter") return process.env.STRIPE_PRICE_STARTER || null;
   if (plan === "pro") return process.env.STRIPE_PRICE_PRO || null;
   if (plan === "business") return process.env.STRIPE_PRICE_BUSINESS || null;
   if (plan === "enterprise") return process.env.STRIPE_PRICE_ENTERPRISE || null;
@@ -20,6 +21,7 @@ export function priceForPlan(plan: string): string | null {
 
 export function planForPrice(priceId: string | null | undefined): string | null {
   if (!priceId) return null;
+  if (priceId === process.env.STRIPE_PRICE_STARTER) return "starter";
   if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
   if (priceId === process.env.STRIPE_PRICE_BUSINESS) return "business";
   if (priceId === process.env.STRIPE_PRICE_ENTERPRISE) return "enterprise";
