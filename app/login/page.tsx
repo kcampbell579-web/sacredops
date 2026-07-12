@@ -37,6 +37,9 @@ export default function LoginPage() {
   // On acme.sacredops.app the login is scoped to that company (crew skip the code).
   const [companySlug, setCompanySlug] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState<string | null>(null);
+  // A pricing button can pass ?plan=pro so we send the new admin straight to
+  // Stripe checkout for that plan after they sign up.
+  const [plan, setPlan] = useState<string | null>(null);
 
   const RESERVED = ["www", "app", "api", "admin", "demo", "worker", "workers", "staging", "dev", "sacredops"];
 
@@ -64,10 +67,37 @@ export default function LoginPage() {
         .catch(() => {});
     }
 
+    const p = params.get("plan");
+    if (p && ["starter", "pro", "business", "enterprise"].includes(p)) {
+      setPlan(p);
+      if (!params.get("mode")) setMode("signup");
+    }
+
     const m = params.get("mode");
     if (m === "signup" || m === "supervisor" || m === "worker" || m === "solo") setMode(m as Mode);
     else if (wo) setMode("solo");
   }, []);
+
+  // After signup, kick off Stripe checkout for the chosen plan (or fall through).
+  async function goAfterSignup() {
+    if (plan && plan !== "enterprise") {
+      try {
+        const res = await fetch("/api/billing/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan }),
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+          return;
+        }
+      } catch {
+        /* fall through to the app if billing isn't ready */
+      }
+    }
+    window.location.href = next;
+  }
 
   const s = (k: string, v: string) => setF((o) => ({ ...o, [k]: v }));
 
@@ -214,10 +244,10 @@ export default function LoginPage() {
               {createdCode}
             </div>
             <button
-              onClick={() => (window.location.href = next)}
+              onClick={goAfterSignup}
               style={{ width: "100%", background: AC, color: "#04231a", border: "none", borderRadius: 11, padding: "13px", fontSize: 12.5, fontWeight: 800, cursor: "pointer" }}
             >
-              CONTINUE
+              {plan && plan !== "enterprise" ? "CONTINUE TO CHECKOUT →" : "CONTINUE"}
             </button>
           </div>
         ) : (
