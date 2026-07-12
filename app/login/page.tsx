@@ -23,7 +23,7 @@ const inp: React.CSSProperties = {
   marginBottom: 10,
 };
 
-type Mode = "worker" | "supervisor" | "signup" | "solo";
+type Mode = "worker" | "supervisor" | "signup" | "solo" | "demo";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("worker");
@@ -74,8 +74,10 @@ export default function LoginPage() {
     }
 
     const m = params.get("mode");
-    if (m === "signup" || m === "supervisor" || m === "worker" || m === "solo") setMode(m as Mode);
+    if (m === "signup" || m === "supervisor" || m === "worker" || m === "solo" || m === "demo") setMode(m as Mode);
     else if (wo) setMode("solo");
+    // Demo signup: prefill the demo company code.
+    if (m === "demo") setF((o) => ({ ...o, joinCode: params.get("code") || "SACR-OPS1-DEMO" }));
   }, []);
 
   // After signup, kick off Stripe checkout for the chosen plan (or fall through).
@@ -118,6 +120,9 @@ export default function LoginPage() {
       } else if (mode === "solo") {
         url = "/api/auth/solo-signup";
         body = { name: f.name || "", email: f.email || "", password: f.password || "" };
+      } else if (mode === "demo") {
+        url = "/api/auth/demo-signup";
+        body = { joinCode: f.joinCode || "", name: f.name || "", email: f.email || "", password: f.password || "" };
       } else {
         url = "/api/auth/signup-company";
         body = {
@@ -260,13 +265,16 @@ export default function LoginPage() {
               </div>
             )}
             <p style={{ color: MU, fontSize: 12.5, margin: "0 0 18px" }}>
-              {companyName
+              {mode === "demo"
+                ? "Explore the live SacredOps demo."
+                : companyName
                 ? "Sign in to your crew — no company code needed."
                 : workerOnly
                 ? "Your personal worker portal — track your résumé, training & certs."
                 : "Log in to your company."}
             </p>
 
+            {mode !== "demo" && (
             <div style={{ display: "flex", gap: 7, marginBottom: 18, flexWrap: "wrap" }}>
               {companyName ? (
                 <>
@@ -288,6 +296,7 @@ export default function LoginPage() {
                 </>
               )}
             </div>
+            )}
 
             {mode === "worker" && (
               <>
@@ -322,6 +331,18 @@ export default function LoginPage() {
                 {field("password", "Password (8+ characters)", { type: "password", placeholder: "••••••••" })}
               </>
             )}
+            {mode === "demo" && (
+              <>
+                <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "-6px 0 14px" }}>
+                  Sign up to explore the live SacredOps demo — real projects, forms, inspections and
+                  reports. Takes 20 seconds.
+                </p>
+                {field("joinCode", "Demo company code", { placeholder: "SACR-OPS1-DEMO" })}
+                {field("name", "Your name", { placeholder: "Kelly McClure" })}
+                {field("email", "Work email", { type: "email", placeholder: "you@company.com" })}
+                {field("password", "Create a password (8+ characters)", { type: "password", placeholder: "••••••••" })}
+              </>
+            )}
 
             {error && (
               <div style={{ color: DN, fontSize: 12, fontWeight: 600, margin: "2px 0 10px" }}>{error}</div>
@@ -345,7 +366,7 @@ export default function LoginPage() {
                 letterSpacing: 0.5,
               }}
             >
-              {busy ? "…" : mode === "worker" ? "JOIN / LOG IN" : mode === "supervisor" ? "LOG IN" : mode === "solo" ? "CREATE MY PORTAL" : "CREATE COMPANY"}
+              {busy ? "…" : mode === "worker" ? "JOIN / LOG IN" : mode === "supervisor" ? "LOG IN" : mode === "solo" ? "CREATE MY PORTAL" : mode === "demo" ? "EXPLORE THE DEMO →" : "CREATE COMPANY"}
             </button>
           </>
         )}

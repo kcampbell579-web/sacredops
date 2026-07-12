@@ -36,6 +36,9 @@ export default function AdminPage() {
   const [subEdit, setSubEdit] = useState(false);
   const [subDraft, setSubDraft] = useState("");
   const [subBusy, setSubBusy] = useState(false);
+  const [codeEdit, setCodeEdit] = useState(false);
+  const [codeDraft, setCodeDraft] = useState("");
+  const [codeBusy, setCodeBusy] = useState(false);
   const [meId, setMeId] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -244,6 +247,33 @@ export default function AdminPage() {
     setBillBusy(false);
   }
 
+  async function saveJoinCode() {
+    const code = codeDraft.trim().toUpperCase().replace(/[^A-Z0-9-]/g, "");
+    if (code.length < 4) {
+      flash("Code must be at least 4 characters.");
+      return;
+    }
+    setCodeBusy(true);
+    try {
+      const res = await fetch("/api/admin/company", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ joinCode: code }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        flash(data.error || "Couldn't save that code.");
+      } else {
+        setCompany((c) => ({ ...c, joinCode: data.joinCode }));
+        setCodeEdit(false);
+        flash("Company code updated.");
+      }
+    } catch {
+      flash("Network error.");
+    }
+    setCodeBusy(false);
+  }
+
   async function saveSubdomain() {
     const slug = subDraft.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
     if (slug.length < 2) {
@@ -331,26 +361,30 @@ export default function AdminPage() {
           <div style={{ fontSize: 9.5, fontWeight: 800, color: AC, letterSpacing: 1, fontFamily: MONO, marginBottom: 6 }}>
             COMPANY CODE — SHARE WITH WORKERS
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 800, letterSpacing: 2, color: TX }}>
-              {company.joinCode}
+          {codeEdit ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <input
+                value={codeDraft}
+                onChange={(e) => setCodeDraft(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ""))}
+                placeholder="SACR-OPS1-DEMO"
+                style={{ background: "rgba(255,255,255,0.05)", color: TX, border: "1px solid " + HL, borderRadius: 9, padding: "9px 12px", fontSize: 15, fontFamily: MONO, letterSpacing: 1, width: 200 }}
+              />
+              <button onClick={saveJoinCode} disabled={codeBusy} style={{ background: AC, color: "#04231a", border: "none", borderRadius: 9, padding: "9px 14px", fontSize: 11, fontWeight: 800, cursor: "pointer", opacity: codeBusy ? 0.6 : 1 }}>
+                {codeBusy ? "…" : "SAVE"}
+              </button>
+              <button onClick={() => setCodeEdit(false)} style={ghost}>Cancel</button>
             </div>
-            <button
-              onClick={copyCode}
-              style={{
-                background: AC,
-                color: "#04231a",
-                border: "none",
-                borderRadius: 9,
-                padding: "8px 14px",
-                fontSize: 11,
-                fontWeight: 800,
-                cursor: "pointer",
-              }}
-            >
-              {copied ? "COPIED ✓" : "COPY"}
-            </button>
-          </div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 800, letterSpacing: 2, color: TX }}>
+                {company.joinCode}
+              </div>
+              <button onClick={copyCode} style={{ background: AC, color: "#04231a", border: "none", borderRadius: 9, padding: "8px 14px", fontSize: 11, fontWeight: 800, cursor: "pointer" }}>
+                {copied ? "COPIED ✓" : "COPY"}
+              </button>
+              <button onClick={() => { setCodeDraft(company.joinCode); setCodeEdit(true); }} style={ghost}>Change</button>
+            </div>
+          )}
           <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "10px 0 0" }}>
             Workers log in at your SacredOps site with this code, their name, and a 4-digit PIN they
             choose on first login. New joiners start as <b>Workers</b> — promote them below.

@@ -49,6 +49,15 @@ export async function POST(req: Request) {
     },
   });
 
+  // Capture every signup as a lead so the owner sees it in /leads.
+  try {
+    await prisma.lead.create({
+      data: { companyName: "Solo worker portal", name: cleanName, email: normEmail },
+    });
+  } catch {
+    /* never block signup on lead capture */
+  }
+
   await createSession(user.id);
   return Response.json({ ok: true, user: { name: user.name, role: user.role } });
 }
