@@ -2,6 +2,7 @@
 "use client";
 /* eslint-disable */
 import { useState, useRef } from "react";
+import { TOOLBOX_TALKS } from "./toolboxLibrary";
 
 /* ===== SacredOps — Supervisor Portal (dark industrial) ===== */
 const BG0="#0D0D0D",BG1="#13261D",BG2="#18392B",DG="#003B22",AC="#04A466",SU="#29C46D",WN="#F4B400",DN="#E53935";
@@ -176,7 +177,8 @@ const TALKS=[
  {id:"t4",name:"Struck-By / Caught-Between",proj:"Ironwood Bridge Replacement",date:"Wed Jun 13",by:"J. Rivera",att:22,total:24},
  {id:"t5",name:"Hydrogen Sulfide Awareness",proj:"Cedar Harbor Outfall Rehab",date:"Tue Jun 12",by:"K. McClure",att:12,total:12},
 ];
-const LIBRARY=["Silica Dust & Respirable Hazards","Ladder Safety","Heat Illness Prevention","Struck-By / Caught-Between","Fall Protection Above 6 ft","Hand & Power Tool Safety","Hydrogen Sulfide Awareness","Excavation & Trenching","Electrical Safety / LOTO"];
+const LIBRARY=TOOLBOX_TALKS.map(t=>t.title);
+const findTalk=(name)=>TOOLBOX_TALKS.find(t=>t.title===name);
 const INSPS=[
  {id:"i1",type:"Scaffold",proj:"Granite Ridge Interchange",date:"Mon Jun 18",by:"K. McClure",status:"open",items:[["Base plates & mud sills","pass"],["Guardrails 42\" top rail","flag"],["Planking fully decked","pass"],["Access ladder secured","pass"],["Tagged (green/yellow/red)","flag"]],note:"2 open items — missing mid-rail on north bay; scaffold tag not updated."},
  {id:"i2",type:"Fall Protection",proj:"Ironwood Bridge Replacement",date:"Mon Jun 18",by:"D. Whitfield",status:"pass",items:[["Harness inspected","pass"],["Anchor points rated","pass"],["Lanyards / SRLs","pass"],["100% tie-off enforced","pass"]],note:"All items pass."},
@@ -843,7 +845,7 @@ export default function App(){
     <Eyebrow>Attendance</Eyebrow>{roster.map((w,i)=>{const ok=i<t.att;return(<div key={i} style={{...glass,borderRadius:12,padding:"10px 12px",marginBottom:8,display:"flex",alignItems:"center",gap:11,border:"1px solid "+(ok?HL:WN+"44")}}><div style={{width:30,height:30,borderRadius:15,background:(ok?AC:WN)+"22",border:"1.5px solid "+(ok?AC:WN),display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:ok?AC:WN}}>{ok?"✓":"!"}</div><div style={{flex:1}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{w.n}</div><div style={{fontSize:10,color:MU}}>{w.r} · {ok?"Signed":"No signature"}</div></div>{ok&&<div style={{background:"#fff",borderRadius:7,padding:"2px 4px"}}><Sig i={i+1}/></div>}</div>);})}
     <button onClick={()=>dl({file:"ToolboxTalk.pdf",title:"Toolbox Talk — "+t.name,meta:[["Project",t.proj],["Date",t.date],["Presenter",t.by],["Attendance",t.att+" of "+t.total]],sections:[{h:"Attendance",yn:roster.map((w,i)=>[w.n+" — "+w.r,i<t.att?"Y":"N"])}]})} style={{marginTop:8,width:"100%",background:DG,color:TX,border:"1px solid "+HL,borderRadius:12,padding:"13px",fontSize:12,fontWeight:800,cursor:"pointer"}}>DOWNLOAD RECORD (PDF)</button>
   </Screen>);};
-  const Assign=()=>{const[pick,setPick]=useState(null);const[proj,setProj]=useState(PROJECTS[0].name);return(<Screen title="Assign Toolbox Talk" sub="Push a talk to a crew"><Field label="Project"><Sel v={proj} set={setProj} opts={PNAMES}/></Field><L>Select a talk</L>{LIBRARY.map((t,i)=>(<button key={i} onClick={()=>setPick(t)} style={{...glass,width:"100%",textAlign:"left",borderRadius:12,padding:"12px 13px",marginBottom:8,cursor:"pointer",border:"1px solid "+(pick===t?AC:HL),background:pick===t?AC+"18":glass.background,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:12.5,fontWeight:700,color:TX}}>{t}</span>{pick===t&&<span style={{color:AC,fontWeight:800}}>✓</span>}</button>))}<button disabled={!pick} onClick={()=>{setScr({t:"talks"});show(pick?"Assigned to "+proj:"");}} style={{marginTop:12,width:"100%",background:pick?AC:"rgba(255,255,255,0.08)",color:pick?"#04231a":MU,border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,cursor:pick?"pointer":"default"}}>ASSIGN TO CREW</button></Screen>);};
+  const Assign=()=>{const[pick,setPick]=useState(null);const[proj,setProj]=useState(PROJECTS[0].name);const[q,setQ]=useState("");const aList=LIBRARY.filter(t=>{const s=q.trim().toLowerCase();return !s||t.toLowerCase().includes(s);});return(<Screen title="Assign Toolbox Talk" sub="Push a talk to a crew"><Field label="Project"><Sel v={proj} set={setProj} opts={PNAMES}/></Field><L>Select a talk</L><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search 48 OSHA talks…" style={{...inp,marginBottom:10}}/>{aList.map((t,i)=>(<button key={i} onClick={()=>setPick(t)} style={{...glass,width:"100%",textAlign:"left",borderRadius:12,padding:"12px 13px",marginBottom:8,cursor:"pointer",border:"1px solid "+(pick===t?AC:HL),background:pick===t?AC+"18":glass.background,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:12.5,fontWeight:700,color:TX}}>{t}</span>{pick===t&&<span style={{color:AC,fontWeight:800}}>✓</span>}</button>))}<button disabled={!pick} onClick={()=>{setScr({t:"talks"});show(pick?"Assigned to "+proj:"");}} style={{marginTop:12,width:"100%",background:pick?AC:"rgba(255,255,255,0.08)",color:pick?"#04231a":MU,border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,cursor:pick?"pointer":"default"}}>ASSIGN TO CREW</button></Screen>);};
 
   /* ================= INSPECTIONS ================= */
   const Insps=()=>{const list=ALLINSPS.filter(i=>inFilter(i.proj));const openItems=ALLINSPS.reduce((a,i)=>a+i.items.filter(x=>x[1]==="flag").length,0);return(<div><Header title="Inspections" sub="Logs, checklists & corrective actions"/><ProjFilter/>
@@ -1556,17 +1558,42 @@ export default function App(){
     </Screen>);
   };
 
-  const DeliverTalk=()=>(<Screen title="Toolbox Talks" sub="Deliver a talk, then sign the crew in live">{LIBRARY.map((t,i)=>(<button key={i} onClick={()=>setScr({t:"deliverTalkDetail",name:t})} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"14px 15px",marginBottom:9,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:TX}}>{t}</span><span style={{fontSize:16,color:MU}}>›</span></button>))}</Screen>);
+  const DeliverTalk=()=>{
+    const[q,setQ]=useState("");
+    const list=TOOLBOX_TALKS.filter(t=>{const s=q.trim().toLowerCase();return !s||t.title.toLowerCase().includes(s)||(t.ref||"").toLowerCase().includes(s);});
+    return(<Screen title="Toolbox Talks" sub={TOOLBOX_TALKS.length+" OSHA talks · deliver & sign the crew in"}>
+      <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search talks (fall, silica, ladder, LOTO…)" style={{...inp,marginBottom:12}}/>
+      {list.map((t,i)=>(<button key={t.id} onClick={()=>setScr({t:"deliverTalkDetail",name:t.title})} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"13px 15px",marginBottom:9,cursor:"pointer",display:"flex",alignItems:"center",gap:12}}>
+        <span style={{fontSize:9.5,fontWeight:800,color:AC,fontFamily:MONO,background:AC+"18",borderRadius:7,padding:"4px 7px",flexShrink:0}}>{t.id}</span>
+        <span style={{flex:1,minWidth:0}}><span style={{fontSize:13,fontWeight:700,color:TX,display:"block"}}>{t.title}</span>{t.ref&&<span style={{fontSize:10,color:MU,fontFamily:MONO}}>{t.ref}</span>}</span>
+        <span style={{fontSize:16,color:MU,flexShrink:0}}>›</span>
+      </button>))}
+      {list.length===0&&<div style={{textAlign:"center",color:MU,fontSize:12,padding:"20px"}}>No talks match "{q}".</div>}
+    </Screen>);
+  };
   const DeliverTalkDetail=({name})=>{
     const talkSigRef=useRef(null);
+    const talk=findTalk(name);
     const isSig=(st)=>typeof st==="string"&&st.startsWith("data:");
     const submit=()=>{
       const sigs=WORKERS.map((w,i)=>{const st=signed[name+i];return isSig(st)?{role:w.r,name:w.n,date:new Date().toLocaleDateString(),img:st}:null;}).filter(Boolean);
       const count=WORKERS.filter((w,i)=>{const st=signed[name+i];return st&&st!=="open";}).length;
-      buildPDF({file:"ToolboxTalk.pdf",title:"Toolbox Talk — "+name,meta:[["Date",new Date().toLocaleDateString()],["Crew signed",count+" of "+WORKERS.length]],sections:[{h:"Topic reviewed",text:"Hazards for today's task, controls in place, required PPE, and the emergency plan were reviewed with the crew who signed below."}],sigs:sigs},()=>{setScr(null);show("Toolbox talk submitted — signed PDF downloaded");},()=>show("Need internet to build PDF"));
+      const meta=[["Topic",name]];if(talk&&talk.ref)meta.push(["Reference",talk.ref]);meta.push(["Date",new Date().toLocaleDateString()],["Crew signed",count+" of "+WORKERS.length]);
+      const contentSecs=(talk?talk.sections:[]).map(s=>({h:s.h,text:s.body.map(b=>(s.body.length>1?"•  ":"")+b).join("\n")}));
+      contentSecs.push({h:"Acknowledgment",text:"The crew members who signed below attended this toolbox talk and confirmed they understood the hazards, controls, and required PPE discussed before starting work."});
+      buildPDF({file:"ToolboxTalk_"+name.replace(/[^A-Za-z0-9]+/g,"_")+".pdf",title:"Toolbox Talk — "+name,meta,sections:contentSecs,sigs},()=>{setScr(null);show("Toolbox talk submitted — full talk + signatures downloaded");},()=>show("Need internet to build PDF"));
     };
-    return(<Screen title={name} sub="Toolbox talk · sign-in required">
-      <div style={{...glass,borderRadius:14,padding:14,fontSize:12.5,color:TX,lineHeight:1.5,marginBottom:16}}>Review the hazards for today's task, controls in place, required PPE, and the emergency plan. Confirm every crew member understands before work begins.</div>
+    return(<Screen title={name} sub={talk&&talk.ref?talk.ref:"Toolbox talk · sign-in required"}>
+      {talk?(<div style={{...glass,borderRadius:16,padding:"6px 15px 14px",marginBottom:16}}>
+        {talk.sections.map((s,si)=>(<div key={si} style={{paddingTop:12}}>
+          <div style={{fontSize:10,fontWeight:800,color:AC,letterSpacing:1,fontFamily:MONO,marginBottom:7}}>{s.h}</div>
+          {s.body.length>1
+            ? s.body.map((b,bi)=>(<div key={bi} style={{fontSize:12.5,color:TX,lineHeight:1.5,marginBottom:6,paddingLeft:14,position:"relative"}}><span style={{position:"absolute",left:0,color:AC,fontWeight:800}}>•</span>{b}</div>))
+            : <div style={{fontSize:12.5,color:TX,lineHeight:1.55}}>{s.body[0]}</div>}
+        </div>))}
+      </div>):(
+        <div style={{...glass,borderRadius:14,padding:14,fontSize:12.5,color:TX,lineHeight:1.5,marginBottom:16}}>Review the hazards for today's task, controls in place, required PPE, and the emergency plan. Confirm every crew member understands before work begins.</div>
+      )}
       <div style={{fontSize:10.5,fontWeight:800,color:AC,letterSpacing:1,marginBottom:8,fontFamily:MONO}}>CREW SIGN-IN</div>
       {WORKERS.map((w,i)=>{const st=signed[name+i];const done=st&&st!=="open";return(
         <div key={i} style={{...glass,border:"1px solid "+(done?AC+"66":HL),borderRadius:14,padding:12,marginBottom:9,background:done?AC+"12":glass.background}}>
