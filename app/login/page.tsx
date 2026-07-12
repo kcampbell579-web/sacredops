@@ -34,13 +34,36 @@ export default function LoginPage() {
   const [createdCode, setCreatedCode] = useState<string | null>(null);
   // On worker.sacredops.app we show a worker-only sign-up (no demo, no company).
   const [workerOnly, setWorkerOnly] = useState(false);
+  // On acme.sacredops.app the login is scoped to that company (crew skip the code).
+  const [companySlug, setCompanySlug] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string | null>(null);
+
+  const RESERVED = ["www", "app", "api", "admin", "demo", "worker", "workers", "staging", "dev", "sacredops"];
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setNext(params.get("next") || "/");
-    const isWorkerHost = window.location.hostname.split(":")[0].startsWith("worker.");
+    const hostParts = window.location.hostname.split(":")[0].split(".");
+    const hostSub = hostParts.length >= 3 ? hostParts[0].toLowerCase() : "";
+    const isWorkerHost = hostSub === "worker" || hostSub === "workers";
     const wo = isWorkerHost || params.get("worker") === "1";
     setWorkerOnly(wo);
+
+    // Company subdomain: ?company=acme, or a non-reserved host subdomain.
+    const slug = params.get("company") || (hostSub && !RESERVED.includes(hostSub) ? hostSub : "");
+    if (slug && !wo) {
+      fetch(`/api/company/lookup?subdomain=${encodeURIComponent(slug)}`, { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.company) {
+            setCompanySlug(slug);
+            setCompanyName(d.company.name);
+            setMode("worker");
+          }
+        })
+        .catch(() => {});
+    }
+
     const m = params.get("mode");
     if (m === "signup" || m === "supervisor" || m === "worker" || m === "solo") setMode(m as Mode);
     else if (wo) setMode("solo");
@@ -56,7 +79,9 @@ export default function LoginPage() {
       let body: Record<string, string> = {};
       if (mode === "worker") {
         url = "/api/auth/join";
-        body = { joinCode: f.joinCode || "", name: f.name || "", pin: f.pin || "" };
+        body = companySlug
+          ? { subdomain: companySlug, name: f.name || "", pin: f.pin || "" }
+          : { joinCode: f.joinCode || "", name: f.name || "", pin: f.pin || "" };
       } else if (mode === "supervisor") {
         url = "/api/auth/login";
         body = { email: f.email || "", password: f.password || "" };
@@ -197,12 +222,28 @@ export default function LoginPage() {
           </div>
         ) : (
           <>
+            {companyName && (
+              <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 0 12px", padding: "10px 12px", background: "rgba(4,164,102,0.1)", border: "1px solid " + AC + "44", borderRadius: 11 }}>
+                <span style={{ width: 8, height: 8, borderRadius: 4, background: AC, boxShadow: "0 0 10px " + AC }} />
+                <span style={{ fontSize: 13, fontWeight: 800 }}>{companyName}</span>
+                <span style={{ fontSize: 10.5, color: MU, fontFamily: MONO, marginLeft: "auto" }}>{companySlug}.sacredops.app</span>
+              </div>
+            )}
             <p style={{ color: MU, fontSize: 12.5, margin: "0 0 18px" }}>
-              {workerOnly ? "Your personal worker portal — track your résumé, training & certs." : "Log in to your company."}
+              {companyName
+                ? "Sign in to your crew — no company code needed."
+                : workerOnly
+                ? "Your personal worker portal — track your résumé, training & certs."
+                : "Log in to your company."}
             </p>
 
             <div style={{ display: "flex", gap: 7, marginBottom: 18, flexWrap: "wrap" }}>
-              {workerOnly ? (
+              {companyName ? (
+                <>
+                  {tab("worker", "Worker")}
+                  {tab("supervisor", "Manager")}
+                </>
+              ) : workerOnly ? (
                 <>
                   {tab("solo", "Sign up")}
                   {tab("worker", "Have a code")}
@@ -220,7 +261,7 @@ export default function LoginPage() {
 
             {mode === "worker" && (
               <>
-                {field("joinCode", "Company code", { placeholder: "SACR-OPS1-DEMO" })}
+                {!companySlug && field("joinCode", "Company code", { placeholder: "SACR-OPS1-DEMO" })}
                 {field("name", "Your name", { placeholder: "John Rivera" })}
                 {field("pin", "4-digit PIN", { type: "password", inputMode: "numeric", maxLength: 4, placeholder: "••••" })}
               </>

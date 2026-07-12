@@ -22,6 +22,7 @@ model Company {
   id        String   @id @default(cuid())
   name      String
   joinCode  String   @unique // workers enter this to join (long & random)
+  subdomain String?  @unique // e.g. "acme" → acme.sacredops.app auto-scopes login
   createdAt DateTime @default(now())
 
   users   User[]

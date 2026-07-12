@@ -22,7 +22,7 @@ export async function GET() {
   ]);
 
   return Response.json({
-    company: { name: company?.name || "", joinCode: company?.joinCode || "" },
+    company: { name: company?.name || "", joinCode: company?.joinCode || "", subdomain: company?.subdomain || "" },
     me: { id: admin.id },
     users: users.map((u) => ({
       id: u.id,

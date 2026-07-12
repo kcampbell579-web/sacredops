@@ -1,26 +1,28 @@
 import { prisma } from "@/lib/prisma";
-import { hashSecret, verifySecret, createSession } from "@/lib/auth";
+import { hashSecret, verifySecret, createSession, normalizeSubdomain } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// POST /api/auth/join — worker joins/signs in with the company code + name + PIN.
-// First time creates the worker (sets the PIN); afterwards the PIN must match.
-// { joinCode, name, pin }
+// POST /api/auth/join — worker joins/signs in with name + PIN, and either a
+// company code OR a company subdomain (used on acme.sacredops.app so the crew
+// never has to type the code). First time creates the worker (sets the PIN);
+// afterwards the PIN must match. { joinCode | subdomain, name, pin }
 export async function POST(req: Request) {
-  const { joinCode, name, pin } = await req.json().catch(() => ({}));
-  if (!joinCode || !name || !pin) {
-    return Response.json({ error: "Company code, name, and PIN are required." }, { status: 400 });
+  const { joinCode, subdomain, name, pin } = await req.json().catch(() => ({}));
+  if ((!joinCode && !subdomain) || !name || !pin) {
+    return Response.json({ error: "Company, name, and PIN are required." }, { status: 400 });
   }
   if (!/^\d{4}$/.test(String(pin))) {
     return Response.json({ error: "PIN must be 4 digits." }, { status: 400 });
   }
 
-  const company = await prisma.company.findUnique({
-    where: { joinCode: String(joinCode).trim().toUpperCase() },
-  });
+  const sub = subdomain ? normalizeSubdomain(String(subdomain)) : null;
+  const company = sub
+    ? await prisma.company.findUnique({ where: { subdomain: sub } })
+    : await prisma.company.findUnique({ where: { joinCode: String(joinCode).trim().toUpperCase() } });
   if (!company) {
-    return Response.json({ error: "That company code was not found." }, { status: 404 });
+    return Response.json({ error: "That company was not found." }, { status: 404 });
   }
 
   const cleanName = String(name).trim();

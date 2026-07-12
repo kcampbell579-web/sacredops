@@ -31,7 +31,10 @@ const ROLE_META: Record<string, { label: string; color: string; blurb: string }>
 export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [forbidden, setForbidden] = useState(false);
-  const [company, setCompany] = useState<{ name: string; joinCode: string }>({ name: "", joinCode: "" });
+  const [company, setCompany] = useState<{ name: string; joinCode: string; subdomain: string }>({ name: "", joinCode: "", subdomain: "" });
+  const [subEdit, setSubEdit] = useState(false);
+  const [subDraft, setSubDraft] = useState("");
+  const [subBusy, setSubBusy] = useState(false);
   const [meId, setMeId] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -212,6 +215,33 @@ export default function AdminPage() {
     }
   }
 
+  async function saveSubdomain() {
+    const slug = subDraft.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+    if (slug.length < 2) {
+      flash("Use at least 2 letters or numbers.");
+      return;
+    }
+    setSubBusy(true);
+    try {
+      const res = await fetch("/api/admin/company", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subdomain: slug }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        flash(data.error || "Couldn't save that address.");
+      } else {
+        setCompany((c) => ({ ...c, subdomain: data.subdomain }));
+        setSubEdit(false);
+        flash("Login address updated.");
+      }
+    } catch {
+      flash("Network error.");
+    }
+    setSubBusy(false);
+  }
+
   const page: React.CSSProperties = {
     minHeight: "100vh",
     background: "#0d0d0d",
@@ -295,6 +325,42 @@ export default function AdminPage() {
           <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "10px 0 0" }}>
             Workers log in at your SacredOps site with this code, their name, and a 4-digit PIN they
             choose on first login. New joiners start as <b>Workers</b> — promote them below.
+          </p>
+        </div>
+
+        {/* Login address (company subdomain) */}
+        <div style={{ border: "1px solid " + HL, background: "rgba(255,255,255,0.03)", borderRadius: 16, padding: "16px 18px", marginBottom: 24 }}>
+          <div style={{ fontSize: 9.5, fontWeight: 800, color: MU, letterSpacing: 1, fontFamily: MONO, marginBottom: 6 }}>
+            YOUR LOGIN ADDRESS
+          </div>
+          {company.subdomain && !subEdit ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ fontFamily: MONO, fontSize: 17, fontWeight: 800, color: AC }}>
+                {company.subdomain}.sacredops.app
+              </div>
+              <button onClick={() => { setSubDraft(company.subdomain); setSubEdit(true); }} style={ghost}>Change</button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.05)", border: "1px solid " + HL, borderRadius: 9, overflow: "hidden" }}>
+                <input
+                  value={subDraft}
+                  onChange={(e) => setSubDraft(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                  placeholder="acme"
+                  style={{ background: "transparent", color: TX, border: "none", outline: "none", padding: "9px 4px 9px 11px", fontSize: 13, width: 120, fontFamily: MONO }}
+                />
+                <span style={{ fontFamily: MONO, fontSize: 12.5, color: MU, paddingRight: 11 }}>.sacredops.app</span>
+              </div>
+              <button onClick={saveSubdomain} disabled={subBusy} style={{ background: AC, color: "#04231a", border: "none", borderRadius: 9, padding: "9px 14px", fontSize: 11, fontWeight: 800, cursor: "pointer", opacity: subBusy ? 0.6 : 1 }}>
+                {subBusy ? "…" : "SAVE"}
+              </button>
+              {company.subdomain && <button onClick={() => setSubEdit(false)} style={ghost}>Cancel</button>}
+            </div>
+          )}
+          <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "10px 0 0" }}>
+            Give your crew a branded address — at <b>{company.subdomain || "yourname"}.sacredops.app</b> they
+            just enter their name &amp; PIN, no company code. <b>Tell us</b> when you pick one so we can point the
+            web address at your app (it isn&apos;t live until that&apos;s done).
           </p>
         </div>
 

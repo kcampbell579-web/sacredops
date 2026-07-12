@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { hashSecret, generateJoinCode, createSession } from "@/lib/auth";
+import { hashSecret, generateJoinCode, createSession, slugifySubdomain, RESERVED_SUBDOMAINS } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,7 +29,24 @@ export async function POST(req: Request) {
     joinCode = generateJoinCode(companyName);
   }
 
-  const company = await prisma.company.create({ data: { name: String(companyName).trim(), joinCode } });
+  // Auto-assign a login subdomain (acme → acme.sacredops.app). Fall back with a
+  // numeric suffix on collision; leave null if we can't derive a usable slug.
+  let subdomain: string | null = slugifySubdomain(companyName);
+  if (!subdomain || subdomain.length < 2 || RESERVED_SUBDOMAINS.has(subdomain)) {
+    subdomain = null;
+  } else {
+    const base = subdomain;
+    for (let i = 0; i < 6; i++) {
+      const candidate = i === 0 ? base : `${base}-${i + 1}`;
+      const clash = await prisma.company.findUnique({ where: { subdomain: candidate } });
+      if (!clash) { subdomain = candidate; break; }
+      subdomain = null; // exhausted → leave unset, admin can pick one
+    }
+  }
+
+  const company = await prisma.company.create({
+    data: { name: String(companyName).trim(), joinCode, subdomain },
+  });
   const user = await prisma.user.create({
     data: {
       companyId: company.id,

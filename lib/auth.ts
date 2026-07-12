@@ -49,6 +49,35 @@ export function generateToken(): string {
 }
 
 // ---------------------------------------------------------------------------
+// Company subdomains (acme → acme.sacredops.app)
+// ---------------------------------------------------------------------------
+
+// Subdomains we never hand out to a company (they route to other things).
+export const RESERVED_SUBDOMAINS = new Set([
+  "www", "app", "api", "admin", "demo", "worker", "workers", "staging", "dev",
+  "sacredops", "mail", "support", "help", "status", "blog", "login", "signup",
+]);
+
+// Turn a company name into a clean subdomain slug (lowercase a–z0–9 and hyphens).
+export function slugifySubdomain(name: string): string {
+  return String(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 32)
+    .replace(/-+$/g, "");
+}
+
+// Validate an admin-chosen subdomain: 2–32 chars, a–z0–9 and hyphens, and not
+// reserved. Returns the normalized value or null if invalid.
+export function normalizeSubdomain(raw: string): string | null {
+  const s = slugifySubdomain(raw);
+  if (s.length < 2 || s.length > 32) return null;
+  if (RESERVED_SUBDOMAINS.has(s)) return null;
+  return s;
+}
+
+// ---------------------------------------------------------------------------
 // Sessions (opaque token in an httpOnly cookie)
 // ---------------------------------------------------------------------------
 
