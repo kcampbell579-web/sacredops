@@ -34,7 +34,7 @@ export const PLANS: Record<PlanKey, { label: string; features: Record<FeatureKey
   },
   pro: {
     label: "Pro",
-    features: { scheduler: true, reports: false, payroll: false, expenses: true, subcontractors: false, dailylog: true },
+    features: { scheduler: true, reports: true, payroll: false, expenses: true, subcontractors: false, dailylog: true },
   },
   business: {
     label: "Business",
