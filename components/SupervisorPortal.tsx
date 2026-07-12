@@ -382,6 +382,7 @@ function saveSubcos(a){try{window.localStorage.setItem(CKEY,JSON.stringify(a));}
 function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function mondayOf(d){const x=new Date(d);const day=x.getDay();const diff=(day===0?-6:1-day);x.setDate(x.getDate()+diff);x.setHours(0,0,0,0);return x;}
 function weekLabel(d){return d.toLocaleDateString(undefined,{month:"short",day:"numeric"});}
+function fmtRange(s,e){const p=(x)=>{const a=String(x||"").split("-").map(Number);return a.length>=3&&a[0]?(a[1]+"/"+a[2]):"";};const a=p(s),b=p(e);return a&&b&&a!==b?a+" – "+b:(a||b);}
 function sixWeeks(){const start=mondayOf(new Date());const out=[];for(let i=0;i<6;i++){const s=new Date(start);s.setDate(s.getDate()+i*7);const e=new Date(s);e.setDate(e.getDate()+6);out.push({idx:i,start:s,end:e,key:iso(s)});}return out;}
 const SEED_SUBCOS=[
  {id:"sub1",name:"Precision Rebar Co.",trade:"Reinforcing Steel",contact:"Mike Tallman",phone:"(516) 555-0142",email:"mtallman@precisionrebar.com",status:"Active",coi:"2026-11-01"},
@@ -1214,7 +1215,8 @@ export default function App(){
     const[ns,setNs]=useState({status:"Active"});const setNsF=(k,v)=>setNs(o=>({...o,[k]:v}));
 
     const persistSched=(next)=>{setSched(next);saveSched(next);};
-    const addActivity=(wkKey)=>{if(!na.activity)return;const mode=na.mode||"Internal Crew";const isSub=mode==="Subcontractor";const subObj=isSub?subcos.find(s=>s.name===na.sub):null;const e={id:"sc"+Date.now(),project:schedProj,weekKey:wkKey,activity:na.activity,trade:isSub?(subObj?subObj.trade:""):(na.trade||""),sub:isSub?(na.sub||""):"",crewSize:na.crewSize||"",status:na.status||"On Track",notes:na.notes||""};persistSched([...sched,e]);setNa({});setAddWk(null);};
+    const eow=(k)=>{const p=String(k).split("-").map(Number);const dd=new Date(p[0],p[1]-1,p[2]+6);return iso(dd);};
+    const addActivity=(wkKey)=>{if(!na.activity)return;const mode=na.mode||"Internal Crew";const isSub=mode==="Subcontractor";const subObj=isSub?subcos.find(s=>s.name===na.sub):null;const e={id:"sc"+Date.now(),project:schedProj,weekKey:wkKey,activity:na.activity,trade:isSub?(subObj?subObj.trade:""):(na.trade||""),sub:isSub?(na.sub||""):"",crewSize:na.crewSize||"",status:na.status||"On Track",start:na.start||wkKey,end:na.end||eow(wkKey),notes:na.notes||""};persistSched([...sched,e]);setNa({});setAddWk(null);};
     const delActivity=(id)=>persistSched(sched.filter(x=>x.id!==id));
     const forWeek=(wkKey)=>sched.filter(s=>s.project===schedProj && s.weekKey===wkKey);
 
@@ -1229,10 +1231,18 @@ export default function App(){
       const md=(dt)=>(dt.getMonth()+1)+"/"+dt.getDate();
       const wcols=weeks.map(w=>{const days=[];const s=new Date(w.start);for(let i=0;i<7;i++){const dd=new Date(s);dd.setDate(s.getDate()+i);days.push({l:DOW[i],dt:md(dd),we:i>=5});}return {label:"WEEK "+(w.idx+1),range:weekLabel(w.start)+"–"+weekLabel(w.end),days,start:new Date(w.start),end:new Date(w.end)};});
       const days=wcols.flatMap(w=>w.days);
+      // map a YYYY-MM-DD date onto a 0..41 day column within the 6-week window
+      const first=new Date(weeks[0].start);first.setHours(0,0,0,0);
+      const parseD=(s)=>{const p=String(s||"").split("-").map(Number);return p.length>=3&&p[0]?new Date(p[0],p[1]-1,p[2]):null;};
+      const dayIdx=(s)=>{const dt=parseD(s);return dt?Math.round((dt-first)/86400000):null;};
       const rows=[];
       weeks.forEach((w,wi)=>{forWeek(w.key).forEach(it=>{
         const sub=it.sub||it.trade||(it.crewSize?"Crew "+it.crewSize:"—");
-        rows.push({name:it.activity,sub,start:md(wcols[wi].start),end:md(wcols[wi].end),startCol:wi*7,endCol:wi*7+6,color:statusColor(it.status)});
+        let sc=dayIdx(it.start),ec=dayIdx(it.end);
+        if(sc==null||ec==null){sc=wi*7;ec=wi*7+6;}
+        sc=Math.max(0,Math.min(41,sc));ec=Math.max(sc,Math.min(41,ec));
+        const sd=parseD(it.start),ed=parseD(it.end);
+        rows.push({name:it.activity,sub,start:sd?md(sd):md(wcols[wi].start),end:ed?md(ed):md(wcols[wi].end),startCol:sc,endCol:ec,color:statusColor(it.status)});
       });});
       if(!rows.length)rows.push({name:"No activities scheduled",sub:"",start:"",end:"",startCol:null,endCol:null,color:[190,196,193]});
       const allSt=[];weeks.forEach(w=>forWeek(w.key).forEach(it=>allSt.push(it.status)));
@@ -1268,6 +1278,7 @@ export default function App(){
                 <div style={{width:4,alignSelf:"stretch",borderRadius:4,flexShrink:0,background:it.status==="At Risk"?WN:(it.status==="Blocked / Critical"||it.status==="Blocked")?DN:SU}}/>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontSize:12.5,fontWeight:700,color:TX}}>{it.activity}</div>
+                  {it.start&&<div style={{fontSize:10,color:MU,fontFamily:MONO,marginTop:3}}>{fmtRange(it.start,it.end)}</div>}
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:5}}>
                     {it.status&&it.status!=="On Track"&&<span style={{fontSize:9.5,color:it.status==="At Risk"?WN:DN,background:(it.status==="At Risk"?WN:DN)+"18",borderRadius:20,padding:"2px 8px",fontFamily:MONO}}>{it.status.toUpperCase()}</span>}
                     {it.trade&&<span style={{fontSize:9.5,color:AC,background:AC+"18",borderRadius:20,padding:"2px 8px",fontFamily:MONO}}>{it.trade}</span>}
@@ -1290,6 +1301,8 @@ export default function App(){
                 )}
                 <div style={{height:7}}/>
                 <L>Status</L><Radio v={na.status||"On Track"} set={v=>setNaF("status",v)} opts={["On Track","At Risk","Blocked / Critical"]}/>
+                <div style={{height:7}}/>
+                <Row2><div style={{flex:1}}><L>Start date</L><input type="date" value={na.start||w.key} onChange={e=>setNaF("start",e.target.value)} style={inp}/></div><div style={{flex:1}}><L>End date</L><input type="date" value={na.end||eow(w.key)} min={na.start||w.key} onChange={e=>setNaF("end",e.target.value)} style={inp}/></div></Row2>
                 <div style={{height:7}}/>
                 <TA v={na.notes} set={v=>setNaF("notes",v)} ph="Notes (optional)" h={50}/>
                 <div style={{display:"flex",gap:8,marginTop:9}}>

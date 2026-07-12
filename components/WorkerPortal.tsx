@@ -2,6 +2,7 @@
 "use client";
 /* eslint-disable */
 import { useState, useRef } from "react";
+import { TOOLBOX_TALKS } from "./toolboxLibrary";
 
 /* ===== SacredOps — premium dark industrial theme ===== */
 const BG0="#0D0D0D",BG1="#13261D",BG2="#18392B",DG="#003B22",AC="#04A466",SU="#29C46D",WN="#F4B400",DN="#E53935";
@@ -49,8 +50,9 @@ function Picto({kind}){
 }
 
 /* ---- signature pad ---- */
-function SigPad({height=84}){
+function SigPad({height=84,capRef}){
   const ref=useRef(null);const dr=useRef(false);const lp=useRef(null);const lm=useRef(null);
+  if(capRef)capRef.current=()=>{try{return ref.current?ref.current.toDataURL("image/png"):"";}catch(e){return "";}};
   const xy=(e)=>{const r=ref.current.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(ref.current.width/r.width),y:(t.clientY-r.top)*(ref.current.height/r.height)};};
   const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
   const start=(e)=>{e.preventDefault();dr.current=true;const p=xy(e);lp.current=p;lm.current=p;const c=ref.current.getContext("2d");c.lineJoin="round";c.lineCap="round";c.strokeStyle="#0D0D0D";c.lineWidth=2.5;c.beginPath();c.moveTo(p.x,p.y);};
@@ -795,24 +797,47 @@ export default function App(){
       <button onClick={submit} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
     </Screen>);
   };
-  const talkList=["Silica Dust & Respirable Hazards","Ladder Safety","Heat Illness Prevention","Struck-By / Caught-Between","Fall Protection Above 6 ft","Hand & Power Tool Safety","Hydrogen Sulfide Awareness"];
-  const Talks=()=>(<Screen title="Toolbox Talks" sub="Deliver, then sign the crew in">{talkList.map((t,i)=>(<button key={i} onClick={()=>setScr({t:"talkDetail",name:t})} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"14px 15px",marginBottom:9,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:TX}}>{t}</span><span style={{fontSize:16,color:MU}}>›</span></button>))}</Screen>);
-  const TalkDetail=({name})=>(
-    <Screen title={name} sub="Toolbox talk · sign-in required">
-      <div style={{...glass,borderRadius:14,padding:14,fontSize:12.5,color:TX,lineHeight:1.5,marginBottom:16}}>Review the hazards for today's task, controls in place, required PPE, and the emergency plan. Confirm every crew member understands before work begins.</div>
-      <div style={{fontSize:10.5,fontWeight:800,color:AC,letterSpacing:1,marginBottom:8,fontFamily:MONO}}>CREW SIGN-IN</div>
-      {WORKERS.map((w,i)=>{const done=signed[name+i];return(
-        <div key={i} style={{...glass,border:"1px solid "+(done?AC+"66":HL),borderRadius:14,padding:12,marginBottom:9,background:done?AC+"12":glass.background}}>
-          <div style={{display:"flex",alignItems:"center",gap:11}}>
-            <div style={{width:34,height:34,borderRadius:17,background:AC+"22",border:"1.5px solid "+AC,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:AC}}>{done?"✓":w.n.split(" ").map(x=>x[0]).join("")}</div>
-            <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:TX}}>{w.n}</div><div style={{fontSize:10.5,color:MU}}>{w.r} · {w.l}</div></div>
-            {done?<span style={{fontSize:9.5,fontWeight:800,color:AC,fontFamily:MONO}}>SIGNED ✓</span>:<button onClick={()=>setSigned(s=>({...s,[name+i]:"open"}))} style={{background:AC,color:"#04231a",border:"none",borderRadius:9,padding:"7px 14px",fontSize:10.5,fontWeight:800,cursor:"pointer"}}>SIGN</button>}
-          </div>
-          {done==="open"&&<div style={{marginTop:10}}><SigPad height={68}/><button onClick={()=>setSigned(s=>({...s,[name+i]:true}))} style={{marginTop:8,width:"100%",background:DG,color:TX,border:"1px solid "+HL,borderRadius:9,padding:"9px",fontSize:11,fontWeight:800,cursor:"pointer"}}>CONFIRM SIGNATURE</button></div>}
-        </div>);})}
-      <button onClick={()=>{setScr(null);show("Toolbox talk submitted");}} style={{marginTop:8,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT TOOLBOX TALK</button>
-    </Screen>
-  );
+  const findTalk=(name)=>TOOLBOX_TALKS.find(t=>t.title===name);
+  const Talks=()=>{
+    const[q,setQ]=useState("");
+    const list=TOOLBOX_TALKS.filter(t=>{const s=q.trim().toLowerCase();return !s||t.title.toLowerCase().includes(s)||(t.ref||"").toLowerCase().includes(s);});
+    return(<Screen title="Toolbox Talks" sub={TOOLBOX_TALKS.length+" OSHA safety talks · read & sign"}>
+      <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search (fall, silica, ladder, heat…)" style={{...inp,marginBottom:12}}/>
+      {list.map(t=>(<button key={t.id} onClick={()=>setScr({t:"talkDetail",name:t.title})} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"13px 15px",marginBottom:9,cursor:"pointer",display:"flex",alignItems:"center",gap:12}}>
+        <span style={{fontSize:9.5,fontWeight:800,color:AC,fontFamily:MONO,background:AC+"18",borderRadius:7,padding:"4px 7px",flexShrink:0}}>{t.id}</span>
+        <span style={{flex:1,minWidth:0}}><span style={{fontSize:13,fontWeight:700,color:TX,display:"block"}}>{t.title}</span>{t.ref&&<span style={{fontSize:10,color:MU,fontFamily:MONO}}>{t.ref}</span>}</span>
+        <span style={{fontSize:16,color:MU,flexShrink:0}}>›</span>
+      </button>))}
+      {list.length===0&&<div style={{textAlign:"center",color:MU,fontSize:12,padding:"20px"}}>No talks match "{q}".</div>}
+    </Screen>);
+  };
+  const TalkDetail=({name})=>{
+    const talk=findTalk(name);
+    const sig=useRef(null);
+    const[ack,setAck]=useState(false);
+    const download=()=>{
+      const img=sig.current&&sig.current();
+      const meta=[["Topic",name]];if(talk&&talk.ref)meta.push(["Reference",talk.ref]);meta.push(["Worker",ME_NAME],["Date",new Date().toLocaleDateString()]);
+      const secs=(talk?talk.sections:[]).map(s=>({h:s.h,text:s.body.map(b=>(s.body.length>1?"•  ":"")+b).join("\n")}));
+      secs.push({h:"Acknowledgment",text:"I attended this toolbox talk and understood the hazards, controls, and required PPE discussed before starting work."});
+      dl({file:"ToolboxTalk_"+name.replace(/[^A-Za-z0-9]+/g,"_")+".pdf",title:"Toolbox Talk — "+name,meta,sections:secs,sigs:img?[{role:"Worker",name:ME_NAME,date:new Date().toLocaleDateString(),img}]:[]});
+    };
+    return(<Screen title={name} sub={talk&&talk.ref?talk.ref:"Toolbox talk"}>
+      {talk?(<div style={{...glass,borderRadius:16,padding:"6px 15px 14px",marginBottom:16}}>
+        {talk.sections.map((s,si)=>(<div key={si} style={{paddingTop:12}}>
+          <div style={{fontSize:10,fontWeight:800,color:AC,letterSpacing:1,fontFamily:MONO,marginBottom:7}}>{s.h}</div>
+          {s.body.length>1
+            ? s.body.map((b,bi)=>(<div key={bi} style={{fontSize:12.5,color:TX,lineHeight:1.5,marginBottom:6,paddingLeft:14,position:"relative"}}><span style={{position:"absolute",left:0,color:AC,fontWeight:800}}>•</span>{b}</div>))
+            : <div style={{fontSize:12.5,color:TX,lineHeight:1.55}}>{s.body[0]}</div>}
+        </div>))}
+      </div>):(<div style={{...glass,borderRadius:14,padding:14,fontSize:12.5,color:TX,lineHeight:1.5,marginBottom:16}}>Review the hazards, controls, required PPE, and the emergency plan before starting work.</div>)}
+      <div style={{fontSize:10.5,fontWeight:800,color:AC,letterSpacing:1,marginBottom:8,fontFamily:MONO}}>YOUR ACKNOWLEDGMENT</div>
+      <Chk on={ack} set={setAck} label={"I, "+ME_NAME+", attended this talk and understand it."}/>
+      <div style={{fontSize:10.5,color:MU,margin:"10px 0 6px"}}>Sign below</div>
+      <SigPad height={72} capRef={sig}/>
+      <button disabled={!ack} onClick={download} style={{marginTop:12,width:"100%",background:ack?AC:"rgba(255,255,255,0.08)",color:ack?"#04231a":MU,border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:ack?"pointer":"default"}}>SIGN &amp; DOWNLOAD PDF</button>
+    </Screen>);
+  };
   const Permits=()=>(<Screen title="Permits Center" sub="Hot work · confined space · excavation">
     {[["Hot Work — Bay 3 welding","ACTIVE",SU],["Confined Space — Tank 2","PENDING",WN],["Excavation — North trench","CLOSED",MU]].map((p,i)=>(<div key={i} style={{...glass,borderRadius:14,padding:"14px 15px",marginBottom:9,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:TX}}>{p[0]}</span><span style={{fontSize:9,fontWeight:800,color:p[2],background:p[2]+"22",padding:"4px 9px",borderRadius:20,fontFamily:MONO}}>{p[1]}</span></div>))}
     <button onClick={()=>show("New hot work permit started")} style={{marginTop:6,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>+ NEW PERMIT</button>
