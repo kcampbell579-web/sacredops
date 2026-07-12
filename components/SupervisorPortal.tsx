@@ -536,6 +536,10 @@ function saveSafetyLocs(m){try{window.localStorage.setItem(SLKEY,JSON.stringify(
 const SAFETY_CATS=[["assembly","Assembly Point","M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10zM12 8v3M12 14h.01"],["fire","Fire Extinguishers","M12 3c3 4 1 6 0 8 3-1 4-4 4-4 2 5-2 10-4 10s-6-3-4-8c1 2 3 2 3 2s-2-4 1-8z"],["spill","Spill Kits","M12 3s5 6 5 10a5 5 0 01-10 0c0-4 5-10 5-10z"],["firstaid","First Aid",'M4 7h16v12H4zM9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M9 13h6M12 10v6']];
 const ROLE="Admin";
 export default function App(){
+  // Per-company feature flags (set by PortalGate). A feature is ON unless the
+  // company's plan explicitly turns it off, so nothing breaks when unset.
+  const FEAT=(typeof window!=="undefined"&&window.__sacredFeatures)||{};
+  const hasF=(k)=>FEAT[k]!==false;
   const[tab,setTab]=useState("projects");
   const[scr,setScr]=useState(null);
   const[toast,setToast]=useState("");
@@ -573,6 +577,12 @@ export default function App(){
   function Metric({v,k,c}){return <div><div style={{fontSize:17,fontWeight:800,color:c||TX,lineHeight:1}}>{v}</div><div style={{fontSize:9,color:MU,fontFamily:MONO,letterSpacing:0.3,marginTop:3}}>{String(k).toUpperCase()}</div></div>;}
   function Meta({k,v,c}){return <div><div style={{fontSize:9,color:MU,fontFamily:MONO,letterSpacing:1}}>{String(k).toUpperCase()}</div><div style={{fontSize:13,fontWeight:800,color:c||TX,marginTop:2}}>{v}</div></div>;}
   function Empty(){return <div style={{textAlign:"center",color:MU,fontSize:12,padding:"30px 10px"}}>Nothing here for this project yet.</div>;}
+  const Locked=({name})=>(<div><Header title={name} sub="Not included in your plan"/><div style={{padding:"40px 24px",textAlign:"center"}}>
+    <div style={{width:60,height:60,borderRadius:16,background:AC+"14",border:"1px solid "+AC+"3a",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div>
+    <div style={{fontSize:17,fontWeight:800,color:TX}}>{name} is a premium module</div>
+    <div style={{fontSize:12.5,color:MU,marginTop:8,lineHeight:1.55,maxWidth:300,margin:"8px auto 0"}}>Your plan doesn't include {name}. Ask your SacredOps rep to add it to your subscription.</div>
+    <a href="mailto:sales@sacredops.app?subject=Upgrade%20request" style={{display:"inline-block",marginTop:18,background:AC,color:"#04231a",textDecoration:"none",borderRadius:11,padding:"12px 22px",fontSize:12.5,fontWeight:800}}>Request upgrade</a>
+  </div></div>);
 
   const Header=({title,sub})=>(
     <div style={{position:"relative",overflow:"hidden",borderBottom:"1px solid "+HL,padding:"14px 16px 16px"}}>
@@ -756,7 +766,7 @@ export default function App(){
       ["Forms","All Forms","#A78BFA","M6 3h10l3 3v15H6zM9 12h6M9 16h4",()=>{setTab("forms");setScr(null);}],
       ["Payroll","Run / View","#22D3EE","M12 2a10 10 0 100 20 10 10 0 000-20M12 6v12M9.5 9a2.2 2.2 0 012-2h1.6a2 2 0 010 4h-2.1a2 2 0 000 4H14",()=>setScr({t:"payroll"})],
       ["Assign To-Do","To your crew",AC,"M9 11a3 3 0 100-6 3 3 0 000 6zM4 20a5 5 0 019-3M15 15l2 2 4-4",()=>setScr({t:"assignTodo",proj:p.name})],
-    ];
+    ].filter(t=>{const g={Schedule:"scheduler",Payroll:"payroll"}[t[0]];return !g||hasF(g);});
     const inCrew=ROSTER.filter(r=>r.site===p.name&&r.status==="in");
     const talksFor=TALKS.filter(t=>t.proj===p.name);const inspFor=ALLINSPS.filter(i=>i.proj===p.name);
     const FIC={check:"M5 12l4 4L19 6",chat:"M4 6h16v9H9l-4 4z",alert:"M12 3l9 16H3zM12 9v4M12 17h.01",doc:"M6 3h10l3 3v15H6z"};
@@ -831,7 +841,7 @@ export default function App(){
 
   /* ================= SIGN-INS ================= */
   const SignIns=()=>{const list=SIGNINS.filter(s=>inFilter(s.proj));return(<div><Header title="Sign-In Sheets" sub="Daily musters, talks & JHA reviews"/><ProjFilter/>
-    <div style={{padding:"12px 14px 26px"}}><button onClick={()=>setScr({t:"attendance"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}><span style={{width:8,height:8,borderRadius:4,background:SU}}/> Live Attendance — crew IN / OUT</button><button onClick={()=>setScr({t:"payroll"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}>$ Payroll register — hours & wages</button><button onClick={()=>setScr({t:"expenses"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}>▤ Expense tracker — job costs</button><button onClick={()=>setScr({t:"dailylog"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}>▦ Daily log — project notes</button>{list.map(s=>{const full=s.signed===s.total;return(<button key={s.id} onClick={()=>setScr({t:"signin",id:s.id})} style={{...glass,width:"100%",textAlign:"left",borderRadius:16,padding:13,marginBottom:10,cursor:"pointer"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}><div style={{minWidth:0}}><div style={{fontSize:13,fontWeight:800,color:TX}}>{s.type}</div><div style={{fontSize:10.5,color:MU,marginTop:1}}>{s.proj} · {s.date} · {s.time}</div></div><Pill c={full?SU:WN}>{s.signed}/{s.total}</Pill></div><div style={{marginTop:11}}><Bar pct={Math.round(s.signed/s.total*100)} c={full?SU:WN}/></div></button>);})}{list.length===0&&<Empty/>}</div></div>);};
+    <div style={{padding:"12px 14px 26px"}}><button onClick={()=>setScr({t:"attendance"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}><span style={{width:8,height:8,borderRadius:4,background:SU}}/> Live Attendance — crew IN / OUT</button>{hasF("payroll")&&<button onClick={()=>setScr({t:"payroll"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}>$ Payroll register — hours & wages</button>}{hasF("expenses")&&<button onClick={()=>setScr({t:"expenses"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}>▤ Expense tracker — job costs</button>}{hasF("dailylog")&&<button onClick={()=>setScr({t:"dailylog"})} style={{...glass,width:"100%",borderRadius:14,padding:"13px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:AC,fontWeight:800,fontSize:12.5,border:"1px dashed "+AC+"66"}}>▦ Daily log — project notes</button>}{list.map(s=>{const full=s.signed===s.total;return(<button key={s.id} onClick={()=>setScr({t:"signin",id:s.id})} style={{...glass,width:"100%",textAlign:"left",borderRadius:16,padding:13,marginBottom:10,cursor:"pointer"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}><div style={{minWidth:0}}><div style={{fontSize:13,fontWeight:800,color:TX}}>{s.type}</div><div style={{fontSize:10.5,color:MU,marginTop:1}}>{s.proj} · {s.date} · {s.time}</div></div><Pill c={full?SU:WN}>{s.signed}/{s.total}</Pill></div><div style={{marginTop:11}}><Bar pct={Math.round(s.signed/s.total*100)} c={full?SU:WN}/></div></button>);})}{list.length===0&&<Empty/>}</div></div>);};
   const SignInDetail=({s})=>{const roster=CREW.slice(0,s.total);const times=["06:31","06:32","06:33","06:34","06:35","06:36","06:38","06:40"];return(<Screen title={s.type} sub={s.proj+" · "+s.date}>
     <div style={{...glass,borderRadius:14,padding:"12px 14px",marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:9,color:MU,fontFamily:MONO,letterSpacing:1}}>ATTENDANCE</div><div style={{fontSize:18,fontWeight:800,color:s.signed===s.total?SU:WN}}>{s.signed} of {s.total} signed</div></div>{s.signed<s.total&&<button onClick={()=>show("Reminder sent to "+(s.total-s.signed)+" workers")} style={{background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"9px 12px",fontSize:10.5,fontWeight:800,cursor:"pointer"}}>REMIND MISSING</button>}</div>
     {roster.map((w,i)=>{const ok=i<s.signed;return(<div key={i} style={{...glass,border:"1px solid "+(ok?HL:WN+"44"),borderRadius:12,padding:"10px 12px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}><div style={{width:32,height:32,borderRadius:16,background:(ok?AC:WN)+"22",border:"1.5px solid "+(ok?AC:WN),display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:ok?AC:WN}}>{ok?"✓":"!"}</div><div style={{flex:1,minWidth:0}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{w.n}</div><div style={{fontSize:10,color:MU}}>{w.r} · {ok?"Signed "+times[i]:"Not signed"}</div></div>{ok?<div style={{background:"#fff",borderRadius:7,padding:"2px 4px"}}><Sig i={i}/></div>:<button onClick={()=>show("Reminder sent to "+w.n)} style={{background:"none",border:"1px solid "+WN+"66",color:WN,borderRadius:8,padding:"6px 10px",fontSize:9.5,fontWeight:800,cursor:"pointer"}}>REMIND</button>}</div>);})}
@@ -1258,7 +1268,7 @@ export default function App(){
       <div style={{padding:"14px 14px 4px"}}>
         <div style={{display:"flex",gap:8,marginBottom:14}}>
           <button onClick={()=>setView("lookahead")} style={seg(view==="lookahead")}>6-WEEK LOOK-AHEAD</button>
-          <button onClick={()=>setView("subs")} style={seg(view==="subs")}>SUBCONTRACTORS</button>
+          {hasF("subcontractors")&&<button onClick={()=>setView("subs")} style={seg(view==="subs")}>SUBCONTRACTORS</button>}
         </div>
         {view==="lookahead"&&<Field label="Project"><Sel v={schedProj} set={setSchedProj} opts={PNAMES}/></Field>}
       </div>
@@ -1814,9 +1824,9 @@ export default function App(){
     else if(scr.t==="forms")body=<FormsHub/>;
     else if(scr.t==="form"){const C=FORMC[scr.id];body=<C/>;}
   }
-  if(!body) body = tab==="projects"?<Projects/>:tab==="signins"?<SignIns/>:tab==="talks"?<Talks/>:tab==="insp"?<Insps/>:tab==="schedule"?<Scheduler/>:<FormsHub/>;
+  if(!body) body = tab==="projects"?<Projects/>:tab==="signins"?<SignIns/>:tab==="talks"?<Talks/>:tab==="insp"?<Insps/>:tab==="schedule"?(hasF("scheduler")?<Scheduler/>:<Locked name="Scheduler"/>):<FormsHub/>;
 
-  const nav=[["projects","Projects","M3 7h18v13H3zM3 7l3-3h5l2 3"],["signins","Sign-Ins","M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"],["talks","Talks","M4 5h16v11H8l-4 4z"],["insp","Inspect","M9 11l3 3 8-8M4 12v7h16"],["schedule","Schedule","M4 5h16v16H4zM4 9h16M8 3v4M16 3v4"],["forms","Forms","M6 3h9l4 4v14H6zM9 12h6M9 16h4"]];
+  const nav=[["projects","Projects","M3 7h18v13H3zM3 7l3-3h5l2 3"],["signins","Sign-Ins","M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"],["talks","Talks","M4 5h16v11H8l-4 4z"],["insp","Inspect","M9 11l3 3 8-8M4 12v7h16"],["schedule","Schedule","M4 5h16v16H4zM4 9h16M8 3v4M16 3v4"],["forms","Forms","M6 3h9l4 4v14H6zM9 12h6M9 16h4"]].filter(n=>n[0]!=="schedule"||hasF("scheduler"));
   return (
     <div style={{maxWidth:430,margin:"0 auto",minHeight:"100vh",background:BG0,fontFamily:SANS,color:TX,position:"relative",paddingBottom:70}}>
       {body}

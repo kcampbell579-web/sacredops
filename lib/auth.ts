@@ -140,6 +140,21 @@ export async function requireAdmin(): Promise<SessionUser | null> {
   return user && user.role === "ADMIN" ? user : null;
 }
 
+// Platform-owner gate. Set OWNER_EMAILS in the environment (comma-separated).
+// Fails closed: if unset, nobody is an owner. Returns the session user or null.
+export async function requireOwner(): Promise<SessionUser | null> {
+  const owners = (process.env.OWNER_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (!owners.length) return null;
+  const user = await getSessionUser();
+  if (!user) return null;
+  const row = await prisma.user.findUnique({ where: { id: user.id } });
+  const email = row?.email?.toLowerCase();
+  return email && owners.includes(email) ? user : null;
+}
+
 export async function destroySession(): Promise<void> {
   const jar = await cookies();
   const token = jar.get(COOKIE)?.value;

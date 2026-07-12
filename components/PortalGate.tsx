@@ -28,6 +28,11 @@ export default function PortalGate({ children }: { children: React.ReactNode }) 
         return;
       }
 
+      // Expose the company's effective feature flags so the portals can hide
+      // any module the company's plan doesn't include.
+      (window as unknown as { __sacredFeatures?: Record<string, boolean> }).__sacredFeatures =
+        (user as { features?: Record<string, boolean> }).features || {};
+
       // 2) Hydrate this company's data, then enable write-through.
       if (alive) setMessage("SYNCING SACREDOPS…");
       await hydrate();

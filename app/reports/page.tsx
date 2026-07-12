@@ -174,6 +174,7 @@ export default function ReportsPage() {
   const [filter, setFilter] = useState("");
   const [projectList, setProjectList] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [locked, setLocked] = useState(false);
   // Monotonic request id so a slow earlier fetch can't overwrite a newer one.
   const reqSeq = useRef(0);
 
@@ -185,6 +186,11 @@ export default function ReportsPage() {
         const user = me.ok ? (await me.json()).user : null;
         if (!user) {
           window.location.href = "/login?next=%2Freports";
+          return;
+        }
+        // Reports is a premium module — gate by the company's plan.
+        if (user.features && user.features.reports === false) {
+          setLocked(true);
           return;
         }
       } catch {
@@ -222,6 +228,20 @@ export default function ReportsPage() {
     fontFamily: SANS,
     padding: "22px 18px 60px",
   };
+
+  if (locked) {
+    return (
+      <main style={{ ...wrap, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ maxWidth: 340, textAlign: "center" }}>
+          <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 8 }}>Reports is a premium module</div>
+          <p style={{ color: MU, fontSize: 13, lineHeight: 1.55 }}>
+            Your plan doesn&apos;t include the Reports Dashboard. Ask your SacredOps rep to add it.
+          </p>
+          <Link href="/" style={{ color: AC, fontWeight: 700, textDecoration: "none", fontSize: 13 }}>← Back home</Link>
+        </div>
+      </main>
+    );
+  }
 
   if (!data) {
     return (
