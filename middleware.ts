@@ -32,6 +32,14 @@ export function middleware(req: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+  // demo.sacredops.app → the tab-less demo signup (company code + name + email
+  // + password), so prospects sign up like a real company and become leads.
+  if (sub === "demo") {
+    url.pathname = "/login";
+    url.searchParams.set("mode", "demo");
+    return NextResponse.rewrite(url);
+  }
+
   if (!RESERVED.has(sub)) {
     url.pathname = "/login";
     url.searchParams.set("company", sub);
