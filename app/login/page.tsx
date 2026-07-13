@@ -343,7 +343,7 @@ export default function LoginPage() {
                 </p>
                 {field("joinCode", "Demo company code", { placeholder: "SACR-OPS1-DEMO" })}
                 {field("name", "Your name", { placeholder: "Kelly McClure" })}
-                {field("email", "Work email", { type: "email", placeholder: "you@company.com" })}
+                {field("email", "Email", { type: "email", placeholder: "you@company.com" })}
                 {field("password", "Create a password (8+ characters)", { type: "password", placeholder: "••••••••" })}
               </>
             )}
