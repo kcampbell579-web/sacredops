@@ -51,6 +51,9 @@ export default function LoginPage() {
     const isWorkerHost = hostSub === "worker" || hostSub === "workers";
     const wo = isWorkerHost || params.get("worker") === "1";
     setWorkerOnly(wo);
+    // demo.sacredops.app serves this page via a rewrite, so window.location keeps
+    // the "/" URL and never carries ?mode=demo — detect the demo host directly.
+    const isDemoHost = hostSub === "demo";
 
     // Company subdomain: ?company=acme, or a non-reserved host subdomain.
     const slug = params.get("company") || (hostSub && !RESERVED.includes(hostSub) ? hostSub : "");
@@ -75,9 +78,10 @@ export default function LoginPage() {
 
     const m = params.get("mode");
     if (m === "signup" || m === "supervisor" || m === "worker" || m === "solo" || m === "demo") setMode(m as Mode);
+    else if (isDemoHost) setMode("demo");
     else if (wo) setMode("solo");
     // Demo signup: prefill the demo company code.
-    if (m === "demo") setF((o) => ({ ...o, joinCode: params.get("code") || "SACR-OPS1-DEMO" }));
+    if (m === "demo" || isDemoHost) setF((o) => ({ ...o, joinCode: params.get("code") || "SACR-OPS1-DEMO" }));
   }, []);
 
   // After signup, kick off Stripe checkout for the chosen plan (or fall through).
