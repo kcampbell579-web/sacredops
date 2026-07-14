@@ -136,10 +136,10 @@ async function buildLookAheadPDF({project,file,weeks,days,rows,health},onDone,on
 
 /* ================= DATA ================= */
 const CREW=[
- {n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Marcus Bell",r:"Iron Worker",l:"Local 580"},
- {n:"Diego Santos",r:"Laborer",l:"Local 79"},{n:"Tyrell Woods",r:"Operator",l:"Local 138"},
- {n:"Sam Okafor",r:"Carpenter",l:"Local 157"},{n:"Luis Ortega",r:"Laborer",l:"Local 79"},
- {n:"Frank DeLuca",r:"Iron Worker",l:"Local 580"},{n:"Andre Coleman",r:"Operator",l:"Local 138"},
+ {n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Ray Whitfield",r:"Iron Worker",l:"Local 580"},
+ {n:"Hector Morales",r:"Laborer",l:"Local 79"},{n:"Devon Pryce",r:"Operator",l:"Local 138"},
+ {n:"Nate Kowalski",r:"Carpenter",l:"Local 157"},{n:"Cesar Villanueva",r:"Laborer",l:"Local 79"},
+ {n:"Tony Marchetti",r:"Iron Worker",l:"Local 580"},{n:"Malik Freeman",r:"Operator",l:"Local 138"},
 ];
 const st=(k)=>({ok:SU,attn:WN,risk:DN}[k]);
 const PROJECTS=[
@@ -161,10 +161,10 @@ const ROSTER=[
  {id:"r6",name:"Tim Brewer",role:"Electrician",site:"Ironwood Bridge Replacement",status:"out"},
  {id:"r7",name:"Steve Park",role:"Plumber",site:"Granite Ridge Interchange",status:"in"},
  {id:"r8",name:"Luis Vega",role:"Laborer",site:"Granite Ridge Interchange",status:"in"},
- {id:"r9",name:"Andre Coleman",role:"Operator",site:"Granite Ridge Interchange",status:"in"},
+ {id:"r9",name:"Malik Freeman",role:"Operator",site:"Granite Ridge Interchange",status:"in"},
  {id:"r10",name:"Will Hoffman",role:"Ironworker",site:"Granite Ridge Interchange",status:"out"},
- {id:"r11",name:"Frank DeLuca",role:"Diver",site:"Cedar Harbor Outfall Rehab",status:"in"},
- {id:"r12",name:"Sam Okafor",role:"Carpenter",site:"Cedar Harbor Outfall Rehab",status:"in"},
+ {id:"r11",name:"Tony Marchetti",role:"Diver",site:"Cedar Harbor Outfall Rehab",status:"in"},
+ {id:"r12",name:"Nate Kowalski",role:"Carpenter",site:"Cedar Harbor Outfall Rehab",status:"in"},
  {id:"r13",name:"Nate Briggs",role:"Operator",site:"Copper Line Transit Center",status:"in"},
  {id:"r14",name:"Omar Reyes",role:"Laborer",site:"Copper Line Transit Center",status:"out"},
 ];
@@ -272,9 +272,9 @@ const ORI=[
 const SUBKEY="sacredops_submissions";
 function loadSubs(){try{return JSON.parse(window.localStorage.getItem(SUBKEY))||[];}catch(e){return (window.__subs||[]);}}
 const SEED_SUBS=[
- {id:"seed1",project:"Ironwood Bridge Replacement",formTitle:"Hot Work Permit",worker:"John Rivera",date:"Jun 18, 2026",spec:{file:"HotWorkPermit.pdf",title:"Hot Work Permit",meta:[["Project","Ironwood Bridge Replacement"],["Type","Contractor"],["Date","Jun 18, 2026"],["Location","Pier 4 deck — east"],["Hot work by","John Rivera"],["Fire watch","Marcus Bell"]],sections:[{h:"Requirements within 35 ft",checks:[["Extinguishers in service & operable",true],["Flammables & oily deposits removed",true],["Wall & floor openings covered",true]]},{h:"Fire watch & monitoring",checks:[["Fire watch assigned only to watch",true],["Fire watch has extinguisher & hose",true]]}],sigs:[{role:"Authorizing supervisor",name:"John Rivera",date:"Jun 18, 2026"}]}},
- {id:"seed2",project:"Granite Ridge Interchange",formTitle:"Heavy Equipment Daily Checklist",worker:"Tyrell Woods",date:"Jun 18, 2026",spec:{file:"HeavyEquipmentChecklist.pdf",title:"Heavy Equipment Daily Checklist",meta:[["Project","Granite Ridge Interchange"],["Date","Jun 18, 2026"],["Inspector","Tyrell Woods"],["Serial no.","CAT-336-0492"],["Equipment","Excavator / Payloader"]],sections:[{h:"Safety equipment",yn:[["Back-up alarms & lights functional","Y"],["No leaks","Y"],["Brakes functional","Y"],["Fire extinguisher present","Y"],["First aid kit present","Y"]]},{h:"Excavator / Payloader",yn:[["Digging assembly inspected & functional","Y"],["Attachment secured","Y"],["Instruments calibrated & tested","N"]]}],sigs:[{role:"Inspector",name:"Tyrell Woods",date:"Jun 18, 2026"}]}},
- {id:"seed3",project:"Copper Line Transit Center",formTitle:"Site Safety Orientation",worker:"Sam Okafor",date:"Jun 17, 2026",spec:{file:"SiteSafetyOrientation.pdf",title:"Site Safety Orientation — Acknowledgment",meta:[["Project","Copper Line Transit Center"],["Worker","Sam Okafor"],["Trade/company","Carpenter — Local 157"],["Date","Jun 17, 2026"]],sections:[{h:"Acknowledgment",text:"The worker named above has reviewed and understands all site safety topics listed and agrees to follow them while working on this project."}],sigs:[{role:"Worker",name:"Sam Okafor",date:"Jun 17, 2026"}]}},
+ {id:"seed1",project:"Ironwood Bridge Replacement",formTitle:"Hot Work Permit",worker:"John Rivera",date:"Jun 18, 2026",spec:{file:"HotWorkPermit.pdf",title:"Hot Work Permit",meta:[["Project","Ironwood Bridge Replacement"],["Type","Contractor"],["Date","Jun 18, 2026"],["Location","Pier 4 deck — east"],["Hot work by","John Rivera"],["Fire watch","Ray Whitfield"]],sections:[{h:"Requirements within 35 ft",checks:[["Extinguishers in service & operable",true],["Flammables & oily deposits removed",true],["Wall & floor openings covered",true]]},{h:"Fire watch & monitoring",checks:[["Fire watch assigned only to watch",true],["Fire watch has extinguisher & hose",true]]}],sigs:[{role:"Authorizing supervisor",name:"John Rivera",date:"Jun 18, 2026"}]}},
+ {id:"seed2",project:"Granite Ridge Interchange",formTitle:"Heavy Equipment Daily Checklist",worker:"Devon Pryce",date:"Jun 18, 2026",spec:{file:"HeavyEquipmentChecklist.pdf",title:"Heavy Equipment Daily Checklist",meta:[["Project","Granite Ridge Interchange"],["Date","Jun 18, 2026"],["Inspector","Devon Pryce"],["Serial no.","CAT-336-0492"],["Equipment","Excavator / Payloader"]],sections:[{h:"Safety equipment",yn:[["Back-up alarms & lights functional","Y"],["No leaks","Y"],["Brakes functional","Y"],["Fire extinguisher present","Y"],["First aid kit present","Y"]]},{h:"Excavator / Payloader",yn:[["Digging assembly inspected & functional","Y"],["Attachment secured","Y"],["Instruments calibrated & tested","N"]]}],sigs:[{role:"Inspector",name:"Devon Pryce",date:"Jun 18, 2026"}]}},
+ {id:"seed3",project:"Copper Line Transit Center",formTitle:"Site Safety Orientation",worker:"Nate Kowalski",date:"Jun 17, 2026",spec:{file:"SiteSafetyOrientation.pdf",title:"Site Safety Orientation — Acknowledgment",meta:[["Project","Copper Line Transit Center"],["Worker","Nate Kowalski"],["Trade/company","Carpenter — Local 157"],["Date","Jun 17, 2026"]],sections:[{h:"Acknowledgment",text:"The worker named above has reviewed and understands all site safety topics listed and agrees to follow them while working on this project."}],sigs:[{role:"Worker",name:"Nate Kowalski",date:"Jun 17, 2026"}]}},
 ];
 const subCount=(n)=>[...loadSubs(),...SEED_SUBS].filter(x=>x.project===n).length;
 const INCKEY="sacredops_incidents";
@@ -367,13 +367,13 @@ function QR({text,size=92}){const[u,setU]=useState(null);const d=useRef(false);i
 
 const PAYWORKERS=[
  {name:"John Rivera",union:"Local 361",cls:"Foreman",rate:58.50,fringe:38.00},
- {name:"Marcus Bell",union:"Local 580",cls:"Ironworker (JW)",rate:52.25,fringe:41.50},
- {name:"Diego Santos",union:"Local 79",cls:"Laborer",rate:41.10,fringe:29.75},
- {name:"Tyrell Woods",union:"Local 138",cls:"Operator",rate:55.75,fringe:39.25},
- {name:"Sam Okafor",union:"Local 157",cls:"Carpenter",rate:49.80,fringe:34.60},
- {name:"Luis Ortega",union:"Local 79",cls:"Laborer",rate:41.10,fringe:29.75},
- {name:"Frank DeLuca",union:"Local 580",cls:"Ironworker (JW)",rate:52.25,fringe:41.50},
- {name:"Andre Coleman",union:"Local 138",cls:"Operator",rate:55.75,fringe:39.25},
+ {name:"Ray Whitfield",union:"Local 580",cls:"Ironworker (JW)",rate:52.25,fringe:41.50},
+ {name:"Hector Morales",union:"Local 79",cls:"Laborer",rate:41.10,fringe:29.75},
+ {name:"Devon Pryce",union:"Local 138",cls:"Operator",rate:55.75,fringe:39.25},
+ {name:"Nate Kowalski",union:"Local 157",cls:"Carpenter",rate:49.80,fringe:34.60},
+ {name:"Cesar Villanueva",union:"Local 79",cls:"Laborer",rate:41.10,fringe:29.75},
+ {name:"Tony Marchetti",union:"Local 580",cls:"Ironworker (JW)",rate:52.25,fringe:41.50},
+ {name:"Malik Freeman",union:"Local 138",cls:"Operator",rate:55.75,fringe:39.25},
 ];
 const PKEY="sacredops_pay";
 function loadPay(){try{const v=window.localStorage.getItem(PKEY);return v?JSON.parse(v):{};}catch(e){return (window.__pay||{});}}
@@ -476,7 +476,7 @@ const OSHA=[
   {id:"ghs",t:"GHS / HazCom Compliance",tag:"Hazard communication",body:["Hazardous chemicals must be labeled with GHS pictograms, signal words, and hazard statements.","A Safety Data Sheet must be available for every hazardous chemical on site — see the SDS Library.","Workers must be trained on labels, pictograms, and reading an SDS."]},
   {id:"bbp",t:"First-Aid & Bloodborne Pathogens",tag:"29 CFR 1910.1030",body:["Know where first-aid supplies and the nearest medical facility are located.","Treat all blood and bodily fluids as potentially infectious — use gloves and barrier protection.","Report any exposure incident to your supervisor immediately for follow-up care."]},
 ];
-const WORKERS=[{n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Marcus Bell",r:"Iron Worker",l:"Local 580"},{n:"Diego Santos",r:"Laborer",l:"Local 79"},{n:"Tyrell Woods",r:"Operator",l:"Local 138"},{n:"Sam Okafor",r:"Carpenter",l:"Local 157"}];
+const WORKERS=[{n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Ray Whitfield",r:"Iron Worker",l:"Local 580"},{n:"Hector Morales",r:"Laborer",l:"Local 79"},{n:"Devon Pryce",r:"Operator",l:"Local 138"},{n:"Nate Kowalski",r:"Carpenter",l:"Local 157"}];
 const SIGC={warn:WN,danger:DN,ok:SU};
 function Picto({kind}){
   const label={excl:"Irritant",health:"Health hazard",corr:"Corrosive",env:"Environment",flame:"Flammable"}[kind]||"";
@@ -532,7 +532,7 @@ function saveReminders(a){try{window.localStorage.setItem(REMKEY,JSON.stringify(
 const TODOKEY="sacredops_worker_todos";
 const SEED_TODOS=[
  {id:"t1",worker:"John Rivera",text:"Re-tag Pier 4 scaffold after this morning's flag",pri:"High",project:"Ironwood Bridge Replacement",done:false,by:"Kelly"},
- {id:"t2",worker:"Marcus Bell",text:"Pick up replacement harness from the trailer",pri:"Medium",project:"Ironwood Bridge Replacement",done:false,by:"Kelly"},
+ {id:"t2",worker:"Ray Whitfield",text:"Pick up replacement harness from the trailer",pri:"Medium",project:"Ironwood Bridge Replacement",done:false,by:"Kelly"},
 ];
 function loadTodos(){try{const v=window.localStorage.getItem(TODOKEY);return v?JSON.parse(v):SEED_TODOS;}catch(e){return (window.__todos||SEED_TODOS);}}
 function saveTodos(a){try{window.localStorage.setItem(TODOKEY,JSON.stringify(a));}catch(e){window.__todos=a;}}

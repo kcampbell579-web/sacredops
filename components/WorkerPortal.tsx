@@ -148,7 +148,7 @@ const OSHA=[
   {id:"ghs",t:"GHS / HazCom Compliance",tag:"Hazard communication",body:["Hazardous chemicals must be labeled with GHS pictograms, signal words, and hazard statements.","A Safety Data Sheet must be available for every hazardous chemical on site — see the SDS Library.","Workers must be trained on labels, pictograms, and reading an SDS."]},
   {id:"bbp",t:"First-Aid & Bloodborne Pathogens",tag:"29 CFR 1910.1030",body:["Know where first-aid supplies and the nearest medical facility are located.","Treat all blood and bodily fluids as potentially infectious — use gloves and barrier protection.","Report any exposure incident to your supervisor immediately for follow-up care."]},
 ];
-const WORKERS=[{n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Marcus Bell",r:"Iron Worker",l:"Local 580"},{n:"Diego Santos",r:"Laborer",l:"Local 79"},{n:"Tyrell Woods",r:"Operator",l:"Local 138"},{n:"Sam Okafor",r:"Carpenter",l:"Local 157"}];
+const WORKERS=[{n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Ray Whitfield",r:"Iron Worker",l:"Local 580"},{n:"Hector Morales",r:"Laborer",l:"Local 79"},{n:"Devon Pryce",r:"Operator",l:"Local 138"},{n:"Nate Kowalski",r:"Carpenter",l:"Local 157"}];
 
 const SIGC={warn:WN,danger:DN,ok:SU};
 
