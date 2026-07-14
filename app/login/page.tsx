@@ -34,6 +34,8 @@ export default function LoginPage() {
   const [createdCode, setCreatedCode] = useState<string | null>(null);
   // On worker.sacredops.app we show a worker-only sign-up (no demo, no company).
   const [workerOnly, setWorkerOnly] = useState(false);
+  // On demo.sacredops.app we default to the demo sign-up but let people log in too.
+  const [demoHost, setDemoHost] = useState(false);
   // On acme.sacredops.app the login is scoped to that company (crew skip the code).
   const [companySlug, setCompanySlug] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export default function LoginPage() {
     // demo.sacredops.app serves this page via a rewrite, so window.location keeps
     // the "/" URL and never carries ?mode=demo — detect the demo host directly.
     const isDemoHost = hostSub === "demo";
+    setDemoHost(isDemoHost);
 
     // Company subdomain: ?company=acme, or a non-reserved host subdomain.
     const slug = params.get("company") || (hostSub && !RESERVED.includes(hostSub) ? hostSub : "");
@@ -278,7 +281,7 @@ export default function LoginPage() {
                 : "Log in to your company."}
             </p>
 
-            {mode !== "demo" && (
+            {mode !== "demo" && !demoHost && (
             <div style={{ display: "flex", gap: 7, marginBottom: 18, flexWrap: "wrap" }}>
               {companyName ? (
                 <>
@@ -318,7 +321,7 @@ export default function LoginPage() {
             {mode === "signup" && (
               <>
                 {field("companyName", "Company name", { placeholder: "Acme Construction" })}
-                {field("name", "Your name", { placeholder: "Kelly McClure" })}
+                {field("name", "Your name", { placeholder: "Your full name" })}
                 {field("email", "Email", { type: "email", placeholder: "you@company.com" })}
                 {field("phone", "Phone number", { type: "tel", inputMode: "tel", placeholder: "(555) 123-4567" })}
                 {field("password", "Password (8+ characters)", { type: "password", placeholder: "••••••••" })}
@@ -342,7 +345,7 @@ export default function LoginPage() {
                   reports. Takes 20 seconds.
                 </p>
                 {field("joinCode", "Demo company code", { placeholder: "SACR-OPS1-DEMO" })}
-                {field("name", "Your name", { placeholder: "Kelly McClure" })}
+                {field("name", "Your name", { placeholder: "Your full name" })}
                 {field("email", "Email", { type: "email", placeholder: "you@company.com" })}
                 {field("password", "Create a password (8+ characters)", { type: "password", placeholder: "••••••••" })}
               </>
@@ -372,6 +375,32 @@ export default function LoginPage() {
             >
               {busy ? "…" : mode === "worker" ? "JOIN / LOG IN" : mode === "supervisor" ? "LOG IN" : mode === "solo" ? "CREATE MY PORTAL" : mode === "demo" ? "EXPLORE THE DEMO →" : "CREATE COMPANY"}
             </button>
+
+            {demoHost && (
+              <div style={{ textAlign: "center", marginTop: 16, fontSize: 12.5, color: MU }}>
+                {mode === "demo" ? (
+                  <>
+                    Already have an account?{" "}
+                    <button
+                      onClick={() => { setMode("supervisor"); setError(""); }}
+                      style={{ background: "none", border: "none", color: AC, fontWeight: 800, fontSize: 12.5, cursor: "pointer", padding: 0 }}
+                    >
+                      Log in
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    New here?{" "}
+                    <button
+                      onClick={() => { setMode("demo"); setError(""); }}
+                      style={{ background: "none", border: "none", color: AC, fontWeight: 800, fontSize: 12.5, cursor: "pointer", padding: 0 }}
+                    >
+                      Sign up for the demo
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>
