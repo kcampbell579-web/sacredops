@@ -172,6 +172,7 @@ async function buildPDF({file,title,meta,sections,sigs},onDone,onErr){
     (sec.checks||[]).forEach(c=>{ensure(15);const on=!!c[1];d.setFont("helvetica","bold");d.setFontSize(11);if(on){d.setTextColor(4,164,102);}else{d.setTextColor(150,150,150);}d.text(on?"[x]":"[  ]",M,y);d.setTextColor(20,20,20);d.setFont("helvetica","normal");d.setFontSize(10);const t=d.splitTextToSize(c[0],W-M-46);d.text(t,M+26,y);y+=Math.max(14,t.length*12);});
     (sec.yn||[]).forEach(c=>{ensure(15);d.setFont("helvetica","normal");d.setFontSize(10);d.setTextColor(20,20,20);const t=d.splitTextToSize(c[0],W-M-70);d.text(t,M,y);const v=c[1]||"\u2014";d.setFont("helvetica","bold");if(v==="Y"){d.setTextColor(4,164,102);}else if(v==="N"){d.setTextColor(200,40,40);}else{d.setTextColor(120,120,120);}d.text(v,W-M-24,y,{align:"right"});y+=Math.max(14,t.length*12);});
     if(sec.text){ensure(18);d.setFont("helvetica","normal");d.setFontSize(10);d.setTextColor(20,20,20);const t=d.splitTextToSize(sec.text,W-2*M);ensure(t.length*12);d.text(t,M,y);y+=t.length*12+4;}
+    if(sec.img){const iw=sec.imgW||130,ih=sec.imgH||280;ensure(ih+8);try{d.addImage(sec.img,"PNG",M,y,iw,ih);}catch(e){}if(sec.imgCaption){d.setFont("helvetica","normal");d.setFontSize(8.5);d.setTextColor(110,110,110);d.text(String(sec.imgCaption),M+iw+14,y+14);}y+=ih+8;}
   });
   if(sigs&&sigs.length){y+=12;sigs.forEach(s=>{ensure(78);d.setFont("helvetica","bold");d.setFontSize(9);d.setTextColor(95,95,95);d.text(s.role.toUpperCase(),M,y);y+=4;if(s.img){try{d.addImage(s.img,"PNG",M,y,150,44);}catch(e){}}d.setDrawColor(160,160,160);d.setLineWidth(1);d.line(M,y+48,M+230,y+48);d.line(W-M-150,y+48,W-M,y+48);d.setFont("helvetica","normal");d.setFontSize(9);d.setTextColor(20,20,20);d.text(s.name||"",M,y+60);d.text("Date: "+(s.date||""),W-M-150,y+60);y+=78;});}
   d.save(file);onDone&&onDone();
@@ -192,6 +193,44 @@ function pushSub(sub){try{const a=loadSubs();a.unshift(sub);window.localStorage.
 const INCKEY="sacredops_incidents";
 function loadIncidents(){try{const v=window.localStorage.getItem(INCKEY);return v?JSON.parse(v):[];}catch(e){return (window.__incidents||[]);}}
 function pushIncident(rec){try{const a=loadIncidents();a.unshift(rec);window.localStorage.setItem(INCKEY,JSON.stringify(a));}catch(e){window.__incidents=[rec,...(window.__incidents||[])];}}
+// A trackable case number for workers'-comp / OSHA logs, e.g. INC-20260716-4821.
+function genTrack(){const d=new Date();const p=n=>String(n).padStart(2,"0");const r=Math.floor(1000+Math.random()*9000);return "INC-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+r;}
+// Rasterize an inline SVG (e.g. the body diagram) to a PNG data URL for the PDF.
+function svgToPng(svgEl,w,h){return new Promise(res=>{try{const xml=new XMLSerializer().serializeToString(svgEl);const url="data:image/svg+xml;base64,"+btoa(unescape(encodeURIComponent(xml)));const img=new Image();img.onload=()=>{try{const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.fillStyle="#ffffff";x.fillRect(0,0,w,h);x.drawImage(img,0,0,w,h);res(c.toDataURL("image/png"));}catch(e){res("");}};img.onerror=()=>res("");img.src=url;}catch(e){res("");}});}
+// Clickable body-map regions [key, label, cx, cy] in a 0..120 x 0..290 viewBox.
+const BODY_FRONT=[["head","Head (front)",60,26],["face","Face",60,34],["neck","Neck (front)",60,49],["chest","Chest",60,74],["abdomen","Abdomen",60,102],["l_shoulder","Left shoulder",44,57],["r_shoulder","Right shoulder",76,57],["l_arm","Left arm",32,96],["r_arm","Right arm",88,96],["l_hand","Left hand",33,136],["r_hand","Right hand",87,136],["groin","Groin",60,132],["l_thigh","Left thigh",51,176],["r_thigh","Right thigh",69,176],["l_knee","Left knee",51,210],["r_knee","Right knee",69,210],["l_shin","Left lower leg",51,238],["r_shin","Right lower leg",69,238],["l_foot","Left foot",51,264],["r_foot","Right foot",69,264]];
+const BODY_BACK=[["head_b","Head (back)",60,26],["neck_b","Neck (back)",60,49],["upper_back","Upper back",60,74],["mid_back","Mid back",60,96],["lower_back","Lower back",60,116],["l_shoulder_b","Left shoulder (back)",44,57],["r_shoulder_b","Right shoulder (back)",76,57],["l_arm_b","Left arm (back)",32,96],["r_arm_b","Right arm (back)",88,96],["l_hand_b","Left hand (back)",33,136],["r_hand_b","Right hand (back)",87,136],["l_buttock","Left buttock",51,138],["r_buttock","Right buttock",69,138],["l_ham","Left hamstring",51,176],["r_ham","Right hamstring",69,176],["l_calf","Left calf",51,226],["r_calf","Right calf",69,226],["l_heel","Left heel",51,264],["r_heel","Right heel",69,264]];
+const BODY_LABEL={};[...BODY_FRONT,...BODY_BACK].forEach(p=>{BODY_LABEL[p[0]]=p[1];});
+// Interactive body map: tap a region to mark where the injury is.
+function BodyDiagram({sel,onToggle,capRef}){
+  const[view,setView]=useState("front");
+  const ref=useRef(null);
+  if(capRef)capRef.current=()=>ref.current?svgToPng(ref.current,240,580):Promise.resolve("");
+  const parts=view==="front"?BODY_FRONT:BODY_BACK;
+  const pill=(on)=>({flex:1,padding:"8px 6px",fontSize:11,fontWeight:800,borderRadius:9,cursor:"pointer",fontFamily:MONO,letterSpacing:0.5,background:on?AC+"22":"transparent",border:"1px solid "+(on?AC:HL),color:on?AC:MU});
+  return(<div>
+    <div style={{display:"flex",gap:7,marginBottom:9}}>
+      <button onClick={()=>setView("front")} style={pill(view==="front")}>FRONT</button>
+      <button onClick={()=>setView("back")} style={pill(view==="back")}>BACK</button>
+    </div>
+    <svg ref={ref} viewBox="0 0 120 290" style={{width:"100%",maxWidth:210,display:"block",margin:"0 auto",background:"#0f1512",borderRadius:12,border:"1px solid "+HL,touchAction:"manipulation"}}>
+      <g fill="#26312b" stroke="#3a4a41" strokeWidth="1.4">
+        <circle cx="60" cy="27" r="17"/>
+        <rect x="54" y="42" width="12" height="10"/>
+        <rect x="40" y="50" width="40" height="76" rx="13"/>
+        <rect x="27" y="55" width="12" height="78" rx="6"/>
+        <rect x="81" y="55" width="12" height="78" rx="6"/>
+        <circle cx="33" cy="137" r="7"/><circle cx="87" cy="137" r="7"/>
+        <rect x="42" y="120" width="36" height="26" rx="9"/>
+        <rect x="44" y="142" width="14" height="112" rx="7"/>
+        <rect x="62" y="142" width="14" height="112" rx="7"/>
+        <ellipse cx="51" cy="266" rx="9" ry="6"/><ellipse cx="69" cy="266" rx="9" ry="6"/>
+      </g>
+      {parts.map(p=>{const on=sel.includes(p[0]);return(<circle key={p[0]} cx={p[2]} cy={p[3]} r="7.5" fill={on?"#e53935":"rgba(255,255,255,0.05)"} stroke={on?"#ff7a75":"#556b5f"} strokeWidth="1.4" style={{cursor:"pointer"}} onClick={()=>onToggle(p[0])}><title>{p[1]}</title></circle>);})}
+    </svg>
+    <div style={{fontSize:10.5,color:MU,textAlign:"center",marginTop:7}}>{sel.length?sel.map(k=>BODY_LABEL[k]||k).join(" · "):"Tap the body to mark the injury location"}</div>
+  </div>);
+}
 // Draft persists the in-progress incident form across parent re-renders (the
 // screen components are defined in render, so a re-render remounts them).
 let incidentDraft={};
@@ -773,28 +812,114 @@ export default function App(){
 
   /* ---------- incident / talks / permits ---------- */
   const Incident=()=>{
-    const[f,setF]=useState(()=>({type:"Injury / Illness",proj:myProj.name,by:"John Rivera — Foreman",...incidentDraft}));
+    const TYPES=["Injury / Illness","Near Miss","Equipment / Utility Damage","Witness Statement"];
+    const[f,setF]=useState(()=>({type:"Injury / Illness",track:genTrack(),projName:myProj.name,by:"John Rivera — Foreman",reportedWhen:new Date().toLocaleString(),...incidentDraft}));
     const s=(k,v)=>setF(o=>{const n={...o,[k]:v};incidentDraft=n;return n;});
-    const sigRef=useRef(null);
-    const submit=()=>{
-      pushIncident({
-        id:"inc"+Date.now(),source:"worker",kind:"report",
-        project:f.proj||myProj.name,type:f.type||"Injury / Illness",
-        completedBy:f.by||"",location:f.location||"",description:f.description||"",
-        signature:(sigRef.current&&sigRef.current())||"",
-        dateTime:f.when||"",date:new Date().toLocaleDateString()
-      });
-      incidentDraft={};setScr(null);show("Incident submitted to supervisor");
+    const type=f.type||"Injury / Illness";
+    const parts=f.parts||[];const cond=f.cond||{};
+    const toggleCond=(k,val)=>s("cond",{...cond,[k]:cond[k]===val?"":val});
+    const toggleBody=(k)=>s("parts",parts.includes(k)?parts.filter(x=>x!==k):[...parts,k]);
+    const byCap=useRef(null),invCap=useRef(null),witCap=useRef(null),bodyCap=useRef(null);
+    const isInj=type==="Injury / Illness",isEq=type==="Equipment / Utility Damage",isWit=type==="Witness Statement",isNear=type==="Near Miss";
+    const CONDS=["Lighting","Housekeeping","Exclusion zones established","PPE","Equipment clean & working properly","Adequate ventilation","Floors dry / free of slip hazards","Mechanical safeguards in place & working","Emergency stop switches working"];
+    const TA=(k,ph,h)=>(<textarea style={{...inp,height:h||70,resize:"none"}} value={f[k]||""} onChange={e=>s(k,e.target.value)} placeholder={ph||""}/>);
+    const IN=(k,ph)=>(<input style={inp} value={f[k]||""} onChange={e=>s(k,e.target.value)} placeholder={ph||""}/>);
+    const today=()=>new Date().toLocaleDateString();
+    const download=async()=>{
+      const partLabels=parts.map(k=>BODY_LABEL[k]||k).join(", ");
+      const bodyImg=(isInj&&bodyCap.current)?await bodyCap.current():"";
+      const secs=[];
+      secs.push({h:"Project Details",rows:[["Job / project #",f.projNo],["Project name",f.projName||myProj.name],["Superintendent",f.super],["Project manager",f.pm],["Report completed by",f.by]]});
+      secs.push({h:"General Incident Details",rows:[["How did the incident occur?",f.how],["Injuries or damage resulting",f.injuries],["Date & time of incident",f.when],["When was it reported?",f.reportedWhen],["Location on site",f.location]]});
+      if(isInj){
+        secs.push({h:"Injured Party",rows:[["Injured person",f.involved],["Body location(s)",partLabels||"—"],["Received medical attention?",f.medAttention],["Treated where?",f.medWhere],["Findings of the injury",f.findings],["Clear-to-work letter?",f.clearLetter],["Lost time (days)",f.lostTime]]});
+        if(bodyImg)secs.push({h:"Injury Location Diagram",img:bodyImg,imgW:120,imgH:280,imgCaption:partLabels});
+        if(f.involvedStmt)secs.push({h:"Involved Person Statement",text:f.involvedStmt});
+      }
+      if(isEq)secs.push({h:"Equipment / Utility Damage",rows:[["Equipment / utility damaged",f.equipDamaged],["Owner / utility company",f.equipOwner],["811 / utility locate called?",f.locate811],["Estimated cost of damage",f.estCost],["Description of damage",f.equipDesc]]});
+      if(isNear)secs.push({h:"Near Miss",rows:[["Potential severity if contact was made",f.potential],["Hazard involved",f.hazard]]});
+      if(f.witness||isWit){secs.push({h:"Witness",rows:[["Witness name",f.witness]]});if(f.witnessStmt)secs.push({h:"Witness Statement",text:f.witnessStmt});}
+      secs.push({h:"Root Cause Analysis",rows:[["Why did it happen? Underlying causes",f.why],["What could have prevented it?",f.prevent]]});
+      secs.push({h:"Preventive Measures",rows:[["Corrective actions to prevent recurrence",f.corrective],["Training / info provided to those involved",f.training]]});
+      secs.push({h:"Conditions & Environment",rows:[["Environmental conditions at time",f.envConditions]],yn:CONDS.map(c=>[c,cond[c]==="pass"?"Y":cond[c]==="fail"?"N":"—"])});
+      const sigs=[{role:"Report completed by",name:f.by||"",date:today(),img:byCap.current&&byCap.current()}];
+      if(isInj&&f.involved)sigs.push({role:"Involved person",name:f.involved,date:today(),img:invCap.current&&invCap.current()});
+      if(f.witness)sigs.push({role:"Witness",name:f.witness,date:today(),img:witCap.current&&witCap.current()});
+      const meta=[["Tracking #",f.track],["Report type",type],["Project",f.projName||myProj.name],["Date / time",f.when||"—"]];
+      const spec={file:"IncidentReport_"+String(f.track||"").replace(/[^A-Za-z0-9-]/g,"")+".pdf",title:"Incident Investigation Report",meta,sections:secs,sigs};
+      pushIncident({id:"inc"+Date.now(),source:"worker",kind:"report",track:f.track,project:f.projName||myProj.name,type,completedBy:f.by||"",location:f.location||"",description:f.how||f.injuries||"",bodyParts:partLabels,dateTime:f.when||"",date:today()});
+      try{pushSub({id:"w"+Date.now(),project:f.projName||myProj.name,formTitle:"Incident Report "+f.track,worker:"John Rivera",date:today(),spec});}catch(e){}
+      buildPDF(spec,()=>{incidentDraft={};setScr(null);show("Report "+f.track+" generated & sent");},()=>show("Need internet to build the PDF"));
     };
-    return(<Screen title="Report an Incident" sub="Injury · near-miss · hazard">
-      <Field label="Type"><Sel v={f.type} set={v=>s("type",v)} opts={["Injury / Illness","Near Miss","Hazard Observation","Property Damage"]}/></Field>
-      <Field label="Project"><Sel v={f.proj} set={v=>s("proj",v)} opts={PNAMES}/></Field>
-      <Field label="Date & time of incident"><input style={inp} type="datetime-local" value={f.when||""} onChange={e=>s("when",e.target.value)}/></Field>
-      <Field label="Location"><input style={inp} value={f.location||""} onChange={e=>s("location",e.target.value)} placeholder="Grid / area on site"/></Field>
-      <Field label="Description"><textarea style={{...inp,height:88,resize:"none"}} value={f.description||""} onChange={e=>s("description",e.target.value)} placeholder="What happened?"/></Field>
-      <Field label="Reported by"><input style={inp} value={f.by||""} onChange={e=>s("by",e.target.value)}/></Field>
-      <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"6px 0 5px",letterSpacing:1,fontFamily:MONO}}>SIGNATURE</div><SigPad/>
-      <button onClick={submit} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
+    return(<Screen title="Incident Investigation Report" sub={f.track}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:14}}>
+        {TYPES.map(t=>(<button key={t} onClick={()=>s("type",t)} style={{padding:"11px 8px",fontSize:11,fontWeight:800,borderRadius:11,cursor:"pointer",lineHeight:1.2,background:type===t?AC+"22":"transparent",border:"1px solid "+(type===t?AC:HL),color:type===t?AC:MU}}>{t}</button>))}
+      </div>
+      <div style={{...glass,borderRadius:12,padding:"10px 12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:10,color:MU,fontFamily:MONO,letterSpacing:1}}>TRACKING #</span><span style={{fontSize:13,fontWeight:800,color:AC,fontFamily:MONO}}>{f.track}</span></div>
+
+      <SecHead>Project Details</SecHead>
+      <Row2><div style={{flex:1}}><Field label="Job / project #">{IN("projNo","e.g. 24-118")}</Field></div><div style={{flex:1}}><Field label="Project name">{IN("projName","")}</Field></div></Row2>
+      <Row2><div style={{flex:1}}><Field label="Superintendent">{IN("super","")}</Field></div><div style={{flex:1}}><Field label="Project manager">{IN("pm","")}</Field></div></Row2>
+      <Field label="Report completed by">{IN("by","")}</Field>
+
+      <SecHead>General Incident Details</SecHead>
+      <Field label="How did the incident occur?">{TA("how","Describe what happened",80)}</Field>
+      <Field label="Injuries or damage resulting">{TA("injuries","")}</Field>
+      <Row2><div style={{flex:1}}><Field label="Date & time of incident"><input style={inp} type="datetime-local" value={f.when||""} onChange={e=>s("when",e.target.value)}/></Field></div><div style={{flex:1}}><Field label="Location on site">{IN("location","Grid / area")}</Field></div></Row2>
+      <Field label="When was it reported?">{IN("reportedWhen","")}</Field>
+
+      {isInj&&<>
+        <SecHead>Injured Party</SecHead>
+        <Field label="Injured person">{IN("involved","Name")}</Field>
+        <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"4px 0 7px",letterSpacing:1,fontFamily:MONO}}>WHERE IS THE INJURY?</div>
+        <BodyDiagram sel={parts} onToggle={toggleBody} capRef={bodyCap}/>
+        <div style={{height:12}}/>
+        <Field label="Received medical attention?"><Sel v={f.medAttention} set={v=>s("medAttention",v)} opts={["No","First aid on site","Yes — see below"]}/></Field>
+        <Field label="Treated where?"><Sel v={f.medWhere} set={v=>s("medWhere",v)} opts={["On site / first aid","Urgent care","Hospital / ER","None"]}/></Field>
+        <Field label="Findings of the injury">{TA("findings","Diagnosis / findings")}</Field>
+        <Row2><div style={{flex:1}}><Field label="Clear-to-work letter?"><Sel v={f.clearLetter} set={v=>s("clearLetter",v)} opts={["Pending","Yes","No","N/A"]}/></Field></div><div style={{flex:1}}><Field label="Lost time (days)">{IN("lostTime","0")}</Field></div></Row2>
+        <Field label="Involved person statement">{TA("involvedStmt","In their words…",80)}</Field>
+        <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"6px 0 5px",letterSpacing:1,fontFamily:MONO}}>INVOLVED PERSON SIGNATURE</div><SigPad capRef={invCap}/>
+      </>}
+
+      {isEq&&<>
+        <SecHead>Equipment / Utility Damage</SecHead>
+        <Field label="Equipment / utility damaged">{IN("equipDamaged","e.g. gas line, excavator")}</Field>
+        <Field label="Owner / utility company">{IN("equipOwner","")}</Field>
+        <Row2><div style={{flex:1}}><Field label="811 / locate called?"><Sel v={f.locate811} set={v=>s("locate811",v)} opts={["Yes","No","N/A"]}/></Field></div><div style={{flex:1}}><Field label="Estimated cost">{IN("estCost","$")}</Field></div></Row2>
+        <Field label="Description of damage">{TA("equipDesc","")}</Field>
+      </>}
+
+      {isNear&&<>
+        <SecHead>Near Miss</SecHead>
+        <Field label="Potential severity if contact was made"><Sel v={f.potential} set={v=>s("potential",v)} opts={["Minor","Serious","Major / life-threatening","Fatal"]}/></Field>
+        <Field label="Hazard involved">{IN("hazard","")}</Field>
+      </>}
+
+      <SecHead>Witness</SecHead>
+      <Field label="Witness name">{IN("witness","")}</Field>
+      <Field label="Witness statement">{TA("witnessStmt","What the witness saw",80)}</Field>
+      {(f.witness||isWit)&&<><div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"6px 0 5px",letterSpacing:1,fontFamily:MONO}}>WITNESS SIGNATURE</div><SigPad capRef={witCap}/></>}
+
+      <SecHead>Root Cause Analysis</SecHead>
+      <Field label="Why did it happen? Underlying causes">{TA("why","")}</Field>
+      <Field label="What could have prevented it?">{TA("prevent","")}</Field>
+
+      <SecHead>Preventive Measures</SecHead>
+      <Field label="Corrective actions to prevent recurrence">{TA("corrective","")}</Field>
+      <Field label="Training / info provided to those involved">{TA("training","")}</Field>
+
+      <SecHead>Conditions &amp; Environment</SecHead>
+      <Field label="Environmental conditions at time (lighting, floor…)">{TA("envConditions","")}</Field>
+      {CONDS.map(c=>(<div key={c} style={{...glass,borderRadius:11,padding:"9px 11px",marginBottom:7,display:"flex",alignItems:"center",gap:8}}>
+        <span style={{flex:1,fontSize:12,color:TX}}>{c}</span>
+        <button onClick={()=>toggleCond(c,"pass")} style={{fontSize:10,fontWeight:800,padding:"5px 10px",borderRadius:8,cursor:"pointer",fontFamily:MONO,background:cond[c]==="pass"?SU+"22":"transparent",border:"1px solid "+(cond[c]==="pass"?SU:HL),color:cond[c]==="pass"?SU:MU}}>PASS</button>
+        <button onClick={()=>toggleCond(c,"fail")} style={{fontSize:10,fontWeight:800,padding:"5px 10px",borderRadius:8,cursor:"pointer",fontFamily:MONO,background:cond[c]==="fail"?DN+"22":"transparent",border:"1px solid "+(cond[c]==="fail"?DN:HL),color:cond[c]==="fail"?DN:MU}}>FAIL</button>
+      </div>))}
+
+      <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"14px 0 5px",letterSpacing:1,fontFamily:MONO}}>REPORT COMPLETED BY — SIGNATURE</div><SigPad capRef={byCap}/>
+
+      <button onClick={download} style={{marginTop:18,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"15px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>GENERATE REPORT (PDF)</button>
     </Screen>);
   };
   const findTalk=(name)=>TOOLBOX_TALKS.find(t=>t.title===name);
