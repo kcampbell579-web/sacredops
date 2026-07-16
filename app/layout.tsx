@@ -23,7 +23,7 @@ export default function RootLayout({
   // Google Analytics 4. Set NEXT_PUBLIC_GA_ID (e.g. "G-XXXXXXXXXX") in Vercel
   // to turn it on — it tracks every app pageview, including the demo signup on
   // demo.sacredops.app. Filter GA by hostname to isolate demo traffic.
-  const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-EEZN8JVJFB";
 
   return (
     <html lang="en">
