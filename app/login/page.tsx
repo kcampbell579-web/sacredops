@@ -25,6 +25,18 @@ const inp: React.CSSProperties = {
 
 type Mode = "worker" | "supervisor" | "signup" | "solo" | "demo";
 
+// Fire a Google Analytics 4 event if GA is loaded (see NEXT_PUBLIC_GA_ID in
+// app/layout.tsx). Uses beacon transport so it survives the redirect. No-op
+// when GA isn't configured.
+function track(event: string, params?: Record<string, unknown>) {
+  try {
+    const g = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
+    if (g) g("event", event, params || {});
+  } catch {
+    /* analytics must never break signup */
+  }
+}
+
 export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("worker");
   const [f, setF] = useState<Record<string, string>>({});
@@ -151,6 +163,10 @@ export default function LoginPage() {
         setBusy(false);
         return;
       }
+      // Fire a Google Analytics conversion for this signup (no-op if GA is off).
+      if (mode === "demo") track("demo_signup", { method: "demo_code" });
+      else if (mode === "signup") track("sign_up", { method: "company" });
+      else if (mode === "solo") track("sign_up", { method: "worker_portal" });
       // New company: show the join code before continuing.
       if (mode === "signup" && data.joinCode) {
         setCreatedCode(data.joinCode);
