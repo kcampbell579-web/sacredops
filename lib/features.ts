@@ -51,7 +51,11 @@ export function effectiveFeatures(
   plan: string | null | undefined,
   overrides: unknown
 ): Record<string, boolean> {
-  const base = (PLANS[(plan as PlanKey)] || PLANS.starter).features;
+  // No plan set yet (free trial / demo / not-yet-billed) → full access, so
+  // prospects experience the whole product. A plan only RESTRICTS features once
+  // it's explicitly assigned (e.g. Stripe webhook sets "starter"). Per-company
+  // overrides below still win for QC / manual tuning.
+  const base = (PLANS[(plan as PlanKey)] || PLANS.enterprise).features;
   const eff: Record<string, boolean> = { ...base };
   if (overrides && typeof overrides === "object") {
     for (const [k, v] of Object.entries(overrides as Record<string, unknown>)) {
