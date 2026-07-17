@@ -241,7 +241,7 @@ export default function LoginPage() {
     >
       <div style={{ width: "100%", maxWidth: 400 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 9, background: "linear-gradient(135deg," + AC + ",#003B22)", boxShadow: "0 0 22px " + AC + "66" }} />
+          <div style={{ width: 34, height: 34, borderRadius: 9, background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 2px 12px rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 700, fontSize: 22, color: "#fff", lineHeight: 1 }}>S</span></div>
           <div style={{ fontSize: 22, fontWeight: 800 }}>
             Sacred<span style={{ color: AC }}>Ops</span>
           </div>

@@ -270,7 +270,7 @@ export default function ReportsPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, flexWrap: "wrap", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: "linear-gradient(135deg," + AC + ",#003B22)", boxShadow: "0 0 20px " + AC + "55" }} />
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 2px 10px rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 700, fontSize: 20, color: "#fff", lineHeight: 1 }}>S</span></div>
             <div>
               <div style={{ fontSize: 20, fontWeight: 800 }}>
                 Sacred<span style={{ color: AC }}>Ops</span> <span style={{ color: MU, fontWeight: 700 }}>Reports</span>

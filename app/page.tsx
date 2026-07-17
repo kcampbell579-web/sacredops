@@ -46,13 +46,19 @@ export default function Home() {
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
           <div
             style={{
-              width: 34,
-              height: 34,
+              width: 36,
+              height: 36,
               borderRadius: 9,
-              background: "linear-gradient(135deg," + AC + ",#003B22)",
-              boxShadow: "0 0 24px " + AC + "66",
+              background: "#0a0a0a",
+              border: "1px solid rgba(255,255,255,0.12)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.55)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
+          >
+            <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 700, fontSize: 23, color: "#fff", lineHeight: 1 }}>S</span>
+          </div>
           <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: 0.4 }}>
             Sacred<span style={{ color: AC }}>Ops</span>
           </div>
