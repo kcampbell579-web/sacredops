@@ -12,7 +12,11 @@ export async function GET() {
   if (!user) return Response.json({ user: null });
 
   const company = await prisma.company.findUnique({ where: { id: user.companyId } });
-  const features = effectiveFeatures(company?.plan, company?.features);
+  // Full access until there's an ACTIVE paid subscription (free trial / demo /
+  // not-yet-billed). Once they subscribe (stripeSubId set), the chosen plan's
+  // limits apply. Per-company overrides in company.features still win either way.
+  const subscribed = !!company?.stripeSubId;
+  const features = effectiveFeatures(subscribed ? company?.plan : null, company?.features);
   return Response.json({
     user: { ...user, plan: company?.plan || "starter", features },
   });
