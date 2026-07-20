@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 /* eslint-disable */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TOOLBOX_TALKS } from "./toolboxLibrary";
 
 /* ===== SacredOps — Supervisor Portal (dark industrial) ===== */
@@ -15,6 +15,10 @@ const SIGPATHS=["M2 26 C10 6 16 40 24 20 C30 6 38 34 46 16 C54 4 60 30 78 18","M
 
 /* ---- jsPDF loader (CDN) ---- */
 function loadJsPDF(){return new Promise((res,rej)=>{if(window.jspdf&&window.jspdf.jsPDF)return res(window.jspdf.jsPDF);const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";s.onload=()=>res(window.jspdf.jsPDF);s.onerror=rej;document.head.appendChild(s);});}
+// Loads the vendored QR generator (public/vendor/qrcode.min.js) once and
+// resolves with window.QRCode ({toDataURL}). Same-origin, no external CDN, so
+// equipment stickers work offline and aren't blocked by any CSP.
+function loadQRCode(){return new Promise((res,rej)=>{if(typeof window==="undefined")return rej(new Error("no window"));if(window.QRCode&&window.QRCode.toDataURL)return res(window.QRCode);const done=()=>(window.QRCode&&window.QRCode.toDataURL)?res(window.QRCode):rej(new Error("qr load failed"));const ex=document.getElementById("qrlib");if(ex){ex.addEventListener("load",done);ex.addEventListener("error",()=>rej(new Error("qr load error")));return;}const s=document.createElement("script");s.id="qrlib";s.src="/vendor/qrcode.min.js";s.onload=done;s.onerror=()=>rej(new Error("qr load error"));document.head.appendChild(s);});}
 
 function Brand({size=26}){return(<div style={{display:"flex",alignItems:"center",gap:9}}><div style={{position:"relative",width:size,height:size,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:size,height:size,borderRadius:size*0.26,background:"#0a0a0a",border:"1px solid rgba(255,255,255,0.12)",boxShadow:"0 2px 12px rgba(0,0,0,0.55)",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"Georgia,'Times New Roman',serif",fontWeight:700,fontSize:size*0.62,color:"#fff",lineHeight:1}}>S</span></div></div><div style={{fontSize:size*0.55,fontWeight:800,letterSpacing:0.4,color:TX}}>Sacred<span style={{color:AC}}>Ops</span></div></div>);}
 function Sig({i=0}){return(<svg viewBox="0 0 82 32" width="72" height="28"><path d={SIGPATHS[i%4]} fill="none" stroke="#0D0D0D" strokeWidth="2.4" strokeLinecap="round"/></svg>);}
@@ -368,7 +372,7 @@ const EQUIP=[
 const EQKEY="sacredops_equipment";
 function loadEquipOv(){try{const v=window.localStorage.getItem(EQKEY);return v?JSON.parse(v):{};}catch(e){return (window.__equipov||{});}}
 function saveEquipOv(m){try{window.localStorage.setItem(EQKEY,JSON.stringify(m));}catch(e){window.__equipov=m;}}
-function QR({text,size=92}){const[u,setU]=useState(null);const d=useRef(false);if(!d.current&&typeof window!=="undefined"&&window.QRCode){d.current=true;window.QRCode.toDataURL(text,{width:size*2,margin:1,color:{dark:"#0D0D0D",light:"#ffffff"}}).then(setU).catch(()=>{});}return u?<img src={u} width={size} height={size} alt="QR" style={{borderRadius:8,background:"#fff",display:"block"}}/>:<div style={{width:size,height:size,borderRadius:8,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#888",fontFamily:"monospace"}}>QR</div>;}
+function QR({text,size=92}){const[u,setU]=useState(null);useEffect(()=>{let on=true;loadQRCode().then(Q=>Q.toDataURL(text,{width:size*2,margin:1})).then(d=>{if(on)setU(d);}).catch(()=>{});return()=>{on=false;};},[text,size]);return u?<img src={u} width={size} height={size} alt="QR" style={{borderRadius:8,background:"#fff",display:"block"}}/>:<div style={{width:size,height:size,borderRadius:8,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#888",fontFamily:"monospace"}}>QR</div>;}
 
 const PAYWORKERS=[
  {name:"John Rivera",union:"Local 361",cls:"Foreman",rate:58.50,fringe:38.00},
@@ -565,7 +569,7 @@ export default function App(){
   const PNAMES=ALLP.map(p=>p.name);
   const[q,setQ]=useState("");const[zoom,setZoom]=useState(false);const[signed,setSigned]=useState({});
   const maps=()=>{show("Opening directions to nearest hospital");window.open("https://maps.apple.com/?q=nearest%20hospital","_blank");};
-  const sticker=(e)=>{if(!(typeof window!=="undefined"&&window.QRCode)){show("QR unavailable offline");return;}window.QRCode.toDataURL("https://sacredops.app/inspect/"+e.id,{width:600,margin:1}).then(qr=>{const c=document.createElement("canvas");c.width=600;c.height=780;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,600,780);x.fillStyle="#003B22";x.fillRect(0,0,600,90);x.fillStyle="#fff";x.font="bold 34px sans-serif";x.textAlign="center";x.fillText("SACRED OPS",300,56);const img=new Image();img.onload=()=>{x.drawImage(img,90,130,420,420);x.fillStyle="#0D0D0D";x.font="bold 30px sans-serif";x.fillText(e.type,300,610);x.fillStyle="#555";x.font="24px sans-serif";x.fillText("SN "+e.serial+"  \u00b7  "+e.id,300,648);x.fillStyle="#04A466";x.font="bold 24px sans-serif";x.fillText("SCAN TO INSPECT",300,700);const a=document.createElement("a");a.href=c.toDataURL("image/png");a.download="QR_"+e.id+".png";a.click();show("Sticker downloaded");};img.src=qr;}).catch(()=>show("Could not build sticker"));};
+  const sticker=(e)=>{loadQRCode().then(Q=>Q.toDataURL("https://sacredops.app/inspect/"+e.id,{width:600,margin:1})).then(qr=>{const c=document.createElement("canvas");c.width=600;c.height=780;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,600,780);x.fillStyle="#003B22";x.fillRect(0,0,600,90);x.fillStyle="#fff";x.font="bold 34px sans-serif";x.textAlign="center";x.fillText("SACRED OPS",300,56);const img=new Image();img.onload=()=>{x.drawImage(img,90,130,420,420);x.fillStyle="#0D0D0D";x.font="bold 30px sans-serif";x.fillText(e.type,300,610);x.fillStyle="#555";x.font="24px sans-serif";x.fillText("SN "+e.serial+"  \u00b7  "+e.id,300,648);x.fillStyle="#04A466";x.font="bold 24px sans-serif";x.fillText("SCAN TO INSPECT",300,700);const a=document.createElement("a");a.href=c.toDataURL("image/png");a.download="QR_"+e.id+".png";a.click();show("Sticker downloaded");};img.src=qr;}).catch(()=>show("Could not build sticker"));};
 
   /* ---- primitives ---- */
   const inp={width:"100%",boxSizing:"border-box",padding:"11px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid "+HL,borderRadius:11,fontSize:13,color:TX,outline:"none"};
