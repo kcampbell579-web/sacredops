@@ -12,11 +12,15 @@ export async function GET() {
   if (!user) return Response.json({ user: null });
 
   const company = await prisma.company.findUnique({ where: { id: user.companyId } });
-  // Full access until there's an ACTIVE paid subscription (free trial / demo /
-  // not-yet-billed). Once they subscribe (stripeSubId set), the chosen plan's
-  // limits apply. Per-company overrides in company.features still win either way.
+  // The demo company always shows the full product so prospects see everything.
+  const isDemo = company?.joinCode === "SACR-OPS1-DEMO";
+  // Otherwise: full access until there's an ACTIVE paid subscription (free
+  // trial / not-yet-billed). Once they subscribe (stripeSubId set), the chosen
+  // plan's limits apply. Per-company overrides in company.features still win.
   const subscribed = !!company?.stripeSubId;
-  const features = effectiveFeatures(subscribed ? company?.plan : null, company?.features);
+  const features = isDemo
+    ? effectiveFeatures("enterprise", null)
+    : effectiveFeatures(subscribed ? company?.plan : null, company?.features);
   return Response.json({
     user: { ...user, plan: company?.plan || "starter", features },
   });
