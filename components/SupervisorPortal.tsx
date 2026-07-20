@@ -161,6 +161,48 @@ const PJKEY="sacredops_custom_projects";
 function loadCustomProjects(){try{const v=window.localStorage.getItem(PJKEY);return v?JSON.parse(v):[];}catch(e){return (window.__myprojects||[]);}}
 function saveCustomProjects(a){try{window.localStorage.setItem(PJKEY,JSON.stringify(a));}catch(e){window.__myprojects=a;}}
 const PNAMES=PROJECTS.map(p=>p.name);
+/* ================= TRAINING / CERTIFICATIONS ================= */
+// Certification catalog. months = how long the card stays valid; req = every
+// worker must carry it (site basics) so a missing one counts against compliance.
+const CERTS=[
+ {id:"osha30",name:"OSHA 30-Hour Construction",short:"OSHA 30",months:60,req:true},
+ {id:"osha10",name:"OSHA 10-Hour Construction",short:"OSHA 10",months:60,req:true},
+ {id:"sst",name:"NYC SST Worker Card (40-Hr)",short:"SST 40",months:60,req:true},
+ {id:"cpr",name:"First Aid / CPR / AED",short:"CPR / AED",months:24,req:false},
+ {id:"fall",name:"Fall Protection — Competent Person",short:"Fall Prot.",months:24,req:false},
+ {id:"confined",name:"Confined Space Entry",short:"Confined Sp.",months:12,req:false},
+ {id:"lift",name:"Aerial / Scissor Lift (MEWP)",short:"MEWP Lift",months:36,req:false},
+ {id:"rigging",name:"Rigging & Signal Person",short:"Rigging",months:24,req:false},
+ {id:"silica",name:"Silica Awareness",short:"Silica",months:12,req:false},
+ {id:"flagger",name:"Work-Zone Flagger",short:"Flagger",months:24,req:false},
+];
+const CERTBY=CERTS.reduce((a,c)=>{a[c.id]=c;return a;},{});
+const TRAINKEY="sacredops_training";
+function addMonths(d,m){const x=new Date(d.getTime());x.setMonth(x.getMonth()+m);return x;}
+function fmtISO(d){return d.toISOString().slice(0,10);}
+// Deterministic demo data: gives every worker the required cards plus a
+// realistic spread of others, with a mix of valid / expiring / expired dates.
+function seedTraining(){
+ const base=new Date();const recs={};
+ CREW.forEach((w,wi)=>{CERTS.forEach((c,ci)=>{
+  const s=wi*7+ci*13;const hold=c.req||(s%4!==0);if(!hold)return;
+  const off=(s%38)-7;                       // months to expiry: -7 .. +30
+  const exp=addMonths(base,off);const iss=addMonths(exp,-c.months);
+  recs[w.n+"|"+c.id]={exp:fmtISO(exp),iss:fmtISO(iss)};
+ });});
+ return recs;
+}
+function loadTraining(){try{const v=window.localStorage.getItem(TRAINKEY);if(v)return JSON.parse(v);}catch(e){}const s=seedTraining();try{window.localStorage.setItem(TRAINKEY,JSON.stringify(s));}catch(e){window.__training=s;}return s;}
+function saveTraining(m){try{window.localStorage.setItem(TRAINKEY,JSON.stringify(m));}catch(e){window.__training=m;}}
+// valid (green) · expiring within 60 days (amber) · expired (red) · missing (grey)
+function trainStatus(expISO){
+ if(!expISO)return {k:"missing",lab:"Not on file",c:MU};
+ const exp=new Date(expISO+"T00:00:00").getTime();const now=Date.now();
+ const days=Math.round((exp-now)/86400000);
+ if(days<0)return {k:"expired",lab:"Expired",c:DN,days};
+ if(days<=60)return {k:"expiring",lab:days+"d left",c:WN,days};
+ return {k:"valid",lab:"Valid",c:SU,days};
+}
 const ROSTER=[
  {id:"r1",name:"Mike Salerno",role:"Foreman",site:"Ironwood Bridge Replacement",status:"in"},
  {id:"r2",name:"Danny Torres",role:"Ironworker",site:"Ironwood Bridge Replacement",status:"in"},
@@ -651,6 +693,7 @@ export default function App(){
       ["Report Incident",()=>setScr({t:"incident"}),"M12 3l9 16H3zM12 10v4M12 17h.01"],
       ["Hospital Route",maps,"M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11z"],
       ["Deliver Talk",()=>setScr({t:"deliverTalks"}),"M4 5h16v11H8l-4 4z"],
+      ["Training",()=>setScr({t:"training"}),"M12 14a4 4 0 100-8 4 4 0 000 8zM9 13l-1 8 4-2 4 2-1-8"],
       ["Equipment Scan",()=>setScr({t:"equipscan"}),"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3M20 14v3M17 20h3"],
       ["My Profile",()=>setScr({t:"myprofile"}),"M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0"],
       ["Call 911",()=>show("Dialing 911"),"M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.4 2.1L8.1 9.7a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.4c.9.3 1.8.5 2.7.6a2 2 0 011.9 2.1z","danger"],
@@ -1028,6 +1071,58 @@ export default function App(){
       </div>
       <div style={{display:"flex",gap:8}}><button onClick={csv} style={{flex:1,background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12,fontWeight:800,cursor:"pointer"}}>EXPORT CSV</button><button onClick={pdf} style={{flex:1,background:DG,color:TX,border:"1px solid "+HL,borderRadius:12,padding:"14px",fontSize:12,fontWeight:800,cursor:"pointer"}}>DOWNLOAD PDF</button></div>
       <div style={{...glass,borderRadius:12,padding:"12px 14px",marginTop:12,fontSize:11,color:MU,lineHeight:1.5}}>Overtime is auto-calculated at 1.5x for hours over 40. Union, class, base rate and fringe you set here appear on each worker's profile. Export CSV for payroll/accounting or PDF for records.</div>
+    </Screen>);
+  };
+
+  /* ================= TRAINING TRACKER ================= */
+  const Training=()=>{
+    const[map,setMap]=useState(()=>loadTraining());
+    const[q,setQ]=useState("");
+    const[open,setOpen]=useState(null);
+    const rec=(wn,cid)=>map[wn+"|"+cid]||null;
+    const setExp=(wn,cid,v)=>{const key=wn+"|"+cid;setMap(m=>{let nx;if(!v){nx={...m};delete nx[key];}else{const c=CERTBY[cid];const iss=c?fmtISO(addMonths(new Date(v+"T00:00:00"),-c.months)):"";nx={...m,[key]:{exp:v,iss:iss}};}saveTraining(nx);return nx;});};
+    const wState=(wn)=>{let expired=0,expiring=0,valid=0,missingReq=0,onfile=0;CERTS.forEach(c=>{const r=rec(wn,c.id);const s=trainStatus(r&&r.exp);if(r)onfile++;if(s.k==="expired")expired++;else if(s.k==="expiring")expiring++;else if(s.k==="valid")valid++;if(c.req&&(s.k==="missing"||s.k==="expired"))missingReq++;});return {expired,expiring,valid,missingReq,onfile,ok:expired===0&&missingReq===0};};
+    const states=CREW.map(w=>({w,s:wState(w.n)}));
+    const compliant=states.filter(x=>x.s.ok).length;
+    const totExpiring=states.reduce((a,x)=>a+x.s.expiring,0);
+    const totExpired=states.reduce((a,x)=>a+x.s.expired,0);
+    const totMissingReq=states.reduce((a,x)=>a+x.s.missingReq,0);
+    const shown=states.filter(x=>{const t=(q||"").toLowerCase();return !t||x.w.n.toLowerCase().includes(t)||x.w.r.toLowerCase().includes(t);});
+    const auditRows=(fn)=>{const out=[];CREW.forEach(w=>{CERTS.forEach(c=>{const r=rec(w.n,c.id);const s=trainStatus(r&&r.exp);if(!r&&!c.req)return;out.push(fn(w,c,r,s));});});return out;};
+    const csv=()=>{const R=[["Worker","Trade","Certification","Issued","Expires","Status"]];auditRows((w,c,r,s)=>R.push([w.n,w.r,c.name,r&&r.iss?r.iss:"",r&&r.exp?r.exp:"",s.k==="missing"?"Not on file":s.k==="expiring"?"Expiring soon":s.lab==="Valid"?"Valid":"Expired"]));const str=R.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");const a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(str);a.download="TrainingTracker.csv";a.click();show("Training CSV exported");};
+    const pdf=()=>buildPDF({file:"TrainingTracker.pdf",title:"Training & Certification Tracker",meta:[["Workers",CREW.length],["Fully compliant",compliant+" of "+CREW.length],["Expiring ≤60 days",totExpiring],["Expired",totExpired],["Missing required",totMissingReq],["Generated",new Date().toLocaleDateString()]],sections:[{h:"Certification status",cols:["Worker","Certification","Expires","Status"],widths:[120,150,78,90],rows:auditRows((w,c,r,s)=>[w.n,c.short,r&&r.exp?r.exp:"—",s.k==="missing"?"NOT ON FILE":s.k==="expiring"?"EXPIRING":s.k.toUpperCase()])}]},()=>show("Training PDF downloaded"),()=>show("Need internet to build PDF"));
+    return(<Screen title="Training Tracker" sub="Company-wide certifications & expirations">
+      <div style={{display:"flex",gap:7,marginBottom:14}}>
+        {[["COMPLIANT",compliant+"/"+CREW.length,compliant===CREW.length?SU:WN],["EXPIRING",totExpiring,totExpiring?WN:MU],["EXPIRED",totExpired,totExpired?DN:MU],["MISSING REQ",totMissingReq,totMissingReq?DN:MU]].map((k,i)=>(
+          <div key={i} style={{...glass,flex:1,borderRadius:14,padding:"10px 4px",textAlign:"center"}}><div style={{fontSize:18,fontWeight:800,color:k[2],lineHeight:1}}>{k[1]}</div><div style={{fontSize:6.8,fontWeight:700,color:MU,marginTop:5,fontFamily:MONO,letterSpacing:0.4}}>{k[0]}</div></div>))}
+      </div>
+      <div style={{marginBottom:12}}><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search worker or trade…" style={{width:"100%",boxSizing:"border-box",padding:"11px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid "+HL,borderRadius:11,fontSize:13,color:TX,outline:"none"}}/></div>
+      {shown.map(({w,s})=>{const isOpen=open===w.n;const attn=CERTS.filter(c=>{const st=trainStatus((rec(w.n,c.id)||{}).exp);return st.k==="expired"||st.k==="expiring"||(c.req&&st.k==="missing");});const issues=s.expired+s.missingReq;return(
+        <div key={w.n} style={{...glass,borderRadius:16,padding:12,marginBottom:10,borderLeft:"3px solid "+(s.ok?SU:issues?DN:WN)}}>
+          <div onClick={()=>setOpen(isOpen?null:w.n)} style={{display:"flex",alignItems:"center",gap:11,cursor:"pointer"}}>
+            <div style={{width:36,height:36,borderRadius:18,background:AC+"22",border:"1.5px solid "+AC,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:AC,flexShrink:0}}>{w.n.split(" ").map(x=>x[0]).join("")}</div>
+            <div style={{flex:1,minWidth:0}}><div style={{fontSize:13.5,fontWeight:800,color:TX}}>{w.n}</div><div style={{fontSize:10.5,color:MU}}>{w.r} · {w.l}</div></div>
+            <div style={{padding:"4px 9px",borderRadius:20,fontSize:8.5,fontWeight:800,fontFamily:MONO,letterSpacing:0.4,background:(s.ok?SU:DN)+"1e",color:s.ok?SU:DN,border:"1px solid "+(s.ok?SU:DN)+"55"}}>{s.ok?"COMPLIANT":issues+" ISSUE"+(issues>1?"S":"")}</div>
+          </div>
+          {!isOpen&&attn.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:10}}>
+            {attn.map(c=>{const st=trainStatus((rec(w.n,c.id)||{}).exp);return(<span key={c.id} style={{fontSize:9.5,fontWeight:700,padding:"3px 8px",borderRadius:7,background:st.c+"1e",color:st.c,border:"1px solid "+st.c+"55"}}>{c.short} · {st.lab}</span>);})}
+          </div>}
+          {!isOpen&&<div style={{fontSize:9.5,color:MU,fontFamily:MONO,marginTop:8,letterSpacing:0.3}}>{s.valid} VALID · {s.onfile}/{CERTS.length} ON FILE · TAP TO EDIT</div>}
+          {isOpen&&<div style={{marginTop:12,borderTop:"1px solid "+HL,paddingTop:11}}>
+            {CERTS.map(c=>{const r=rec(w.n,c.id);const st=trainStatus(r&&r.exp);return(
+              <div key={c.id} style={{display:"flex",alignItems:"center",gap:9,marginBottom:9}}>
+                <div style={{flex:1,minWidth:0}}><div style={{fontSize:11.5,fontWeight:700,color:TX,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}{c.req&&<span style={{color:AC,fontSize:8.5,marginLeft:5,fontFamily:MONO,fontWeight:800}}>REQ</span>}</div><div style={{fontSize:8.5,color:st.c,fontWeight:700,fontFamily:MONO,letterSpacing:0.3,marginTop:2}}>{st.lab.toUpperCase()}{r&&r.exp?" · EXP "+r.exp:""}</div></div>
+                <input type="date" value={r&&r.exp?r.exp:""} onChange={e=>setExp(w.n,c.id,e.target.value)} style={{width:140,boxSizing:"border-box",padding:"8px 9px",background:"rgba(255,255,255,0.05)",border:"1px solid "+(st.k==="expired"?DN:st.k==="expiring"?WN:HL),borderRadius:9,fontSize:11.5,color:TX,outline:"none"}}/>
+              </div>);})}
+            <div style={{fontSize:9.5,color:MU,marginTop:4,lineHeight:1.4}}>Set an expiration date to log a card; clear the date to mark it not on file.</div>
+          </div>}
+        </div>);})}
+      {shown.length===0&&<div style={{textAlign:"center",color:MU,fontSize:12,padding:20}}>No workers match that search.</div>}
+      <div style={{display:"flex",gap:8,marginTop:6}}>
+        <button onClick={csv} style={{flex:1,background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12,fontWeight:800,cursor:"pointer"}}>EXPORT CSV</button>
+        <button onClick={pdf} style={{flex:1,background:DG,color:TX,border:"1px solid "+HL,borderRadius:12,padding:"14px",fontSize:12,fontWeight:800,cursor:"pointer"}}>DOWNLOAD PDF</button>
+      </div>
+      <div style={{...glass,borderRadius:12,padding:"12px 14px",marginTop:12,fontSize:11,color:MU,lineHeight:1.5}}>Every worker's certifications in one place. <b style={{color:SU}}>Green</b> valid · <b style={{color:WN}}>amber</b> expires within 60 days · <b style={{color:DN}}>red</b> expired. Tap a worker to set or update a card's expiration. <b style={{color:AC}}>REQ</b> cards are required for every worker. Export a CSV or PDF for audits and pre-quals.</div>
     </Screen>);
   };
 
@@ -1834,6 +1929,7 @@ export default function App(){
     else if(scr.t==="deliverTalkDetail")body=<DeliverTalkDetail name={scr.name}/>;
     else if(scr.t==="myprofile")body=<MyProfile/>;
     else if(scr.t==="payroll")body=<Payroll/>;
+    else if(scr.t==="training")body=<Training/>;
     else if(scr.t==="expenses")body=<Expenses/>;
     else if(scr.t==="dailylog")body=<DailyLog/>;
     else if(scr.t==="forms")body=<FormsHub/>;
