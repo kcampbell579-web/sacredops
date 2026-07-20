@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getStripe, planForPrice } from "@/lib/stripe";
+import { sendEmail, welcomeEmailHtml } from "@/lib/email";
 import type Stripe from "stripe";
 
 export const runtime = "nodejs";
@@ -40,6 +41,19 @@ export async function POST(req: Request) {
         await setPlan(companyId, plan, {
           stripeCustomerId: (s.customer as string) || null,
           stripeSubId: (s.subscription as string) || null,
+        });
+      }
+      // Send the "subscription confirmed — how to set up your account" email to
+      // the buyer (works for marketing Payment Links too). No-op if email isn't
+      // configured (RESEND_API_KEY unset).
+      const buyerEmail =
+        s.customer_details?.email ||
+        (typeof s.customer_email === "string" ? s.customer_email : null);
+      if (buyerEmail) {
+        await sendEmail({
+          to: buyerEmail,
+          subject: "Welcome to SacredOps — set up your account",
+          html: welcomeEmailHtml(),
         });
       }
     } else if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.created") {
