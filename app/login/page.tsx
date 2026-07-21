@@ -356,10 +356,15 @@ export default function LoginPage() {
             )}
             {mode === "demo" && (
               <>
-                <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "-6px 0 14px" }}>
+                <p style={{ color: MU, fontSize: 12, lineHeight: 1.5, margin: "-6px 0 12px" }}>
                   Sign up to explore the live SacredOps demo — real projects, forms, inspections and
                   reports. Takes 20 seconds.
                 </p>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 14px", padding: "10px 12px", background: "rgba(4,164,102,0.1)", border: "1px solid " + AC + "44", borderRadius: 11 }}>
+                  <span style={{ fontSize: 11.5, color: MU }}>Use demo code:</span>
+                  <span style={{ fontFamily: MONO, fontSize: 14, fontWeight: 800, letterSpacing: 1.5, color: AC }}>SACR-OPS1-DEMO</span>
+                  <span style={{ fontSize: 10, color: MU, marginLeft: "auto", fontStyle: "italic" }}>already filled in</span>
+                </div>
                 {field("joinCode", "Demo company code", { placeholder: "SACR-OPS1-DEMO" })}
                 {field("name", "Your name", { placeholder: "Your full name" })}
                 {field("email", "Email", { type: "email", placeholder: "you@company.com" })}
