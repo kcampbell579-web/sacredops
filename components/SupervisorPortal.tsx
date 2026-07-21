@@ -599,6 +599,9 @@ export default function App(){
   const hasF=(k)=>FEAT[k]!==false;
   const[tab,setTab]=useState("projects");
   const[scr,setScr]=useState(null);
+  // Remembers the project you last opened so the Projects tab returns you to it.
+  const[lastProj,setLastProj]=useState(null);
+  const openProj=(id)=>{setLastProj(id);setScr({t:"proj",id});};
   const[toast,setToast]=useState("");
   const[filter,setFilter]=useState("All projects");
   const show=(m)=>{setToast(m);setTimeout(()=>setToast(""),2200);};
@@ -628,7 +631,7 @@ export default function App(){
   function Submit({label,onClick}){return <button onClick={onClick} style={{marginTop:18,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"15px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>{label}</button>;}
   const dl=(spec)=>buildPDF(spec,()=>{setScr({t:"forms"});show("PDF downloaded");},()=>show("Need internet to build PDF"));
 
-  function Eyebrow({children}){return(<div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}><span style={{fontSize:10,fontWeight:700,letterSpacing:2.5,color:MU,fontFamily:MONO}}>{String(children).toUpperCase()}</span><div style={{flex:1,height:1,background:HL}}/></div>);}
+  function Eyebrow({children}){const label=(Array.isArray(children)?children.join(""):String(children)).toUpperCase();return(<div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}><span style={{fontSize:10,fontWeight:700,letterSpacing:2.5,color:MU,fontFamily:MONO}}>{label}</span><div style={{flex:1,height:1,background:HL}}/></div>);}
   function Pill({c,children}){return <span style={{fontSize:8.5,fontWeight:800,letterSpacing:0.5,color:c,background:c+"22",padding:"4px 9px",borderRadius:20,fontFamily:MONO,whiteSpace:"nowrap"}}>{children}</span>;}
   function Bar({pct,c}){return <div style={{height:6,borderRadius:3,background:"rgba(255,255,255,0.08)",overflow:"hidden"}}><div style={{width:pct+"%",height:"100%",background:c,borderRadius:3}}/></div>;}
   function Metric({v,k,c}){return <div><div style={{fontSize:17,fontWeight:800,color:c||TX,lineHeight:1}}>{v}</div><div style={{fontSize:9,color:MU,fontFamily:MONO,letterSpacing:0.3,marginTop:3}}>{String(k).toUpperCase()}</div></div>;}
@@ -660,9 +663,9 @@ export default function App(){
   const ProjFilter=()=>(<div style={{display:"flex",gap:8,overflowX:"auto",padding:"14px 14px 4px"}}>{["All projects",...PNAMES].map(f=>(<button key={f} onClick={()=>setFilter(f)} style={{...glass,border:"1px solid "+(filter===f?AC:HL),background:filter===f?AC+"1e":glass.background,color:filter===f?AC:MU,borderRadius:20,padding:"7px 13px",fontSize:11,fontWeight:700,whiteSpace:"nowrap",cursor:"pointer",flexShrink:0}}>{f}</button>))}</div>);
   const inFilter=(proj)=>filter==="All projects"||proj===filter;
 
-  function Screen({title,sub,children}){return(<div>
+  function Screen({title,sub,children,onBack}){return(<div>
     <div style={{position:"sticky",top:0,zIndex:20,background:"rgba(13,13,13,0.86)",backdropFilter:"blur(12px)",borderBottom:"1px solid "+HL,padding:"13px 16px",display:"flex",alignItems:"center",gap:12}}>
-      <button onClick={()=>setScr(null)} style={{...glass,color:TX,width:32,height:32,borderRadius:11,fontSize:18,cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>‹</button>
+      <button onClick={onBack||(()=>setScr(null))} style={{...glass,color:TX,width:32,height:32,borderRadius:11,fontSize:18,cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>‹</button>
       <div style={{minWidth:0}}><div style={{fontSize:15,fontWeight:800,color:TX,lineHeight:1.2}}>{title}</div>{sub&&<div style={{fontSize:10.5,color:MU}}>{sub}</div>}</div>
     </div>
     <div style={{padding:"16px 14px 40px"}}>{children}</div>
@@ -751,7 +754,7 @@ export default function App(){
           <div style={{...glass,borderRadius:10,padding:"9px 11px",marginTop:9,fontSize:10.5,color:MU,lineHeight:1.45}}>Give the Bid / Contract # to any subcontractor joining this job — matching numbers is how their crew links into the same project.</div>
           <div style={{display:"flex",gap:8,marginTop:10}}><button onClick={addProject} style={{flex:1,background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>CREATE PROJECT</button><button onClick={()=>{setShowNewProj(false);setNpf({role:"GC"});}} style={{flex:1,background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>CANCEL</button></div>
         </div>)}
-        {ALLP.map(p=>(<button key={p.id} onClick={()=>setScr({t:"proj",id:p.id})} style={{...glass,width:"100%",textAlign:"left",borderRadius:18,padding:14,marginBottom:12,cursor:"pointer"}}>
+        {ALLP.map(p=>(<button key={p.id} onClick={()=>openProj(p.id)} style={{...glass,width:"100%",textAlign:"left",borderRadius:18,padding:14,marginBottom:12,cursor:"pointer"}}>
           <div style={{display:"flex",gap:12}}>
             <Thumb div={p.div} tag={p.role}/>
             <div style={{flex:1,minWidth:0}}>
@@ -833,9 +836,12 @@ export default function App(){
     if(talksFor[0])feed.push({c:"#F5842B",ic:"chat",title:"Toolbox talk completed",sub:talksFor[0].name+" · "+talksFor[0].att+"/"+talksFor[0].total+" signed",time:"18m ago"});
     if(inspFor[0])feed.push({c:inspFor[0].status==="pass"?SU:WN,ic:inspFor[0].status==="pass"?"check":"alert",title:"Inspection "+(inspFor[0].status==="pass"?"passed":"flagged")+" — "+inspFor[0].type,sub:inspFor[0].by,time:"28m ago"});
     if(inCrew[1])feed.push({c:SU,ic:"check",title:inCrew[1].name+" clocked in",sub:"Site access · 7:04 AM",time:"41m ago"});
-    if(formsPending)feed.push({c:AC,ic:"doc",title:formsPending+" form"+(formsPending>1?"s":"")+" submitted by crew",sub:"Tap a submission below to review",time:"1h ago"});
+    // Each crew-submitted form is its own tappable feed entry that opens its PDF.
+    subs.slice(0,4).forEach((su)=>feed.push({c:AC,ic:"doc",title:su.formTitle+" submitted",sub:su.worker+" · "+su.date,time:"tap to open",onClick:()=>buildPDF(su.spec,()=>show("PDF downloaded"),()=>show("Need internet to build PDF"))}));
+    if(subs.length>4)feed.push({c:AC,ic:"doc",title:(subs.length-4)+" more form"+(subs.length-4>1?"s":"")+" submitted",sub:"See “Submitted by crew” below",time:"1h ago"});
     feed.push({c:DN,ic:"alert",title:"Daily JHA missing",sub:"Needs submission · "+p.name,time:"1h ago"});
-    return(<Screen title={p.name} sub={p.loc+(p.div?" · "+p.div:"")}>
+    const standDown=()=>show("⛔ Safety stand-down alert sent to all crew on "+p.name);
+    return(<Screen title={p.name} sub={p.loc+(p.div?" · "+p.div:"")} onBack={()=>{setLastProj(null);setScr(null);}}>
     <div style={{position:"relative",overflow:"hidden",borderRadius:18,marginBottom:16,padding:"16px 16px 15px",background:"linear-gradient(150deg,"+ic.grad[0]+","+ic.grad[1]+")",border:"1px solid rgba(255,255,255,0.09)"}}>
       <div style={{position:"absolute",top:-40,right:-20,width:150,height:150,borderRadius:"50%",background:AC,filter:"blur(60px)",opacity:0.25}}/>
       <div style={{position:"relative"}}>
@@ -846,6 +852,13 @@ export default function App(){
         <div style={{display:"flex",gap:16,marginTop:12,fontSize:11,color:"rgba(255,255,255,0.8)",fontWeight:600}}>
           <span>🗓 {today}</span><span>⛅ 78°F</span>{p.contract&&<span style={{fontFamily:MONO,fontSize:10,color:"rgba(255,255,255,0.6)"}}>{p.contract}</span>}
         </div>
+      </div>
+    </div>
+    <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:16}}>
+      <button onClick={maps} style={{width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:13,padding:"14px",fontSize:12.5,fontWeight:800,cursor:"pointer",letterSpacing:0.3,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#04231a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11zM12 8v6M9 11h6"/></svg>HOSPITAL DIRECTIONS</button>
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={standDown} style={{flex:1,background:DN,color:"#fff",border:"none",borderRadius:13,padding:"14px 8px",fontSize:11.5,fontWeight:800,cursor:"pointer",letterSpacing:0.3,display:"flex",alignItems:"center",justifyContent:"center",gap:7}}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zM8 12h8"/></svg>STAND DOWN</button>
+        <button onClick={()=>setScr({t:"incident"})} style={{flex:1,background:WN,color:"#231a04",border:"none",borderRadius:13,padding:"14px 8px",fontSize:11.5,fontWeight:800,cursor:"pointer",letterSpacing:0.3,display:"flex",alignItems:"center",justifyContent:"center",gap:7}}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#231a04" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l9 16H3zM12 10v4M12 17h.01"/></svg>REPORT INCIDENT</button>
       </div>
     </div>
     <div style={{...glass,borderRadius:16,padding:"14px 6px",marginBottom:18,display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr"}}>
@@ -865,12 +878,16 @@ export default function App(){
     </div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><span style={{fontSize:10,fontWeight:700,letterSpacing:2.5,color:MU,fontFamily:MONO}}>OPERATIONS FEED</span><span style={{fontSize:9,color:AC,fontFamily:MONO}}>LIVE</span></div>
     <div style={{...glass,borderRadius:16,padding:"6px 14px",marginBottom:18}}>
-      {feed.map((e,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:i<feed.length-1?"1px solid "+HL:"none"}}>
+      {feed.map((e,i)=>{const Row=e.onClick?"button":"div";return(<Row key={i} onClick={e.onClick||undefined} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",width:"100%",textAlign:"left",background:"none",border:"none",borderBottom:i<feed.length-1?"1px solid "+HL:"none",cursor:e.onClick?"pointer":"default"}}>
         <div style={{width:30,height:30,borderRadius:15,background:e.c+"1e",border:"1px solid "+e.c+"55",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke={e.c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={FIC[e.ic]}/></svg></div>
         <div style={{flex:1,minWidth:0}}><div style={{fontSize:12.5,fontWeight:700,color:TX,lineHeight:1.2}}>{e.title}</div><div style={{fontSize:10.5,color:MU,marginTop:2}}>{e.sub}</div></div>
-        <span style={{fontSize:9.5,color:MU,fontFamily:MONO,flexShrink:0}}>{e.time}</span>
-      </div>))}
+        {e.onClick?<span style={{fontSize:9,fontWeight:800,color:AC,fontFamily:MONO,flexShrink:0}}>PDF ›</span>:<span style={{fontSize:9.5,color:MU,fontFamily:MONO,flexShrink:0}}>{e.time}</span>}
+      </Row>);})}
     </div>
+
+    <div style={{marginTop:8}}><Eyebrow>Submitted by crew ({subs.length})</Eyebrow></div>
+    {subs.length===0&&<div style={{fontSize:11.5,color:MU,marginBottom:10}}>No crew form submissions yet for this project.</div>}
+    {subs.map(su=>(<button key={su.id} onClick={()=>buildPDF(su.spec,()=>show("PDF downloaded"),()=>show("Need internet to build PDF"))} style={{...glass,width:"100%",textAlign:"left",borderRadius:12,padding:"11px 13px",marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",gap:11}}><div style={{width:32,height:32,borderRadius:9,background:AC+"18",border:"1px solid "+AC+"3a",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h9l4 4v14H6z"/></svg></div><div style={{flex:1,minWidth:0}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{su.formTitle}</div><div style={{fontSize:10.5,color:MU}}>{su.worker} · {su.date}</div></div><span style={{fontSize:9,fontWeight:800,color:AC,fontFamily:MONO}}>PDF ›</span></button>))}
 
     <div style={{marginTop:8}}><Eyebrow>Safety locations</Eyebrow></div>
     {SAFETY_CATS.map(([key,label,path])=>{const v=myLocs[key];return(
@@ -892,7 +909,6 @@ export default function App(){
       </div>);})}
     <div style={{...glass,borderRadius:12,padding:"11px 13px",marginBottom:8,fontSize:10.5,color:MU,lineHeight:1.5}}>Workers tap these on their project to get walking/driving directions, or see "in the vehicle" for mobile sites.</div>
 
-    {(()=>{const subs=[...loadSubs(),...SEED_SUBS].filter(x=>x.project===p.name);return(<><div style={{marginTop:8}}><Eyebrow>Submitted by crew ({subs.length})</Eyebrow></div>{subs.length===0&&<div style={{fontSize:11.5,color:MU,marginBottom:10}}>No crew form submissions yet for this project.</div>}{subs.map(su=>(<button key={su.id} onClick={()=>buildPDF(su.spec,()=>show("PDF downloaded"),()=>show("Need internet to build PDF"))} style={{...glass,width:"100%",textAlign:"left",borderRadius:12,padding:"11px 13px",marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",gap:11}}><div style={{width:32,height:32,borderRadius:9,background:AC+"18",border:"1px solid "+AC+"3a",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h9l4 4v14H6z"/></svg></div><div style={{flex:1,minWidth:0}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{su.formTitle}</div><div style={{fontSize:10.5,color:MU}}>{su.worker} · {su.date}</div></div><span style={{fontSize:9,fontWeight:800,color:AC,fontFamily:MONO}}>PDF ›</span></button>))}</>);})()}
     <div style={{marginTop:8}}><Eyebrow>Crew roster</Eyebrow></div>{CREW.slice(0,6).map((w,i)=>(<div key={i} style={{...glass,borderRadius:12,padding:"10px 12px",marginBottom:7,display:"flex",alignItems:"center",gap:11}}><div style={{width:32,height:32,borderRadius:16,background:AC+"22",border:"1.5px solid "+AC,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10.5,fontWeight:800,color:AC}}>{w.n.split(" ").map(x=>x[0]).join("")}</div><div style={{flex:1}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{w.n}</div><div style={{fontSize:10.5,color:MU}}>{w.r} · {w.l}</div></div></div>))}
   </Screen>);
   };
@@ -1943,7 +1959,7 @@ export default function App(){
       {body}
       {toast&&<div style={{position:"fixed",bottom:84,left:"50%",transform:"translateX(-50%)",background:"rgba(4,164,102,0.96)",color:"#04231a",padding:"11px 20px",borderRadius:12,fontSize:11.5,fontWeight:800,letterSpacing:0.3,boxShadow:"0 8px 30px #04a46655",zIndex:300,whiteSpace:"nowrap"}}>{toast}</div>}{zoom&&<div onClick={()=>setZoom(false)} style={{position:"fixed",inset:0,background:"#000000ee",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:12}}><img src={POSTER} alt="OSHA poster" style={{maxWidth:"100%",maxHeight:"92vh",borderRadius:8}}/></div>}
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(13,13,13,0.9)",backdropFilter:"blur(14px)",borderTop:"1px solid "+HL,display:"flex",justifyContent:"space-around",padding:"8px 0 13px",zIndex:200}}>
-        {nav.map(n=>{const on=(tab===n[0])&&(!scr||(scr.t==="forms"&&n[0]==="forms"));return(<button key={n[0]} onClick={()=>{setTab(n[0]);setScr(null);}} style={{background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"3px 4px"}}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke={on?AC:MU} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={n[2]}/></svg><span style={{fontSize:7,fontWeight:800,color:on?AC:MU,letterSpacing:0.2,fontFamily:MONO}}>{n[1].toUpperCase()}</span></button>);})}
+        {nav.map(n=>{const on=(tab===n[0])&&(!scr||(scr.t==="forms"&&n[0]==="forms")||(scr.t==="proj"&&n[0]==="projects"));return(<button key={n[0]} onClick={()=>{if(n[0]==="projects"&&lastProj){setTab("projects");setScr({t:"proj",id:lastProj});}else{setTab(n[0]);setScr(null);}}} style={{background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"3px 4px"}}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke={on?AC:MU} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={n[2]}/></svg><span style={{fontSize:7,fontWeight:800,color:on?AC:MU,letterSpacing:0.2,fontFamily:MONO}}>{n[1].toUpperCase()}</span></button>);})}
       </div>
     </div>
   );
