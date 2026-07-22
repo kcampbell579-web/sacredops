@@ -1565,6 +1565,12 @@ export default function App(){
   };
 
   /* ================= FIELD TOOLS (worker parity) ================= */
+  // SDS / OSHA document helpers (used by SdsDetail on the white sheet and by
+  // OshaDetail on the dark card via the `dark` variant).
+  function PSec({label}){return <div style={{fontSize:10,fontWeight:800,letterSpacing:1,color:"#0b6b45",textTransform:"uppercase",fontFamily:MONO,margin:"16px 0 7px"}}>{label}</div>;}
+  function PRow({children,dark}){return <div style={{fontSize:12,lineHeight:1.5,color:dark?TX:"#333",marginBottom:7,display:"flex",gap:8}}><span style={{color:dark?AC:"#0b6b45",flexShrink:0,fontWeight:800}}>•</span><span style={{flex:1}}>{children}</span></div>;}
+  function PStat({k,v}){return <div style={{flex:1,background:"#f6f8f7",border:"1px solid #e8ebe9",borderRadius:10,padding:"9px 11px"}}><div style={{fontSize:9,fontWeight:800,color:"#8a978f",letterSpacing:0.5,fontFamily:MONO,textTransform:"uppercase"}}>{k}</div><div style={{fontSize:11.5,fontWeight:700,color:"#222",marginTop:2,lineHeight:1.3}}>{v}</div></div>;}
+  function PBadge({c,k,v}){return <div style={{flex:1,border:"1px solid "+c+"44",background:c+"12",borderRadius:10,padding:"9px 6px",textAlign:"center"}}><div style={{fontSize:20,fontWeight:800,color:c,lineHeight:1}}>{v}</div><div style={{fontSize:8,fontWeight:800,color:c,letterSpacing:0.5,marginTop:3,fontFamily:MONO}}>{k}</div></div>;}
   const SdsList=()=>{
     const list=SDS.filter(s=>(s.name+s.maker).toLowerCase().includes(q.toLowerCase()));
     return(<Screen title="SDS Library" sub={SDS.length+" safety data sheets on file"}>
