@@ -62,6 +62,7 @@ async function buildPDF({file,title,meta,sections,sigs},onDone,onErr){
       ensure(16);y+=7;d.setFont("helvetica","normal");d.setFontSize(7.5);d.setTextColor(110,110,110);d.text("Risk score:  1–2 Low  ·  3–4 Moderate  ·  5–6 High  ·  7–9 Critical",M,y);y+=10;}
     if(sec.cols){ensure(24);const cols=sec.cols;const avail=W-2*M;const cw=sec.widths||cols.map(()=>avail/cols.length);d.setFillColor(24,57,43);d.rect(M,y-10,avail,17,"F");d.setTextColor(255,255,255);d.setFont("helvetica","bold");d.setFontSize(8.5);let cx=M+4;cols.forEach((c,i)=>{d.text(String(c),cx,y+1.5);cx+=cw[i];});y+=19;d.setTextColor(20,20,20);(sec.rows||[]).forEach((r,ri)=>{ensure(15);if(ri%2){d.setFillColor(244,247,245);d.rect(M,y-9,avail,14,"F");}let x2=M+4;d.setFont("helvetica",ri===sec.rows.length-1?"bold":"normal");d.setFontSize(8.5);r.forEach((cell,i)=>{const t=d.splitTextToSize(String(cell==null?"":cell),cw[i]-6);d.text(t[0]||"",x2,y);x2+=cw[i];});y+=14;});d.setDrawColor(210,210,210);d.line(M,y-1,W-M,y-1);y+=6;}
     if(sec.text){ensure(18);d.setFont("helvetica","normal");d.setFontSize(10);d.setTextColor(20,20,20);const t=d.splitTextToSize(sec.text,W-2*M);ensure(t.length*12);d.text(t,M,y);y+=t.length*12+4;}
+    if(sec.img){const iw=sec.imgW||130,ih=sec.imgH||280;ensure(ih+8);try{d.addImage(sec.img,"PNG",M,y,iw,ih);}catch(e){}if(sec.imgCaption){d.setFont("helvetica","normal");d.setFontSize(8.5);d.setTextColor(110,110,110);const cap=d.splitTextToSize(String(sec.imgCaption),W-2*M-iw-20);d.text(cap,M+iw+14,y+14);}y+=ih+8;}
     // sigrows: a signed sign-in sheet — [name/role, signed?, sigIndex] per row.
     if(sec.sigrows&&sec.sigrows.length){ensure(24);d.setFont("helvetica","bold");d.setFontSize(8);d.setTextColor(120,120,120);d.text("NAME / ROLE",M,y);d.text("SIGNATURE",W-M-150,y);y+=6;d.setDrawColor(210,210,210);d.setLineWidth(0.7);d.line(M,y,W-M,y);y+=6;
       sec.sigrows.forEach((r,ri)=>{ensure(40);const nm=String(r[0]||"");const signed=r[1]!==false&&r[1]!=null&&r[1]!=="";const idx=r[2]!=null?r[2]:ri;d.setFont("helvetica","normal");d.setFontSize(10);d.setTextColor(20,20,20);const t=d.splitTextToSize(nm,W-M-180);d.text(t[0]||"",M,y+16);const sx=W-M-150;if(signed){const img=sigDataUrl(idx);if(img){try{d.addImage(img,"PNG",sx,y-2,118,32);}catch(e){}}}d.setDrawColor(180,180,180);d.setLineWidth(0.7);d.line(sx,y+24,W-M,y+24);d.setDrawColor(238,238,238);d.setLineWidth(0.5);d.line(M,y+32,W-M,y+32);y+=38;});y+=4;}
@@ -529,6 +530,43 @@ const OSHA=[
 ];
 const WORKERS=[{n:"John Rivera",r:"Foreman",l:"Local 361"},{n:"Ray Whitfield",r:"Iron Worker",l:"Local 580"},{n:"Hector Morales",r:"Laborer",l:"Local 79"},{n:"Devon Pryce",r:"Operator",l:"Local 138"},{n:"Nate Kowalski",r:"Carpenter",l:"Local 157"}];
 const SIGC={warn:WN,danger:DN,ok:SU};
+
+/* ===== Incident report: tracking #, body-diagram map (match worker portal) ===== */
+function genTrack(){const d=new Date();const p=n=>String(n).padStart(2,"0");const r=Math.floor(1000+Math.random()*9000);return "INC-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+r;}
+// Rasterize an inline SVG (the body diagram) to a PNG data URL for the PDF.
+function svgToPng(svgEl,w,h){return new Promise(res=>{try{const xml=new XMLSerializer().serializeToString(svgEl);const url="data:image/svg+xml;base64,"+btoa(unescape(encodeURIComponent(xml)));const img=new Image();img.onload=()=>{try{const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.fillStyle="#ffffff";x.fillRect(0,0,w,h);x.drawImage(img,0,0,w,h);res(c.toDataURL("image/png"));}catch(e){res("");}};img.onerror=()=>res("");img.src=url;}catch(e){res("");}});}
+const BODY_FRONT=[["head","Head (front)",60,26],["face","Face",60,34],["neck","Neck (front)",60,49],["chest","Chest",60,74],["abdomen","Abdomen",60,102],["l_shoulder","Left shoulder",44,57],["r_shoulder","Right shoulder",76,57],["l_arm","Left arm",32,96],["r_arm","Right arm",88,96],["l_hand","Left hand",33,136],["r_hand","Right hand",87,136],["groin","Groin",60,132],["l_thigh","Left thigh",51,176],["r_thigh","Right thigh",69,176],["l_knee","Left knee",51,210],["r_knee","Right knee",69,210],["l_shin","Left lower leg",51,238],["r_shin","Right lower leg",69,238],["l_foot","Left foot",51,264],["r_foot","Right foot",69,264]];
+const BODY_BACK=[["head_b","Head (back)",60,26],["neck_b","Neck (back)",60,49],["upper_back","Upper back",60,74],["mid_back","Mid back",60,96],["lower_back","Lower back",60,116],["l_shoulder_b","Left shoulder (back)",44,57],["r_shoulder_b","Right shoulder (back)",76,57],["l_arm_b","Left arm (back)",32,96],["r_arm_b","Right arm (back)",88,96],["l_hand_b","Left hand (back)",33,136],["r_hand_b","Right hand (back)",87,136],["l_buttock","Left buttock",51,138],["r_buttock","Right buttock",69,138],["l_ham","Left hamstring",51,176],["r_ham","Right hamstring",69,176],["l_calf","Left calf",51,226],["r_calf","Right calf",69,226],["l_heel","Left heel",51,264],["r_heel","Right heel",69,264]];
+const BODY_LABEL={};[...BODY_FRONT,...BODY_BACK].forEach(p=>{BODY_LABEL[p[0]]=p[1];});
+function BodyDiagram({sel,onToggle,capRef}){
+  const[view,setView]=useState("front");
+  const ref=useRef(null);
+  if(capRef)capRef.current=()=>ref.current?svgToPng(ref.current,240,580):Promise.resolve("");
+  const parts=view==="front"?BODY_FRONT:BODY_BACK;
+  const pill=(on)=>({flex:1,padding:"8px 6px",fontSize:11,fontWeight:800,borderRadius:9,cursor:"pointer",fontFamily:MONO,letterSpacing:0.5,background:on?AC+"22":"transparent",border:"1px solid "+(on?AC:HL),color:on?AC:MU});
+  return(<div>
+    <div style={{display:"flex",gap:7,marginBottom:9}}>
+      <button onClick={()=>setView("front")} style={pill(view==="front")}>FRONT</button>
+      <button onClick={()=>setView("back")} style={pill(view==="back")}>BACK</button>
+    </div>
+    <svg ref={ref} viewBox="0 0 120 290" style={{width:"100%",maxWidth:210,display:"block",margin:"0 auto",background:"#0f1512",borderRadius:12,border:"1px solid "+HL,touchAction:"manipulation"}}>
+      <g fill="#26312b" stroke="#3a4a41" strokeWidth="1.4">
+        <circle cx="60" cy="27" r="17"/>
+        <rect x="54" y="42" width="12" height="10"/>
+        <rect x="40" y="50" width="40" height="76" rx="13"/>
+        <rect x="27" y="55" width="12" height="78" rx="6"/>
+        <rect x="81" y="55" width="12" height="78" rx="6"/>
+        <circle cx="33" cy="137" r="7"/><circle cx="87" cy="137" r="7"/>
+        <rect x="42" y="120" width="36" height="26" rx="9"/>
+        <rect x="44" y="142" width="14" height="112" rx="7"/>
+        <rect x="62" y="142" width="14" height="112" rx="7"/>
+        <ellipse cx="51" cy="266" rx="9" ry="6"/><ellipse cx="69" cy="266" rx="9" ry="6"/>
+      </g>
+      {parts.map(p=>{const on=sel.includes(p[0]);return(<circle key={p[0]} cx={p[2]} cy={p[3]} r="7.5" fill={on?"#e53935":"rgba(255,255,255,0.05)"} stroke={on?"#ff7a75":"#556b5f"} strokeWidth="1.4" style={{cursor:"pointer"}} onClick={()=>onToggle(p[0])}><title>{p[1]}</title></circle>);})}
+    </svg>
+    <div style={{fontSize:10.5,color:MU,textAlign:"center",marginTop:7}}>{sel.length?sel.map(k=>BODY_LABEL[k]||k).join(" · "):"Tap the body to mark the injury location"}</div>
+  </div>);
+}
 function Picto({kind}){
   const label={excl:"Irritant",health:"Health hazard",corr:"Corrosive",env:"Environment",flame:"Flammable"}[kind]||"";
   const glyph={
@@ -1606,7 +1644,7 @@ export default function App(){
         {s.prop65&&<><PSec label="California Prop 65"/><PRow>{s.prop65}</PRow></>}
         <div style={{marginTop:12,fontSize:10,color:"#9aa79f",fontFamily:MONO}}>REV {s.rev}</div>
       </div>
-      <button onClick={()=>show("Full PDF opened")} style={{marginTop:14,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>OPEN FULL SDS (PDF)</button>
+      <button onClick={()=>buildPDF({file:"SDS_"+s.id+".pdf",title:"Safety Data Sheet — "+s.name,meta:[["Manufacturer",s.maker],["Product / use",s.use],["Signal word",s.signal],["Appearance",s.color],["Flash point",s.flash],["Revision",s.rev]],sections:[{h:"Hazard statements",text:s.hazards.map(h=>"• "+h).join("\n")},{h:"Composition / ingredients",cols:["Component","CAS #","%"],widths:[240,150,70],rows:s.comps},{h:"First aid measures",text:Object.entries(s.aid).map(([k,v])=>k.toUpperCase()+":  "+v).join("\n")},{h:"Protective equipment",text:s.ppe},{h:"Physical & fire",text:"Appearance:  "+s.color+"\nFlash point:  "+s.flash+(s.ratings.H!=null?"\n"+s.ratings.sys+" ratings — Health "+s.ratings.H+"  ·  Flammability "+s.ratings.F+"  ·  Reactivity "+s.ratings.R:"")},{h:"Transport",text:s.transport},...(s.prop65?[{h:"California Prop 65",text:s.prop65}]:[])]},()=>show("SDS PDF downloaded"),()=>show("Need internet to build PDF"))} style={{marginTop:14,width:"100%",background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>OPEN FULL SDS (PDF)</button>
     </Screen>
   );
 
@@ -1639,32 +1677,38 @@ export default function App(){
   );
 
   const Incident=()=>{
-    const[f,setF]=useState(()=>({proj:(ALLP[0]&&ALLP[0].name)||"",completedBy:"Kelly McClure — Safety Director",...incidentDraft}));
+    const[f,setF]=useState(()=>({proj:(ALLP[0]&&ALLP[0].name)||"",type:"Injury / Illness",track:genTrack(),completedBy:"Kelly McClure — Safety Director",...incidentDraft}));
     const s=(k,v)=>setF(o=>{const n={...o,[k]:v};incidentDraft=n;return n;});
     const[cond,setCond]=useState(()=>({...incidentCondDraft}));
     const setC=(i,v)=>setCond(o=>{const n={...o,[i]:o[i]===v?"":v};incidentCondDraft=n;return n;});
-    const sigRef=useRef(null);
-    const submit=()=>{
-      const rec={
-        id:"inc"+Date.now(),source:"supervisor",kind:"investigation",
-        signature:(sigRef.current&&sigRef.current())||"",
-        project:f.proj||"",projectNumber:f.projNumber||"",type:f.type||"",
-        completedBy:f.completedBy||"",dateTime:f.dateTime||"",reportedWhen:f.reportedWhen||"",
-        medicalAttention:f.medical||"",lostTime:f.lostTime||"",
-        superintendent:f.superintendent||"",projectManager:f.pm||"",
-        howOccurred:f.how||"",injuriesDamage:f.injuries||"",
-        involvedPersons:f.involved||"",involvedStatement:f.involvedStmt||"",
-        equipmentDamaged:f.equip||"",witness1:f.wit1||"",witness1Statement:f.wit1Stmt||"",
-        treatedWhere:f.treated||"",findings:f.findings||"",clearToWork:f.clear||"",
-        whyHappened:f.why||"",couldPrevent:f.couldPrevent||"",
-        correctiveActions:f.corrective||"",trainingProvided:f.training||"",
-        envConditions:f.env||"",
-        conditions:INC_CONDITIONS.map((c,i)=>[c,cond[i]||""]),
-        date:new Date().toLocaleDateString()
-      };
-      pushIncident(rec);incidentDraft={};incidentCondDraft={};setScr(null);show("Incident report submitted");
+    const sigRef=useRef(null),bodyCap=useRef(null);
+    const parts=f.parts||[];
+    const toggleBody=(k)=>s("parts",parts.includes(k)?parts.filter(x=>x!==k):[...parts,k]);
+    const isInj=(f.type||"")==="Injury / Illness";
+    const today=()=>new Date().toLocaleDateString();
+    const submit=async()=>{
+      const partLabels=parts.map(k=>BODY_LABEL[k]||k).join(", ");
+      const bodyImg=(isInj&&bodyCap.current)?await bodyCap.current():"";
+      const secs=[];
+      secs.push({h:"Project Details",rows:[["Job / project #",f.projNumber],["Project name",f.proj],["Superintendent",f.superintendent],["Project manager",f.pm],["Report completed by",f.completedBy]]});
+      secs.push({h:"General Incident Details",rows:[["Incident type",f.type],["How did the incident occur?",f.how],["Injuries or damage resulting",f.injuries],["Date & time of incident",f.dateTime],["When was it reported?",f.reportedWhen]]});
+      secs.push({h:"Involved Party",rows:[["Involved person(s)",f.involved],["Body location(s)",partLabels||"—"],["Received medical attention?",f.medical],["Treated where?",f.treated],["Findings of the injury",f.findings],["Clear-to-work letter?",f.clear],["Lost time (days)",f.lostTime]]});
+      if(bodyImg)secs.push({h:"Injury Location Diagram",img:bodyImg,imgW:120,imgH:280,imgCaption:partLabels});
+      if(f.involvedStmt)secs.push({h:"Involved Person Statement",text:f.involvedStmt});
+      if(f.equip)secs.push({h:"Equipment / Property Damage",rows:[["Equipment / property damaged",f.equip]]});
+      if(f.wit1||f.wit1Stmt){secs.push({h:"Witness",rows:[["Witness name",f.wit1]]});if(f.wit1Stmt)secs.push({h:"Witness Statement",text:f.wit1Stmt});}
+      secs.push({h:"Root Cause Analysis",rows:[["Why did it happen? Underlying causes",f.why],["What could have prevented it?",f.couldPrevent]]});
+      secs.push({h:"Preventive Measures",rows:[["Corrective actions to prevent recurrence",f.corrective],["Training / information provided",f.training]]});
+      secs.push({h:"Conditions & Environment",rows:[["Environmental conditions at time",f.env]],yn:INC_CONDITIONS.map((c,i)=>[c,cond[i]==="pass"?"Y":cond[i]==="fail"?"N":"—"])});
+      const sigs=[{role:"Report completed by",name:f.completedBy||"",date:today(),img:sigRef.current&&sigRef.current()}];
+      const meta=[["Tracking #",f.track],["Report type",f.type||"—"],["Project",f.proj||"—"],["Date / time",f.dateTime||"—"]];
+      const spec={file:"IncidentReport_"+String(f.track||"").replace(/[^A-Za-z0-9-]/g,"")+".pdf",title:"Incident Investigation Report",meta,sections:secs,sigs};
+      const rec={id:"inc"+Date.now(),source:"supervisor",kind:"investigation",signature:(sigRef.current&&sigRef.current())||"",track:f.track,project:f.proj||"",projectNumber:f.projNumber||"",type:f.type||"",completedBy:f.completedBy||"",dateTime:f.dateTime||"",reportedWhen:f.reportedWhen||"",medicalAttention:f.medical||"",lostTime:f.lostTime||"",superintendent:f.superintendent||"",projectManager:f.pm||"",howOccurred:f.how||"",injuriesDamage:f.injuries||"",involvedPersons:f.involved||"",involvedStatement:f.involvedStmt||"",equipmentDamaged:f.equip||"",witness1:f.wit1||"",witness1Statement:f.wit1Stmt||"",treatedWhere:f.treated||"",findings:f.findings||"",clearToWork:f.clear||"",bodyParts:partLabels,whyHappened:f.why||"",couldPrevent:f.couldPrevent||"",correctiveActions:f.corrective||"",trainingProvided:f.training||"",envConditions:f.env||"",conditions:INC_CONDITIONS.map((c,i)=>[c,cond[i]||""]),date:today()};
+      pushIncident(rec);
+      buildPDF(spec,()=>{incidentDraft={};incidentCondDraft={};setScr(null);show("Report "+f.track+" generated & submitted");},()=>show("Need internet to build the PDF"));
     };
-    return(<Screen title="Incident Investigation Report" sub="Injury · near-miss · damage · investigation">
+    return(<Screen title="Incident Investigation Report" sub={f.track}>
+      <div style={{...glass,borderRadius:12,padding:"10px 12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:10,color:MU,fontFamily:MONO,letterSpacing:1}}>TRACKING #</span><span style={{fontSize:13,fontWeight:800,color:AC,fontFamily:MONO}}>{f.track}</span></div>
       <SecHead>Project</SecHead>
       <Field label="Project number"><T v={f.projNumber} set={v=>s("projNumber",v)}/></Field>
       <Field label="Project name"><Sel v={f.proj} set={v=>s("proj",v)} opts={PNAMES}/></Field>
@@ -1679,6 +1723,11 @@ export default function App(){
 
       <SecHead>Involved parties</SecHead>
       <Field label="Involved person(s)"><T v={f.involved} set={v=>s("involved",v)}/></Field>
+      {isInj&&<>
+        <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"4px 0 7px",letterSpacing:1,fontFamily:MONO}}>WHERE IS THE INJURY?</div>
+        <BodyDiagram sel={parts} onToggle={toggleBody} capRef={bodyCap}/>
+        <div style={{height:12}}/>
+      </>}
       <Field label="Involved person statement"><TA v={f.involvedStmt} set={v=>s("involvedStmt",v)} h={88}/></Field>
       <Field label="Equipment damaged"><T v={f.equip} set={v=>s("equip",v)}/></Field>
       <Field label="Witness (1)"><T v={f.wit1} set={v=>s("wit1",v)}/></Field>
@@ -1709,7 +1758,7 @@ export default function App(){
       ))}
 
       <div style={{fontSize:10.5,fontWeight:800,color:AC,margin:"14px 0 5px",letterSpacing:1,fontFamily:MONO}}>SIGNATURE</div><SigPad capRef={sigRef}/>
-      <button onClick={submit} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>SUBMIT REPORT</button>
+      <button onClick={submit} style={{marginTop:16,width:"100%",background:DN,color:"#fff",border:"none",borderRadius:12,padding:"15px",fontSize:12.5,fontWeight:800,letterSpacing:0.5,cursor:"pointer"}}>GENERATE REPORT (PDF)</button>
     </Screen>);
   };
 

@@ -44,21 +44,21 @@ export default function Home() {
       <div style={{ width: "100%", maxWidth: 430 }}>
         <AccountBar />
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-          <div
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="SacredOps"
+            width={36}
+            height={36}
             style={{
               width: 36,
               height: 36,
               borderRadius: 9,
-              background: "#0a0a0a",
               border: "1px solid rgba(255,255,255,0.12)",
               boxShadow: "0 2px 12px rgba(0,0,0,0.55)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              display: "block",
             }}
-          >
-            <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 700, fontSize: 23, color: "#fff", lineHeight: 1 }}>S</span>
-          </div>
+          />
           <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: 0.4 }}>
             Sacred<span style={{ color: AC }}>Ops</span>
           </div>
