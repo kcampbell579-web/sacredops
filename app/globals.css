@@ -14,3 +14,68 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* ============================================================
+   Interactive feedback — press / hover / focus across the app.
+   The portals use inline styles (no :hover/:active/:focus), so
+   these global pseudo-class rules add tactile response to every
+   button, tab, tile, link, and input. !important beats inline.
+   ============================================================ */
+button,
+a,
+label,
+select,
+[role="button"],
+[style*="cursor: pointer"],
+[style*="cursor:pointer"] {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.09s ease, filter 0.12s ease, box-shadow 0.15s ease,
+    background-color 0.12s ease, opacity 0.12s ease;
+}
+
+/* Press feedback on tap / click */
+button:active,
+[role="button"]:active,
+[style*="cursor: pointer"]:active,
+[style*="cursor:pointer"]:active {
+  transform: scale(0.965) !important;
+  filter: brightness(1.13);
+}
+
+/* Hover feedback — only where a real pointer can hover (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  button:hover,
+  [role="button"]:hover,
+  [style*="cursor: pointer"]:hover,
+  [style*="cursor:pointer"]:hover {
+    filter: brightness(1.09);
+  }
+  a:hover {
+    opacity: 0.82;
+  }
+}
+
+/* Disabled controls should not react */
+button:disabled,
+button[disabled] {
+  transform: none !important;
+  filter: none !important;
+  cursor: default;
+}
+
+/* Focus highlight for anything you fill in */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #04a466 !important;
+  box-shadow: 0 0 0 3px rgba(4, 166, 102, 0.28) !important;
+  outline: none !important;
+}
+
+/* Keyboard focus ring (accessibility) */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #04a466;
+  outline-offset: 2px;
+}
