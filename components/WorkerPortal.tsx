@@ -18,7 +18,7 @@ function Brand({size=34,stack=false}){
   return (
     <div style={{display:"flex",alignItems:"center",gap:10}}>
       <div style={{position:"relative",width:size,height:size,display:"flex",alignItems:"center",justifyContent:"center"}}>
-        <div style={{width:size,height:size,borderRadius:size*0.26,background:"#0a0a0a",border:"1px solid rgba(255,255,255,0.12)",boxShadow:"0 2px 12px rgba(0,0,0,0.55)",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"Georgia,'Times New Roman',serif",fontWeight:700,fontSize:size*0.62,color:"#fff",lineHeight:1}}>S</span></div>
+        <img src="/logo.png" alt="SacredOps" width={size} height={size} style={{width:size,height:size,borderRadius:size*0.26,border:"1px solid rgba(255,255,255,0.12)",boxShadow:"0 2px 12px rgba(0,0,0,0.55)",display:"block"}}/>
       </div>
       <div style={{lineHeight:1}}>
         <div style={{fontSize:size*0.52,fontWeight:800,letterSpacing:0.5,color:TX,fontFamily:SANS}}>

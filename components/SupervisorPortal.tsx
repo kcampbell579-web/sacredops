@@ -20,7 +20,7 @@ function loadJsPDF(){return new Promise((res,rej)=>{if(window.jspdf&&window.jspd
 // equipment stickers work offline and aren't blocked by any CSP.
 function loadQRCode(){return new Promise((res,rej)=>{if(typeof window==="undefined")return rej(new Error("no window"));if(window.QRCode&&window.QRCode.toDataURL)return res(window.QRCode);const done=()=>(window.QRCode&&window.QRCode.toDataURL)?res(window.QRCode):rej(new Error("qr load failed"));const ex=document.getElementById("qrlib");if(ex){ex.addEventListener("load",done);ex.addEventListener("error",()=>rej(new Error("qr load error")));return;}const s=document.createElement("script");s.id="qrlib";s.src="/vendor/qrcode.min.js";s.onload=done;s.onerror=()=>rej(new Error("qr load error"));document.head.appendChild(s);});}
 
-function Brand({size=26}){return(<div style={{display:"flex",alignItems:"center",gap:9}}><div style={{position:"relative",width:size,height:size,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:size,height:size,borderRadius:size*0.26,background:"#0a0a0a",border:"1px solid rgba(255,255,255,0.12)",boxShadow:"0 2px 12px rgba(0,0,0,0.55)",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"Georgia,'Times New Roman',serif",fontWeight:700,fontSize:size*0.62,color:"#fff",lineHeight:1}}>S</span></div></div><div style={{fontSize:size*0.55,fontWeight:800,letterSpacing:0.4,color:TX}}>Sacred<span style={{color:AC}}>Ops</span></div></div>);}
+function Brand({size=26}){return(<div style={{display:"flex",alignItems:"center",gap:9}}><div style={{position:"relative",width:size,height:size,display:"flex",alignItems:"center",justifyContent:"center"}}><img src="/logo.png" alt="SacredOps" width={size} height={size} style={{width:size,height:size,borderRadius:size*0.26,border:"1px solid rgba(255,255,255,0.12)",boxShadow:"0 2px 12px rgba(0,0,0,0.55)",display:"block"}}/></div><div style={{fontSize:size*0.55,fontWeight:800,letterSpacing:0.4,color:TX}}>Sacred<span style={{color:AC}}>Ops</span></div></div>);}
 function Sig({i=0}){return(<svg viewBox="0 0 82 32" width="72" height="28"><path d={SIGPATHS[i%4]} fill="none" stroke="#0D0D0D" strokeWidth="2.4" strokeLinecap="round"/></svg>);}
 // Rasterize an on-screen signature path to a PNG data URL so it can be embedded
 // in generated PDFs (jsPDF can't render SVG paths directly).
@@ -880,7 +880,7 @@ export default function App(){
     feed.push({c:DN,ic:"alert",title:"Daily JHA missing",sub:"Needs submission · "+p.name,time:"1h ago"});
     const standDown=()=>show("⛔ Safety stand-down alert sent to all crew on "+p.name);
     return(<Screen title={p.name} sub={p.loc+(p.div?" · "+p.div:"")} onBack={()=>{setLastProj(null);setScr(null);}}>
-    <div style={{position:"relative",overflow:"hidden",borderRadius:18,marginBottom:16,padding:"16px 16px 15px",background:"linear-gradient(150deg,"+ic.grad[0]+","+ic.grad[1]+")",border:"1px solid rgba(255,255,255,0.09)"}}>
+    <div style={{position:"relative",overflow:"hidden",borderRadius:18,marginBottom:16,padding:"16px 16px 15px",background:"linear-gradient(150deg,#0b5e3e,#05231a)",border:"1px solid "+AC+"3a"}}>
       <div style={{position:"absolute",top:-40,right:-20,width:150,height:150,borderRadius:"50%",background:AC,filter:"blur(60px)",opacity:0.25}}/>
       <div style={{position:"relative"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
