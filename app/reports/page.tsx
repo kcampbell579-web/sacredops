@@ -6,7 +6,7 @@ import Link from "next/link";
 // Brand palette (matches the portals' dark industrial theme)
 const BG0 = "#0D0D0D";
 const AC = "#04A466"; // brand green — single hue for magnitude
-const SU = "#29C46D"; // status: good
+const SU = "#04A466"; // status: good
 const WN = "#F4B400"; // status: warning
 const DN = "#E53935"; // status: critical
 const TX = "#F4F7F5";

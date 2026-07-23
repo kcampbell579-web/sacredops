@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { TOOLBOX_TALKS } from "./toolboxLibrary";
 
 /* ===== SacredOps — Supervisor Portal (dark industrial) ===== */
-const BG0="#0D0D0D",BG1="#13261D",BG2="#18392B",DG="#003B22",AC="#04A466",SU="#29C46D",WN="#F4B400",DN="#E53935";
+const BG0="#0D0D0D",BG1="#13261D",BG2="#18392B",DG="#003B22",AC="#04A466",SU="#04A466",WN="#F4B400",DN="#E53935";
 const TX="#F4F7F5",MU="#8FA096",HL="rgba(255,255,255,0.08)";
 const glass={background:"linear-gradient(160deg,rgba(255,255,255,0.055),rgba(255,255,255,0.015))",border:"1px solid "+HL,backdropFilter:"blur(10px)"};
 const MONO="ui-monospace,'SF Mono',Menlo,monospace";
@@ -1605,8 +1605,8 @@ export default function App(){
   /* ================= FIELD TOOLS (worker parity) ================= */
   // SDS / OSHA document helpers (used by SdsDetail on the white sheet and by
   // OshaDetail on the dark card via the `dark` variant).
-  function PSec({label}){return <div style={{fontSize:10,fontWeight:800,letterSpacing:1,color:"#0b6b45",textTransform:"uppercase",fontFamily:MONO,margin:"16px 0 7px"}}>{label}</div>;}
-  function PRow({children,dark}){return <div style={{fontSize:12,lineHeight:1.5,color:dark?TX:"#333",marginBottom:7,display:"flex",gap:8}}><span style={{color:dark?AC:"#0b6b45",flexShrink:0,fontWeight:800}}>•</span><span style={{flex:1}}>{children}</span></div>;}
+  function PSec({label}){return <div style={{fontSize:10,fontWeight:800,letterSpacing:1,color:"#04A466",textTransform:"uppercase",fontFamily:MONO,margin:"16px 0 7px"}}>{label}</div>;}
+  function PRow({children,dark}){return <div style={{fontSize:12,lineHeight:1.5,color:dark?TX:"#333",marginBottom:7,display:"flex",gap:8}}><span style={{color:dark?AC:"#04A466",flexShrink:0,fontWeight:800}}>•</span><span style={{flex:1}}>{children}</span></div>;}
   function PStat({k,v}){return <div style={{flex:1,background:"#f6f8f7",border:"1px solid #e8ebe9",borderRadius:10,padding:"9px 11px"}}><div style={{fontSize:9,fontWeight:800,color:"#8a978f",letterSpacing:0.5,fontFamily:MONO,textTransform:"uppercase"}}>{k}</div><div style={{fontSize:11.5,fontWeight:700,color:"#222",marginTop:2,lineHeight:1.3}}>{v}</div></div>;}
   function PBadge({c,k,v}){return <div style={{flex:1,border:"1px solid "+c+"44",background:c+"12",borderRadius:10,padding:"9px 6px",textAlign:"center"}}><div style={{fontSize:20,fontWeight:800,color:c,lineHeight:1}}>{v}</div><div style={{fontSize:8,fontWeight:800,color:c,letterSpacing:0.5,marginTop:3,fontFamily:MONO}}>{k}</div></div>;}
   const SdsList=()=>{
@@ -1634,12 +1634,12 @@ export default function App(){
         {s.pictos.length>0&&<div style={{display:"flex",gap:14,justifyContent:"center",margin:"16px 0 4px"}}>{s.pictos.map((p,i)=><Picto key={i} kind={p}/>)}</div>}
         <PSec label="Hazard statements"/>{s.hazards.map((h,i)=><PRow key={i}>{h}</PRow>)}
         <PSec label="Composition"/>
-        <div style={{border:"1px solid #e8ebe9",borderRadius:10,overflow:"hidden"}}>{s.comps.map((c,i)=>(<div key={i} style={{display:"flex",padding:"9px 11px",fontSize:11.5,borderTop:i?"1px solid #e8ebe9":"none",background:i%2?"#f6f8f7":"#fff"}}><div style={{flex:1,fontWeight:600,color:"#222"}}>{c[0]}</div><div style={{width:86,color:"#8a978f",fontFamily:MONO,fontSize:10.5}}>{c[1]}</div><div style={{width:50,textAlign:"right",fontWeight:800,color:"#0b6b45"}}>{c[2]}</div></div>))}</div>
-        <PSec label="First aid"/>{Object.entries(s.aid).map(([k,v])=>(<div key={k} style={{marginBottom:7}}><div style={{fontSize:10.5,fontWeight:800,color:"#0b6b45"}}>{k.toUpperCase()}</div><div style={{fontSize:12,color:"#333",lineHeight:1.4}}>{v}</div></div>))}
+        <div style={{border:"1px solid #e8ebe9",borderRadius:10,overflow:"hidden"}}>{s.comps.map((c,i)=>(<div key={i} style={{display:"flex",padding:"9px 11px",fontSize:11.5,borderTop:i?"1px solid #e8ebe9":"none",background:i%2?"#f6f8f7":"#fff"}}><div style={{flex:1,fontWeight:600,color:"#222"}}>{c[0]}</div><div style={{width:86,color:"#8a978f",fontFamily:MONO,fontSize:10.5}}>{c[1]}</div><div style={{width:50,textAlign:"right",fontWeight:800,color:"#04A466"}}>{c[2]}</div></div>))}</div>
+        <PSec label="First aid"/>{Object.entries(s.aid).map(([k,v])=>(<div key={k} style={{marginBottom:7}}><div style={{fontSize:10.5,fontWeight:800,color:"#04A466"}}>{k.toUpperCase()}</div><div style={{fontSize:12,color:"#333",lineHeight:1.4}}>{v}</div></div>))}
         <PSec label="Protective equipment"/><PRow>{s.ppe}</PRow>
         <PSec label="Physical / fire"/>
         <div style={{display:"flex",gap:8}}><PStat k="Appearance" v={s.color}/><PStat k="Flash point" v={s.flash}/></div>
-        {s.ratings.H!==null&&<><PSec label={s.ratings.sys+" ratings"}/><div style={{display:"flex",gap:8}}><PBadge c="#0b6b45" k="HEALTH" v={s.ratings.H}/><PBadge c="#c0392b" k="FLAMM." v={s.ratings.F}/><PBadge c="#b58600" k="REACT." v={s.ratings.R}/></div></>}
+        {s.ratings.H!==null&&<><PSec label={s.ratings.sys+" ratings"}/><div style={{display:"flex",gap:8}}><PBadge c="#04A466" k="HEALTH" v={s.ratings.H}/><PBadge c="#c0392b" k="FLAMM." v={s.ratings.F}/><PBadge c="#b58600" k="REACT." v={s.ratings.R}/></div></>}
         <PSec label="Transport"/><PRow>{s.transport}</PRow>
         {s.prop65&&<><PSec label="California Prop 65"/><PRow>{s.prop65}</PRow></>}
         <div style={{marginTop:12,fontSize:10,color:"#9aa79f",fontFamily:MONO}}>REV {s.rev}</div>
