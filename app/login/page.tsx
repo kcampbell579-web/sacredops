@@ -35,6 +35,18 @@ function track(event: string, params?: Record<string, unknown>) {
   } catch {
     /* analytics must never break signup */
   }
+  // Mirror the conversion to the Meta (Facebook) Pixel so ad campaigns can
+  // optimize: demo signup -> Lead, company/worker signup -> CompleteRegistration.
+  try {
+    const f = (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq;
+    if (f) {
+      const fbEvent =
+        event === "demo_signup" ? "Lead" : event === "sign_up" ? "CompleteRegistration" : event;
+      f("track", fbEvent, params || {});
+    }
+  } catch {
+    /* analytics must never break signup */
+  }
 }
 
 export default function LoginPage() {
