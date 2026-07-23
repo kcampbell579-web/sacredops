@@ -102,6 +102,22 @@
   .plist li::before{content:"";flex:none;width:7px;height:7px;margin-top:8px;background:var(--green-bright);border-radius:1px;box-shadow:0 0 8px rgba(4,164,102,.6)}
   .plist li b{font-weight:600;color:var(--ink)}
   .plist li span{color:var(--muted)}
+
+  /* app showcase (screenshots) */
+  .showcase{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+  @media(max-width:880px){.showcase{grid-template-columns:1fr;gap:34px}}
+  .phones{display:flex;gap:16px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+  .phone-shot{width:224px;max-width:44%;border-radius:26px;border:7px solid #141414;
+    box-shadow:0 26px 64px rgba(0,0,0,.6),0 0 0 1px var(--forest-line);display:block;background:#0d0d0d}
+  .phone-shot.lift{transform:translateY(22px)}
+  @media(max-width:880px){.phone-shot{max-width:46%}.phone-shot.lift{transform:none}}
+  .feat{list-style:none}
+  .feat li{display:flex;gap:13px;padding:13px 0;border-top:1px solid var(--hair);font-size:15px;align-items:flex-start;line-height:1.5}
+  .feat li:first-child{border-top:none}
+  .feat li::before{content:"";flex:none;width:8px;height:8px;margin-top:7px;background:var(--green-bright);
+    border-radius:2px;box-shadow:0 0 8px rgba(4,164,102,.6)}
+  .feat li b{color:var(--ink);font-weight:600}
+  .feat li span{color:var(--muted)}
   .both{text-align:center;margin-top:26px;font-family:var(--display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .both b{color:var(--green-bright)}
 
@@ -415,6 +431,56 @@
       </div>
     </div>
     <p class="both">Every paid plan includes <b>both portals</b> — unlimited workers, flat by job site.</p>
+  </div>
+</section>
+
+<!-- SUPERVISOR SHOWCASE -->
+<section class="block" id="supervisor">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-tag">For supervisors &amp; the office</div>
+      <h2>The <span class="grn">Supervisor</span> Portal</h2>
+      <p>Run every job site from your phone — projects, crews, compliance, and paperwork in one place.</p>
+    </div>
+    <div class="showcase">
+      <div class="phones">
+        <img class="phone-shot" src="/shots/sup-home.png" alt="SacredOps supervisor dashboard — live projects and compliance" loading="lazy" width="224">
+        <img class="phone-shot lift" src="/shots/sup-training.png" alt="SacredOps training tracker — worker certifications and expirations" loading="lazy" width="224">
+      </div>
+      <ul class="feat">
+        <li><b>Live project dashboards</b><span> — crew on site, sign-in %, open inspections and compliance status across every job.</span></li>
+        <li><b>Toolbox talks &amp; sign-ins</b><span> — assign a talk, collect crew signatures, export a signed PDF.</span></li>
+        <li><b>Inspections &amp; JSAs</b><span> — checklists, corrective actions and color-coded JSA/JHA builders.</span></li>
+        <li><b>Training tracker</b><span> — every worker's certifications with valid / expiring / expired at a glance.</span></li>
+        <li><b>Incident reports</b><span> — auto tracking number, tap-the-body injury map and a full PDF in seconds.</span></li>
+        <li><b>Payroll &amp; daily logs</b><span> — certified payroll with OT and fringe, exportable to accounting.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- WORKER SHOWCASE -->
+<section class="block" id="worker">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-tag">For the crew</div>
+      <h2>The <span class="grn">Worker</span> Portal</h2>
+      <p>Everything a worker needs in the field — no laptop, just their phone and a company code.</p>
+    </div>
+    <div class="showcase">
+      <ul class="feat">
+        <li><b>Daily briefing &amp; schedule</b><span> — where they're working, what's happening, and what's due.</span></li>
+        <li><b>Toolbox talks</b><span> — read and sign the day's safety talk right on their phone.</span></li>
+        <li><b>Report an incident</b><span> — tracking number plus a tap-the-body injury map, straight from the field.</span></li>
+        <li><b>SDS &amp; OSHA</b><span> — safety data sheets and required postings always on hand.</span></li>
+        <li><b>Forms &amp; permits</b><span> — fill out and sign permits without paper.</span></li>
+        <li><b>Profile, résumé &amp; certs</b><span> — their training and certifications, always with them.</span></li>
+      </ul>
+      <div class="phones">
+        <img class="phone-shot" src="/shots/wrk-home.png" alt="SacredOps worker portal home" loading="lazy" width="224">
+        <img class="phone-shot lift" src="/shots/wrk-incident.png" alt="SacredOps worker incident report with body diagram" loading="lazy" width="224">
+      </div>
+    </div>
   </div>
 </section>
 
