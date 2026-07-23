@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       // site). Point the ad at sacredops.app/opStTherese to track that campaign.
       { source: "/opStTherese", destination: "/opStTherese.html" },
       { source: "/StIsidore", destination: "/StIsidore.html" },
+      { source: "/StMichael", destination: "/StMichael.html" },
     ];
   },
 };

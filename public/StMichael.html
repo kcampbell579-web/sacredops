@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SacredOps — OSHA Compliance Without a Full-Time Safety Director</title>
+<meta name="description" content="SacredOps gives small and mid-size construction and warehouse contractors audit-ready OSHA compliance and field safety operations — without hiring a full-time safety director. From $149/mo, flat by job site.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#050705;--panel:#0a0f0b;--panel-2:#0e150f;--forest:#002d19;--forest-line:#0a3d24;
+    --green:#04A466;--green-bright:#04A466;--lime:#04A466;--ink:#f2f5f0;--muted:#8ea394;
+    --hair:rgba(120,180,140,.14);
+    --display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--green);color:#000}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);
+    background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 0%,transparent 75%);opacity:.5}
+
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:19px}
+  .brand .s{color:var(--ink)}.brand .o{color:var(--green-bright)}
+  .brand svg{width:30px;height:30px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-links{display:flex;gap:30px;font-size:14px;color:var(--muted);font-family:var(--display);letter-spacing:.03em}
+  .nav-links a{transition:color .2s}.nav-links a:hover{color:var(--lime)}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    padding:10px 18px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px;transition:.2s}
+  .nav-cta:hover{background:var(--green);color:#000;box-shadow:0 0 18px rgba(4,164,102,.45)}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;flex:none;
+    background:transparent;border:1px solid var(--forest-line);border-radius:2px;cursor:pointer;padding:0}
+  .nav-toggle span{display:block;width:18px;height:2px;background:var(--green-bright);margin:0 auto;transition:.25s}
+  .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .nav-menu{display:none;flex-direction:column;background:rgba(5,7,5,.97);backdrop-filter:blur(10px);border-top:1px solid var(--hair)}
+  .nav-menu.open{display:flex}
+  .nav-menu a{padding:15px 24px;border-bottom:1px solid var(--hair);font-family:var(--display);font-size:14px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:.2s}
+  .nav-menu a:hover,.nav-menu a:active{color:var(--green-bright);background:rgba(4,164,102,.08)}
+  section[id],header[id]{scroll-margin-top:74px}
+  @media(max-width:900px){.nav-links{display:none}.nav-toggle{display:flex}}
+  @media(max-width:560px){
+    .nav-in{height:58px}
+    .brand{font-size:15px;gap:8px}
+    .brand svg{width:24px;height:24px}
+    .nav-cta{padding:8px 11px;font-size:10.5px;letter-spacing:.05em;white-space:nowrap}
+    .hero{padding-top:34px}
+    .btns .btn{width:100%;text-align:center}
+  }
+
+  .hero{position:relative;z-index:1;text-align:center;padding:60px 0 38px}
+  .eyebrow{font-family:var(--display);font-size:12.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--green-bright);margin-bottom:26px}
+  .emblem{width:180px;height:180px;margin:0 auto 28px;position:relative}
+  h1{font-family:var(--display);font-weight:700;letter-spacing:.02em;font-size:clamp(38px,7vw,74px);line-height:.98;text-transform:uppercase}
+  h1 .white{color:var(--ink)}h1 .grn{color:var(--green-bright);text-shadow:0 0 26px rgba(4,164,102,.5)}
+  .tag{font-family:var(--display);font-size:clamp(14px,2.3vw,18px);letter-spacing:.24em;text-transform:uppercase;margin-top:18px;color:var(--muted)}
+  .tag b{color:var(--ink);font-weight:600}
+  .sub{max-width:600px;margin:24px auto 0;color:var(--muted);font-size:16.5px}
+  .btns{display:flex;gap:14px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+  .btn{font-family:var(--display);font-weight:600;letter-spacing:.06em;font-size:14px;text-transform:uppercase;
+    padding:15px 30px;border-radius:2px;transition:.2s;cursor:pointer;border:none}
+  .btn-primary{background:var(--green);color:#000}
+  .btn-primary:hover{background:var(--green-bright);box-shadow:0 0 26px rgba(4,164,102,.55);transform:translateY(-1px)}
+  .btn-ghost{border:1px solid var(--forest-line);color:var(--ink);background:transparent}
+  .btn-ghost:hover{border-color:var(--green);color:var(--green-bright)}
+  .hero-code{margin-top:20px;font-family:var(--display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .hero-code b{color:var(--green-bright);font-weight:700;letter-spacing:.1em}
+
+  section.block{position:relative;z-index:1;padding:92px 0}
+  .sec-head{max-width:680px;margin-bottom:50px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-tag{font-family:var(--display);font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--green-bright);
+    display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .sec-head.center .sec-tag{justify-content:center}
+  .sec-tag::before{content:"";width:34px;height:1px;background:var(--green)}
+  h2{font-family:var(--display);font-weight:600;font-size:clamp(28px,4.4vw,44px);line-height:1.05;text-transform:uppercase;letter-spacing:.01em}
+  h2 .grn{color:var(--green-bright)}
+  .sec-head p{color:var(--muted);margin-top:16px;font-size:16px}
+
+  /* portals */
+  .portals{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:860px){.portals{grid-template-columns:1fr}}
+  .portal{background:var(--panel);border:1px solid var(--forest-line);border-radius:6px;padding:34px 32px;position:relative;overflow:hidden}
+  .portal::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),transparent)}
+  .portal .role{font-family:var(--display);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--green-bright)}
+  .portal h3{font-family:var(--display);font-weight:600;font-size:26px;text-transform:uppercase;letter-spacing:.02em;margin:8px 0 6px}
+  .portal .lede{color:var(--muted);font-size:15px;margin-bottom:22px}
+  .plist{list-style:none}
+  .plist li{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--hair);font-size:14.5px;align-items:flex-start}
+  .plist li::before{content:"";flex:none;width:7px;height:7px;margin-top:8px;background:var(--green-bright);border-radius:1px;box-shadow:0 0 8px rgba(4,164,102,.6)}
+  .plist li b{font-weight:600;color:var(--ink)}
+  .plist li span{color:var(--muted)}
+
+  /* app showcase (screenshots) */
+  .showcase{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+  @media(max-width:880px){.showcase{grid-template-columns:1fr;gap:34px}}
+  .phones{display:flex;gap:16px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+  .phone-shot{width:224px;max-width:44%;border-radius:26px;border:7px solid #141414;
+    box-shadow:0 26px 64px rgba(0,0,0,.6),0 0 0 1px var(--forest-line);display:block;background:#0d0d0d}
+  .phone-shot.lift{transform:translateY(22px)}
+  @media(max-width:880px){.phone-shot{max-width:46%}.phone-shot.lift{transform:none}}
+  .feat{list-style:none}
+  .feat li{display:flex;gap:13px;padding:13px 0;border-top:1px solid var(--hair);font-size:15px;align-items:flex-start;line-height:1.5}
+  .feat li:first-child{border-top:none}
+  .feat li::before{content:"";flex:none;width:8px;height:8px;margin-top:7px;background:var(--green-bright);
+    border-radius:2px;box-shadow:0 0 8px rgba(4,164,102,.6)}
+  .feat li b{color:var(--ink);font-weight:600}
+  .feat li span{color:var(--muted)}
+  .both{text-align:center;margin-top:26px;font-family:var(--display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .both b{color:var(--green-bright)}
+
+  /* value comparison */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto}
+  @media(max-width:680px){.compare{grid-template-columns:1fr}}
+  .comp-col{border-radius:6px;padding:30px 28px}
+  .comp-col.old{background:var(--panel);border:1px solid var(--hair);opacity:.9}
+  .comp-col.new{background:linear-gradient(180deg,rgba(4,164,102,.1),var(--panel));border:1px solid var(--green);box-shadow:0 0 44px -14px rgba(4,164,102,.45)}
+  .comp-h{font-family:var(--display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .comp-col.new .comp-h{color:var(--green-bright)}
+  .comp-fig{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1;color:var(--ink)}
+  .comp-col.new .comp-fig{color:var(--green-bright);text-shadow:0 0 24px rgba(4,164,102,.4)}
+  .comp-fig span{font-size:15px;color:var(--muted);font-weight:400;letter-spacing:.02em}
+  .comp-sub{font-size:13px;color:var(--muted);margin:8px 0 18px;letter-spacing:.04em}
+  .comp-col ul{list-style:none;font-size:14px}
+  .comp-col ul li{padding:8px 0;border-top:1px solid var(--hair);color:var(--muted);display:flex;gap:10px}
+  .comp-col.old ul li::before{content:"\2013";color:var(--muted)}
+  .comp-col.new ul li{color:var(--ink)}
+  .comp-col.new ul li::before{content:"\2713";color:var(--green-bright);font-family:var(--display)}
+
+  /* capability grid */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair)}
+  .card{background:var(--panel);padding:32px 28px;transition:.25s;position:relative}
+  .card:hover{background:var(--panel-2)}
+  .card::after{content:"";position:absolute;left:0;top:0;height:2px;width:0;background:var(--green);transition:.3s}
+  .card:hover::after{width:100%;box-shadow:0 0 14px rgba(4,164,102,.6)}
+  .card .ic{width:42px;height:42px;color:var(--green-bright);margin-bottom:18px}
+  .card h3{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:9px}
+  .card p{color:var(--muted);font-size:14px}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}}
+
+  /* dashboard mock */
+  .dash-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+  @media(max-width:880px){.dash-wrap{grid-template-columns:1fr;gap:36px}}
+  .ticks{list-style:none;margin-top:24px}
+  .ticks li{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--hair);color:var(--ink);font-size:15px}
+  .ticks li span{color:var(--green-bright);font-family:var(--display)}
+  .mock{background:var(--panel);border:1px solid var(--forest-line);border-radius:6px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(4,164,102,.28)}
+  .mock-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--hair);background:var(--black)}
+  .dot{width:10px;height:10px;border-radius:50%;background:#1c2a1f}.dot.g{background:var(--green)}
+  .mock-title{margin-left:10px;font-family:var(--display);font-size:12px;letter-spacing:.1em;color:var(--muted)}
+  .mock-body{padding:22px}
+  .row{display:flex;gap:14px;margin-bottom:14px}
+  .kpi{flex:1;background:var(--panel-2);border:1px solid var(--hair);border-radius:4px;padding:14px}
+  .kpi .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .kpi .v{font-family:var(--display);font-weight:700;font-size:23px;color:var(--ink);margin-top:4px}
+  .kpi .v.g{color:var(--green-bright)}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:110px;padding:16px;background:var(--panel-2);border:1px solid var(--hair);border-radius:4px}
+  .bar{flex:1;background:linear-gradient(var(--green-bright),var(--forest));border-radius:2px 2px 0 0;box-shadow:0 0 12px rgba(4,164,102,.25)}
+  .log{margin-top:14px}
+  .log-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--hair);border-radius:4px;margin-bottom:8px;font-size:13px}
+  .pill{font-family:var(--display);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:2px;white-space:nowrap}
+  .pill.ok{background:rgba(4,164,102,.15);color:var(--green-bright);border:1px solid var(--green)}
+  .pill.warn{background:rgba(230,180,40,.12);color:#e6b428;border:1px solid #6b5410}
+  .pill.stop{background:rgba(230,70,60,.14);color:#e6564a;border:1px solid #6b1d18}
+
+  /* how / cross-link */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{border-left:2px solid var(--forest-line);padding:6px 0 6px 24px}
+  .step .num{font-family:var(--display);font-weight:700;color:var(--green-bright);font-size:14px;letter-spacing:.2em}
+  .step h4{font-family:var(--display);font-size:20px;text-transform:uppercase;margin:8px 0 8px;letter-spacing:.02em}
+  .step p{color:var(--muted);font-size:14.5px}
+
+  /* pricing */
+  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media(max-width:980px){.price-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.price-grid{grid-template-columns:1fr}}
+  .tier{background:var(--panel);border:1px solid var(--forest-line);border-radius:6px;padding:28px 24px;display:flex;flex-direction:column}
+  .tier.feature{border-color:var(--green);box-shadow:0 0 40px -12px rgba(4,164,102,.4)}
+  .tier .badge{align-self:flex-start;font-family:var(--display);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:#000;background:var(--green-bright);padding:3px 9px;border-radius:2px;margin-bottom:12px}
+  .tier .name{font-family:var(--display);font-weight:600;font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+  .tier .price{font-family:var(--display);font-weight:700;font-size:34px;margin:12px 0 2px;color:var(--ink)}
+  .tier .price small{font-size:14px;color:var(--muted);font-weight:400}
+  .tier .sites{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-bright);margin-bottom:16px}
+  .tier ul{list-style:none;font-size:13.5px;color:var(--muted);flex:1}
+  .tier ul li{padding:7px 0;border-top:1px solid var(--hair);display:flex;gap:9px}
+  .tier ul li::before{content:"+";color:var(--green-bright);font-family:var(--display);font-weight:700}
+  .tier ul li:first-child::before{content:"\2713"}
+  .tier .btn{margin-top:20px;text-align:center}
+  .price-note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:26px}
+  .price-offer{background:linear-gradient(180deg,rgba(4,164,102,.14),var(--panel));border:2px solid var(--green);border-radius:12px;
+    padding:34px 28px;text-align:center;margin-bottom:24px;box-shadow:0 0 60px -18px rgba(4,164,102,.55)}
+  .price-offer .otag{display:inline-block;font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:#04231a;background:var(--green-bright);padding:4px 12px;border-radius:3px;font-weight:700;margin-bottom:16px}
+  .price-offer h3{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.4vw,34px);text-transform:uppercase;letter-spacing:.02em;margin:0;color:var(--ink)}
+  .price-offer .ofig{font-family:var(--display);font-weight:700;font-size:clamp(38px,7vw,52px);color:var(--green-bright);margin:12px 0 2px;text-shadow:0 0 26px rgba(4,164,102,.4)}
+  .price-offer .ofig span{font-size:15px;color:var(--muted);font-weight:400;letter-spacing:.02em}
+  .price-offer p{color:var(--muted);font-size:15px;line-height:1.6;max-width:680px;margin:12px auto 22px}
+  .price-offer .obtn{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:14px;text-transform:uppercase;
+    padding:16px 34px;border-radius:3px;text-decoration:none;background:var(--green);color:#fff;border:2px solid var(--green-bright);transition:.2s}
+  .price-offer .obtn:hover{background:var(--green-bright);box-shadow:0 0 26px rgba(4,164,102,.55)}
+
+  /* quote */
+  .quote{position:relative;z-index:1;text-align:center;padding:90px 0;background:linear-gradient(180deg,transparent,rgba(0,45,25,.25),transparent)}
+  .quote blockquote{font-family:var(--display);font-weight:500;font-size:clamp(22px,3.4vw,34px);line-height:1.35;max-width:900px;margin:0 auto;letter-spacing:.01em}
+  .quote blockquote .grn{color:var(--green-bright)}
+  .quote cite{display:block;margin-top:22px;font-style:normal;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);max-width:640px;margin-left:auto;margin-right:auto}
+
+  /* cta */
+  .cta{position:relative;z-index:1;text-align:center;padding:104px 0}
+  .cta .emblem{width:104px;height:104px;margin:0 auto 22px;opacity:.95}
+  .cta h2{margin-bottom:14px}
+  .cta p{color:var(--muted);max-width:500px;margin:0 auto 30px}
+  .signup{display:flex;gap:10px;max-width:460px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+  .signup input{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--forest-line);color:var(--ink);
+    padding:15px 16px;border-radius:2px;font-family:var(--body);font-size:15px;outline:none;transition:.2s}
+  .signup input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(4,164,102,.2)}
+  .signup input::placeholder{color:var(--muted)}
+  .cta small{display:block;margin-top:14px;color:var(--muted);font-size:12.5px;letter-spacing:.06em}
+
+  footer{position:relative;z-index:1;background:#000;border-top:1px solid var(--hair);padding:52px 0 40px}
+  .foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;margin-bottom:40px}
+  .foot-brand{max-width:300px}.foot-brand p{color:var(--muted);font-size:13.5px;margin-top:14px}
+  .foot-cols{display:flex;gap:56px;flex-wrap:wrap}
+  .foot-col h5{font-family:var(--display);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin-bottom:14px}
+  .foot-col a{display:block;color:var(--muted);font-size:14px;padding:5px 0;transition:.2s}
+  .foot-col a:hover{color:var(--green-bright)}
+  .foot-bot{border-top:1px solid var(--hair);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:12.5px;letter-spacing:.06em}
+
+  :focus-visible{outline:2px solid var(--green-bright);outline-offset:3px}
+
+  @keyframes orbit{to{transform:rotate(360deg)}}
+  @keyframes breathe{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+  .orbits{transform-origin:50% 50%;animation:orbit 26s linear infinite}
+  .core{transform-origin:50% 50%;animation:breathe 3.4s ease-in-out infinite}
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  .rise{opacity:0;animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+  .d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.28s}.d4{animation-delay:.4s}.d5{animation-delay:.52s}
+  @media(prefers-reduced-motion:reduce){.orbits,.core{animation:none}.rise{animation:none;opacity:1}html{scroll-behavior:auto}}
+</style>
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EEZN8JVJFB');
+  gtag('event','campaign_landing',{campaign:'st_michael',source:'linkedin'});
+</script>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "xq4xlm8mes");
+</script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="coreG" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="28%" stop-color="#c9ffd8"/>
+    <stop offset="60%" stop-color="#2ecb5f" stop-opacity=".45"/><stop offset="100%" stop-color="#2ecb5f" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="crossV" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0a5d30"/><stop offset="50%" stop-color="#f2fff6"/><stop offset="100%" stop-color="#0a5d30"/>
+  </linearGradient>
+  <linearGradient id="crossH" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#0a5d30"/><stop offset="50%" stop-color="#f2fff6"/><stop offset="100%" stop-color="#0a5d30"/>
+  </linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="1.6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="soft" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="4"/></filter>
+</defs></svg>
+
+<nav>
+  <div class="wrap nav-in">
+    <a href="#top" class="brand" aria-label="SacredOps home">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="4"/>
+        <g stroke="#04A466" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(32 50 50)"/>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(-32 50 50)"/>
+        <circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
+      <span><span class="s">SACRED</span><span class="o">OPS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#portals">Portals</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#dashboard">Oversight</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="nav-right">
+      <a href="#pricing" class="nav-cta">Get started</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-menu" id="navMenu">
+    <a href="#value">Do the math</a>
+    <a href="#portals">Portals</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#dashboard">Oversight</a>
+    <a href="#how">Get started</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+</nav>
+
+<header id="top" class="hero">
+  <div class="wrap">
+    <div class="eyebrow rise d1">For contractors without a safety department</div>
+    <div class="emblem rise d1">
+      <svg viewBox="0 0 200 200" width="180" height="180" aria-label="SacredOps emblem" role="img">
+        <circle cx="100" cy="100" r="66" fill="#04A466" opacity=".16" filter="url(#soft)"/>
+        <g filter="url(#glow)" opacity=".92">
+          <rect x="88" y="24" width="24" height="152" rx="3" fill="url(#crossV)"/>
+          <rect x="24" y="88" width="152" height="24" rx="3" fill="url(#crossH)"/>
+        </g>
+        <g class="orbits" filter="url(#glow)">
+          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#2ecb5f" stroke-width="2.4" transform="rotate(32 100 100)"/>
+          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#04A466" stroke-width="2.4" transform="rotate(-32 100 100)"/>
+        </g>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#17b34a" stroke-width="2.4" filter="url(#glow)"/>
+        <circle cx="100" cy="100" r="72.5" fill="none" stroke="#17b34a" stroke-width="1.7" opacity=".9"/>
+        <g stroke="#25c455" stroke-width="3" stroke-linecap="round" filter="url(#glow)">
+          <line x1="100" y1="6" x2="100" y2="194"/>
+          <line x1="6" y1="100" x2="194" y2="100"/>
+        </g>
+        <circle class="core" cx="100" cy="100" r="17" fill="url(#coreG)"/>
+        <circle cx="100" cy="100" r="7" fill="none" stroke="#0a3d24" stroke-width="2"/>
+        <circle cx="100" cy="100" r="3.3" fill="#eafff0"/>
+      </svg>
+    </div>
+    <h1 class="rise d2"><span class="white">SACRED</span><span class="grn">OPS</span></h1>
+    <div class="tag rise d3"><b>Build safer.</b> Work smarter.</div>
+    <p class="sub rise d3">Too small to justify a $100K safety director. Too busy to keep drowning in OSHA paperwork. SacredOps gives construction and warehouse contractors audit-ready compliance and field safety operations in one mobile app — for less than what a safety hire costs in a week.</p>
+    <div class="btns rise d4">
+      <a target="_blank" rel="noopener" href="https://demo.sacredops.app/" class="btn btn-ghost">Try the live demo</a>
+      <a href="#pricing" class="btn btn-primary">See pricing</a>
+    </div>
+    <p class="hero-code rise d4">Use company code: <b>SACR-OPS1-DEMO</b></p>
+  </div>
+</header>
+
+<!-- VALUE / POSITIONING -->
+<section class="block" id="value">
+  <div class="wrap">
+    <div class="sec-head center">
+      <div class="sec-tag">The math is simple</div>
+      <h2>The safety director you <span class="grn">can't afford to hire</span></h2>
+      <p>You've hit the size where OSHA expects real documentation — safety plans, permits, inspections, training records, sign-ins — but not the size where a six-figure safety salary makes sense. SacredOps fills that gap.</p>
+    </div>
+    <div class="compare">
+      <div class="comp-col old">
+        <div class="comp-h">Hiring it out</div>
+        <div class="comp-fig">$90K&ndash;$120K<span>/year</span></div>
+        <div class="comp-sub">Full-time construction safety manager</div>
+        <ul>
+          <li>Plus benefits, vehicle, and bonus</li>
+          <li>One person, one set of eyes</li>
+          <li>Still needs software to run it</li>
+          <li>Hard to justify below a certain headcount</li>
+        </ul>
+      </div>
+      <div class="comp-col new">
+        <div class="comp-h">Running SacredOps</div>
+        <div class="comp-fig">$149<span>/month</span></div>
+        <div class="comp-sub">Starts here &mdash; flat by job site</div>
+        <ul>
+          <li>Audit-ready records the day OSHA shows up</li>
+          <li>Every crew, every site, one system</li>
+          <li>Unlimited workers, no per-seat fees</li>
+          <li>Scale up a tier only when you add sites</li>
+        </ul>
+      </div>
+    </div>
+    <p class="price-note">Salary range reflects 2026 U.S. construction safety manager data (Indeed, Glassdoor, PayScale, Salary.com). Shown for comparison.</p>
+  </div>
+</section>
+
+<!-- PORTALS -->
+<section class="block" id="portals">
+  <div class="wrap">
+    <div class="sec-head center">
+      <div class="sec-tag">One app, two portals</div>
+      <h2>The field and the office, <span class="grn">finally in sync</span></h2>
+      <p>Anything a worker submits appears on the supervisor side under the right project. The field-to-office hand-off is built in — no re-keying, no lost forms.</p>
+    </div>
+    <div class="portals">
+      <div class="portal">
+        <div class="role">The crew carries it</div>
+        <h3>Worker Portal</h3>
+        <p class="lede">Large, tappable tiles get a worker to what they need in one touch.</p>
+        <ul class="plist">
+          <li><span><b>Dashboard &amp; quick actions</b> — name, project, crew, training status, weather, and a live "Today on site" timeline. One tap to Call Supervisor, Message Crew, dial 911, or route to the nearest hospital.</span></li>
+          <li><span><b>SDS Library</b> — searchable Safety Data Sheets with GHS pictograms, hazard statements, CAS composition, first aid, PPE, flash point, HMIS/NFPA, and Prop 65 flags.</span></li>
+          <li><span><b>OSHA Board</b> — the required postings with plain-language summaries, acknowledgment, and the zoomable official poster.</span></li>
+          <li><span><b>Forms &amp; permits</b> — Hot Work, Confined Space Entry, Heavy Equipment Checklist, and more. Fill, sign on screen, generate a PDF, routed to the supervisor automatically.</span></li>
+          <li><span><b>Toolbox talks</b> — deliver a daily briefing and sign the whole crew in on one device.</span></li>
+          <li><span><b>Portable profile &amp; résumé</b> — documents and certs with expiry alerts, plus a work-experience builder that travels with the worker across contractors.</span></li>
+        </ul>
+      </div>
+      <div class="portal">
+        <div class="role">Superintendents &amp; safety managers</div>
+        <h3>Supervisor Portal</h3>
+        <p class="lede">Five areas of oversight, real drill-downs, PDF export throughout.</p>
+        <ul class="plist">
+          <li><span><b>Projects</b> — a portfolio dashboard of active projects, workers on site, open items, and compliance %, with per-project detail and crew rosters.</span></li>
+          <li><span><b>Sign-in sheets</b> — every muster, toolbox talk, and JHA review with signed/total status, a "remind missing" action, and PDF export.</span></li>
+          <li><span><b>Attendance</b> — live IN/OUT toggles per site, on-site counts, and a dropdown to reassign a worker to another job site.</span></li>
+          <li><span><b>Toolbox talks</b> — delivery records by project showing who attended vs. missed, and assign talks from the library.</span></li>
+          <li><span><b>Inspections</b> — a color-coded log (Pass / Open Items / Stop Work) for scaffold, fall protection, crane, and more, with corrective-action tracking and inspector sign-off.</span></li>
+          <li><span><b>Forms hub + JSA/JHA generator</b> — build a Job Safety Analysis from an editable task library and export the full Task → Hazards → Controls → Risk breakdown.</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="both">Every paid plan includes <b>both portals</b> — unlimited workers, flat by job site.</p>
+  </div>
+</section>
+
+<!-- SUPERVISOR SHOWCASE -->
+<section class="block" id="supervisor">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-tag">For supervisors &amp; the office</div>
+      <h2>The <span class="grn">Supervisor</span> Portal</h2>
+      <p>Run every job site from your phone — projects, crews, compliance, and paperwork in one place.</p>
+    </div>
+    <div class="showcase">
+      <div class="phones">
+        <img class="phone-shot" src="/shots/sup-home.png" alt="SacredOps supervisor dashboard — live projects and compliance" loading="lazy" width="224">
+        <img class="phone-shot lift" src="/shots/sup-training.png" alt="SacredOps training tracker — worker certifications and expirations" loading="lazy" width="224">
+      </div>
+      <ul class="feat">
+        <li><b>Live project dashboards</b><span> — crew on site, sign-in %, open inspections and compliance status across every job.</span></li>
+        <li><b>Toolbox talks &amp; sign-ins</b><span> — assign a talk, collect crew signatures, export a signed PDF.</span></li>
+        <li><b>Inspections &amp; JSAs</b><span> — checklists, corrective actions and color-coded JSA/JHA builders.</span></li>
+        <li><b>Training tracker</b><span> — every worker's certifications with valid / expiring / expired at a glance.</span></li>
+        <li><b>Incident reports</b><span> — auto tracking number, tap-the-body injury map and a full PDF in seconds.</span></li>
+        <li><b>Payroll &amp; daily logs</b><span> — certified payroll with OT and fringe, exportable to accounting.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- WORKER SHOWCASE -->
+<section class="block" id="worker">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-tag">For the crew</div>
+      <h2>The <span class="grn">Worker</span> Portal</h2>
+      <p>Everything a worker needs in the field — no laptop, just their phone and a company code.</p>
+    </div>
+    <div class="showcase">
+      <ul class="feat">
+        <li><b>Daily briefing &amp; schedule</b><span> — where they're working, what's happening, and what's due.</span></li>
+        <li><b>Toolbox talks</b><span> — read and sign the day's safety talk right on their phone.</span></li>
+        <li><b>Report an incident</b><span> — tracking number plus a tap-the-body injury map, straight from the field.</span></li>
+        <li><b>SDS &amp; OSHA</b><span> — safety data sheets and required postings always on hand.</span></li>
+        <li><b>Forms &amp; permits</b><span> — fill out and sign permits without paper.</span></li>
+        <li><b>Profile, résumé &amp; certs</b><span> — their training and certifications, always with them.</span></li>
+      </ul>
+      <div class="phones">
+        <img class="phone-shot" src="/shots/wrk-home.png" alt="SacredOps worker portal home" loading="lazy" width="224">
+        <img class="phone-shot lift" src="/shots/wrk-incident.png" alt="SacredOps worker incident report with body diagram" loading="lazy" width="224">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="block" id="capabilities">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-tag">Compliance, covered</div>
+      <h2>The paperwork OSHA expects, <span class="grn">handled</span></h2>
+      <p>Every record a general contractor or auditor asks for — generated, signed, and filed automatically. Built for construction and warehouse crews, not bent to fit them.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+        <h3>Forms &amp; permits to PDF</h3>
+        <p>Six field forms — Hot Work, Confined Space, Heavy Equipment Checklist, Damage Report, Competent Person, Site Orientation — fill, sign, and file.</p>
+      </div>
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+        <h3>SDS library</h3>
+        <p>Every Safety Data Sheet at your fingertips with signal words, GHS pictograms, first aid, PPE, and HMIS/NFPA ratings.</p>
+      </div>
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="1"/><path d="M7 8h10M7 12h6M8 21h8M12 18v3"/></svg>
+        <h3>OSHA board</h3>
+        <p>Required workplace postings with plain-language summaries, worker acknowledgment, and the official zoomable poster.</p>
+      </div>
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 6l1 14a2 2 0 002 2h10a2 2 0 002-2l1-14"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M10 11l4 4M14 11l-4 4"/></svg>
+        <h3>JSA / JHA generator</h3>
+        <p>Check task steps from an editable library, set Low/Moderate/High risk, and generate a numbered Task → Hazards → Controls → Risk PDF.</p>
+      </div>
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8M12 17v4"/><rect x="3" y="4" width="18" height="13" rx="1"/><path d="M8 9l3 3 5-5"/></svg>
+        <h3>Toolbox talks &amp; sign-ins</h3>
+        <p>Run a daily briefing and capture the whole crew's signatures on one device — every muster tracked signed vs. missing.</p>
+      </div>
+      <div class="card">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/><path d="M17 3l1.5 1.5L21 2"/></svg>
+        <h3>Portable worker profile</h3>
+        <p>Documents and certifications with expiry alerts, plus a résumé builder that follows the worker from job to job.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERSIGHT / DASHBOARD MOCK -->
+<section class="block" id="dashboard">
+  <div class="wrap dash-wrap">
+    <div>
+      <div class="sec-tag">Supervisor oversight</div>
+      <h2>See every site <span class="grn">before the shift</span></h2>
+      <p style="color:var(--muted);margin-top:16px;font-size:16px">One live portfolio view of projects, sign-ins, attendance, and inspections. Drill into any project, then export any record as a PDF.</p>
+      <ul class="ticks">
+        <li><span>&#9656;</span> Compliance % and open items per project</li>
+        <li><span>&#9656;</span> Today's sign-in rate and live IN/OUT counts</li>
+        <li><span>&#9656;</span> Inspections flagged Pass, Open Items, or Stop Work</li>
+        <li><span>&#9656;</span> One-click PDF export across every area</li>
+      </ul>
+    </div>
+    <div class="mock" aria-hidden="true">
+      <div class="mock-bar">
+        <span class="dot g"></span><span class="dot"></span><span class="dot"></span>
+        <span class="mock-title">SACREDOPS · SUPERVISOR PORTAL</span>
+      </div>
+      <div class="mock-body">
+        <div class="row">
+          <div class="kpi"><div class="k">Active projects</div><div class="v">4</div></div>
+          <div class="kpi"><div class="k">On site now</div><div class="v g">63</div></div>
+          <div class="kpi"><div class="k">Compliance</div><div class="v g">98%</div></div>
+        </div>
+        <div class="bars">
+          <div class="bar" style="height:40%"></div><div class="bar" style="height:62%"></div>
+          <div class="bar" style="height:48%"></div><div class="bar" style="height:78%"></div>
+          <div class="bar" style="height:55%"></div><div class="bar" style="height:90%"></div>
+          <div class="bar" style="height:70%"></div><div class="bar" style="height:100%"></div>
+        </div>
+        <div class="log">
+          <div class="log-item"><span>Scaffold inspection — Tower B</span><span class="pill ok">Pass</span></div>
+          <div class="log-item"><span>Confined space permit — Vault 2</span><span class="pill warn">Open items</span></div>
+          <div class="log-item"><span>Fall protection — Level 7 deck</span><span class="pill stop">Stop work</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW / GET STARTED -->
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-tag">Get running</div><h2>Live on site in <span class="grn">a day</span></h2></div>
+    <div class="steps">
+      <div class="step"><div class="num">STEP 01</div><h4>Set up your project</h4>
+        <p>Create a job site, add your forms and company plans (HASP, HazCom, Vehicle), and load your SDS and OSHA postings.</p></div>
+      <div class="step"><div class="num">STEP 02</div><h4>Assign the crew</h4>
+        <p>Add workers to the project. Access follows the assignment — on an active project they see its tools; off it, only their own profile.</p></div>
+      <div class="step"><div class="num">STEP 03</div><h4>Work the site</h4>
+        <p>Crews sign in, run talks, and submit permits from the field. Every record rolls up to the supervisor portal under the right project.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="block" id="pricing">
+  <div class="wrap">
+    <div class="sec-head center">
+      <div class="sec-tag">Pricing</div>
+      <h2>Flat by job site, <span class="grn">never per seat</span></h2>
+      <p>Every plan includes unlimited workers and the supervisor portal. No setup fees — cancel anytime.</p>
+    </div>
+
+    <!-- LIMITED-TIME OFFER — replace the href with your $4,999 one-time Stripe Payment Link -->
+    <div class="price-offer">
+      <span class="otag">Limited-time offer</span>
+      <h3>6-Month Business Plan</h3>
+      <div class="ofig">$4,999 <span>one-time payment</span></div>
+      <p>Get six months of SacredOps Business for up to 10 active job sites — unlimited workers, both portals, payroll register, portfolio oversight, and priority support.</p>
+      <a class="obtn" target="_blank" rel="noopener" href="https://buy.stripe.com/REPLACE_6MONTH_OFFER">Get the 6-month Business offer &rarr;</a>
+    </div>
+
+    <div class="price-grid">
+      <div class="tier">
+        <div class="name">Starter</div>
+        <div class="price">$149<small>/mo</small></div>
+        <div class="sites">1 job site</div>
+        <ul>
+          <li>Worker + supervisor portal</li>
+          <li>Forms &amp; permits to PDF</li>
+          <li>SDS library &amp; OSHA board</li>
+          <li>Toolbox talks &amp; sign-ins</li>
+        </ul>
+        <a target="_blank" rel="noopener" href="https://buy.stripe.com/bJecN7gJC4z0g3G5K07IY08" class="btn btn-ghost">Get started</a>
+      </div>
+      <div class="tier feature">
+        <div class="badge">Most popular</div>
+        <div class="name">Pro</div>
+        <div class="price">$399<small>/mo</small></div>
+        <div class="sites">Up to 3 sites</div>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Multi-site attendance</li>
+          <li>Inspections &amp; incident tracking</li>
+          <li>Certification tracking</li>
+        </ul>
+        <a target="_blank" rel="noopener" href="https://buy.stripe.com/fZu8wRdxq5D42cQ3BS7IY09" class="btn btn-primary">Get started</a>
+      </div>
+      <div class="tier">
+        <div class="name">Business</div>
+        <div class="price">$799<small>/mo</small></div>
+        <div class="sites">Up to 10 sites</div>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>JSA / JHA generator</li>
+          <li>Portfolio oversight</li>
+          <li>Priority support</li>
+        </ul>
+        <a target="_blank" rel="noopener" href="https://buy.stripe.com/28EcN72SM9Tk2cQ5K07IY07" class="btn btn-ghost">Get started</a>
+      </div>
+      <div class="tier">
+        <div class="name">Enterprise</div>
+        <div class="price">Custom</div>
+        <div class="sites">Unlimited sites</div>
+        <ul>
+          <li>Everything in Business</li>
+          <li>Personalized HASP / HazCom</li>
+          <li>Subcontractor management</li>
+          <li>SSO &amp; dedicated onboarding</li>
+        </ul>
+        <a target="_blank" rel="noopener" href="mailto:sales@sacredops.app?subject=Enterprise%20plan" class="btn btn-ghost">Talk to us</a>
+      </div>
+    </div>
+    <p class="price-note">No setup fees. No per-seat charges. Annual billing saves roughly two months.</p>
+  </div>
+</section>
+
+<!-- WHY IT PAYS -->
+<section class="quote">
+  <div class="wrap">
+    <blockquote>When the inspector shows up, you don't want to be digging through a truck for a binder. <span class="grn">You want it all on your phone, signed and dated.</span></blockquote>
+    <cite>One avoided serious violation ($16K+) pays for years of SacredOps. Figures are 2026 OSHA penalty estimates, shown for illustration.</cite>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="start">
+  <div class="wrap">
+    <div class="emblem">
+      <svg viewBox="0 0 200 200" width="104" height="104" aria-hidden="true">
+        <g filter="url(#glow)" opacity=".92">
+          <rect x="88" y="24" width="24" height="152" rx="3" fill="url(#crossV)"/>
+          <rect x="24" y="88" width="152" height="24" rx="3" fill="url(#crossH)"/>
+        </g>
+        <g class="orbits" filter="url(#glow)">
+          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#2ecb5f" stroke-width="2.6" transform="rotate(32 100 100)"/>
+          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#04A466" stroke-width="2.6" transform="rotate(-32 100 100)"/>
+        </g>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#17b34a" stroke-width="2.6" filter="url(#glow)"/>
+        <circle cx="100" cy="100" r="72.5" fill="none" stroke="#17b34a" stroke-width="1.8" opacity=".9"/>
+        <g stroke="#25c455" stroke-width="3.2" stroke-linecap="round" filter="url(#glow)">
+          <line x1="100" y1="6" x2="100" y2="194"/>
+          <line x1="6" y1="100" x2="194" y2="100"/>
+        </g>
+        <circle class="core" cx="100" cy="100" r="17" fill="url(#coreG)"/>
+        <circle cx="100" cy="100" r="7" fill="none" stroke="#0a3d24" stroke-width="2"/>
+        <circle cx="100" cy="100" r="3.3" fill="#eafff0"/>
+      </svg>
+    </div>
+    <h2>Build safer. <span class="grn">Start today.</span></h2>
+    <p>Spin up your first job site free for 14 days. Both portals, unlimited workers, cancel anytime.</p>
+    <form class="signup" onsubmit="event.preventDefault();var b=this.querySelector('.btn');var e=this.querySelector('input').value;b.textContent='Sending…';fetch('https://demo.sacredops.app/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,companyName:'Signup request'})}).then(function(){b.textContent='Request sent \u2713';}).catch(function(){b.textContent='Request sent \u2713';});">
+      <input type="email" placeholder="Work email" required aria-label="Work email">
+      <button class="btn btn-primary" type="submit">Get started</button>
+    </form>
+    <small>No setup fees · cancel anytime</small>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#top" class="brand" style="font-size:17px">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="4"/>
+            <g stroke="#04A466" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
+            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(32 50 50)"/>
+            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(-32 50 50)"/>
+            <circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
+          <span><span class="s">SACRED</span><span class="o">OPS</span></span>
+        </a>
+        <p>The construction safety and field-operations platform. Mobile-first, construction-native, built for 6 AM.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col"><h5>Product</h5>
+          <a href="#portals">Portals</a><a href="#capabilities">Capabilities</a><a href="#dashboard">Oversight</a><a href="#pricing">Pricing</a></div>
+        <div class="foot-col"><h5>Company</h5>
+          <a href="#">About</a><a href="#">Contact</a><a href="#">Security</a><a href="#">Access model</a></div>
+        <div class="foot-col"><h5>Resources</h5>
+          <a href="#">SDS &amp; OSHA</a><a href="#">Form templates</a><a href="#">JSA library</a><a href="#">Support</a></div>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 SacredOps. All rights reserved.</span>
+      <span>Build Safer. Work Smarter.</span>
+    </div>
+    <p style="margin-top:18px;font-size:12px;line-height:1.6;color:var(--muted);max-width:760px">
+      We improve our products and advertising by using Microsoft Clarity to see how you use our
+      website. By using our site, you agree that we and Microsoft can collect and use this data.
+      Our <a href="/privacy.html" style="color:var(--muted);text-decoration:underline">privacy statement</a> has more details.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var t=document.getElementById('navToggle'),m=document.getElementById('navMenu');
+  if(!t||!m)return;
+  function close(){m.classList.remove('open');t.setAttribute('aria-expanded','false');t.setAttribute('aria-label','Open menu');}
+  t.addEventListener('click',function(){
+    var open=m.classList.toggle('open');
+    t.setAttribute('aria-expanded',open?'true':'false');
+    t.setAttribute('aria-label',open?'Close menu':'Open menu');
+  });
+  m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+})();
+</script>
+
+</body>
+</html>
