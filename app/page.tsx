@@ -44,21 +44,13 @@ export default function Home() {
       <div style={{ width: "100%", maxWidth: 430 }}>
         <AccountBar />
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="SacredOps"
-            width={36}
-            height={36}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 9,
-              border: "1px solid rgba(255,255,255,0.12)",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.55)",
-              display: "block",
-            }}
-          />
+          <svg viewBox="0 0 100 100" width={36} height={36} aria-hidden="true" style={{ display: "block", filter: "drop-shadow(0 0 6px rgba(4,164,102,.45))" }}>
+            <circle cx="50" cy="50" r="40" fill="none" stroke={AC} strokeWidth={4} />
+            <g stroke={AC} strokeWidth={4} strokeLinecap="round"><line x1="50" y1="4" x2="50" y2="96" /><line x1="4" y1="50" x2="96" y2="50" /></g>
+            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke={AC} strokeWidth={3.4} transform="rotate(32 50 50)" />
+            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke={AC} strokeWidth={3.4} transform="rotate(-32 50 50)" />
+            <circle cx="50" cy="50" r="6" fill="#eafff0" />
+          </svg>
           <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: 0.4 }}>
             Sacred<span style={{ color: AC }}>Ops</span>
           </div>

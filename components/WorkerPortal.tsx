@@ -18,7 +18,7 @@ function Brand({size=34,stack=false}){
   return (
     <div style={{display:"flex",alignItems:"center",gap:10}}>
       <div style={{position:"relative",width:size,height:size,display:"flex",alignItems:"center",justifyContent:"center"}}>
-        <img src="/logo.png" alt="SacredOps" width={size} height={size} style={{width:size,height:size,borderRadius:size*0.26,border:"1px solid rgba(255,255,255,0.12)",boxShadow:"0 2px 12px rgba(0,0,0,0.55)",display:"block"}}/>
+        <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true" style={{display:"block",filter:"drop-shadow(0 0 6px rgba(4,164,102,.45))"}}><circle cx="50" cy="50" r="40" fill="none" stroke={AC} strokeWidth={4}/><g stroke={AC} strokeWidth={4} strokeLinecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke={AC} strokeWidth={3.4} transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke={AC} strokeWidth={3.4} transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
       </div>
       <div style={{lineHeight:1}}>
         <div style={{fontSize:size*0.52,fontWeight:800,letterSpacing:0.5,color:TX,fontFamily:SANS}}>
