@@ -435,7 +435,7 @@ export default function AdminPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <span style={{ fontSize: 16, fontWeight: 800, textTransform: "capitalize" }}>{company.plan}</span>
             <span style={{ fontSize: 9.5, fontWeight: 800, fontFamily: MONO, color: company.hasSubscription ? AC : WN, background: (company.hasSubscription ? AC : WN) + "1e", border: "1px solid " + (company.hasSubscription ? AC : WN) + "55", borderRadius: 20, padding: "3px 9px" }}>
-              {company.hasSubscription ? "ACTIVE" : "TRIAL"}
+              {company.hasSubscription ? "ACTIVE" : "NO PLAN"}
             </span>
             <div style={{ flex: 1 }} />
             {company.hasSubscription ? (

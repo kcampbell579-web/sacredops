@@ -29,9 +29,8 @@ export async function POST(req: Request) {
       : { customer_email: adminUser?.email || undefined }),
     line_items: [{ price, quantity: 1 }],
     metadata: { companyId: admin.companyId, plan: String(plan) },
-    // 14-day free trial, no card required up front (matches the pricing page).
-    subscription_data: { metadata: { companyId: admin.companyId }, trial_period_days: 14 },
-    payment_method_collection: "if_required",
+    // No free trial — the subscription bills immediately (card required).
+    subscription_data: { metadata: { companyId: admin.companyId } },
     success_url: `${origin}/admin?billing=success`,
     cancel_url: `${origin}/admin?billing=cancel`,
     allow_promotion_codes: true,

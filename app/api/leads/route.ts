@@ -22,7 +22,7 @@ export async function OPTIONS() {
 export async function POST(req: Request) {
   const { name, companyName, company, email, phone } = await req.json().catch(() => ({}));
   const cleanEmail = String(email || "").trim().toLowerCase();
-  // Name is optional — the marketing "Start free trial" form captures email only.
+  // Name is optional — the marketing "Get started" form captures email only.
   const cleanName = String(name || "").trim() || cleanEmail.split("@")[0] || "Website lead";
   if (!cleanEmail) {
     return Response.json({ error: "Email is required." }, { status: 400, headers: CORS });
