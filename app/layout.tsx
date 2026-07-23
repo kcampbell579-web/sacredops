@@ -27,7 +27,7 @@ export default function RootLayout({
   // Meta (Facebook) Pixel — set NEXT_PUBLIC_FB_PIXEL_ID in Vercel to your Pixel
   // ID to turn it on. Tracks PageView automatically; the login page fires Lead /
   // CompleteRegistration on signup (see app/login/page.tsx).
-  const FB_PIXEL = process.env.NEXT_PUBLIC_FB_PIXEL_ID || "";
+  const FB_PIXEL = process.env.NEXT_PUBLIC_FB_PIXEL_ID || "1573862441061857";
 
   return (
     <html lang="en">
