@@ -18,6 +18,13 @@ export function middleware(req: NextRequest) {
   const url = req.nextUrl;
   if (url.pathname !== "/") return NextResponse.next();
 
+  // Apex marketing domain (sacredops.app / www.sacredops.app) → serve the
+  // marketing page from public/site.html. Keeps the app on its subdomains.
+  if (host === "sacredops.app" || host === "www.sacredops.app") {
+    url.pathname = "/site.html";
+    return NextResponse.rewrite(url);
+  }
+
   const parts = host.split(".");
   const sub = parts.length >= 3 ? parts[0] : "";
   if (!sub) return NextResponse.next();
