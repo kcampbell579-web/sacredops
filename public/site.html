@@ -12,7 +12,7 @@
 <style>
   :root{
     --black:#050705;--panel:#0a0f0b;--panel-2:#0e150f;--forest:#002d19;--forest-line:#0a3d24;
-    --green:#16a645;--green-bright:#20c454;--lime:#88c874;--ink:#f2f5f0;--muted:#8ea394;
+    --green:#04A466;--green-bright:#04A466;--lime:#04A466;--ink:#f2f5f0;--muted:#8ea394;
     --hair:rgba(120,180,140,.14);
     --display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;
   }
@@ -31,12 +31,12 @@
   .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
   .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:19px}
   .brand .s{color:var(--ink)}.brand .o{color:var(--green-bright)}
-  .brand svg{width:30px;height:30px;filter:drop-shadow(0 0 6px rgba(32,196,84,.6))}
+  .brand svg{width:30px;height:30px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
   .nav-links{display:flex;gap:30px;font-size:14px;color:var(--muted);font-family:var(--display);letter-spacing:.03em}
   .nav-links a{transition:color .2s}.nav-links a:hover{color:var(--lime)}
   .nav-cta{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
     padding:10px 18px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px;transition:.2s}
-  .nav-cta:hover{background:var(--green);color:#000;box-shadow:0 0 18px rgba(32,196,84,.45)}
+  .nav-cta:hover{background:var(--green);color:#000;box-shadow:0 0 18px rgba(4,164,102,.45)}
   .nav-right{display:flex;align-items:center;gap:12px}
   .nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;flex:none;
     background:transparent;border:1px solid var(--forest-line);border-radius:2px;cursor:pointer;padding:0}
@@ -48,7 +48,7 @@
   .nav-menu.open{display:flex}
   .nav-menu a{padding:15px 24px;border-bottom:1px solid var(--hair);font-family:var(--display);font-size:14px;
     letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:.2s}
-  .nav-menu a:hover,.nav-menu a:active{color:var(--green-bright);background:rgba(22,166,69,.08)}
+  .nav-menu a:hover,.nav-menu a:active{color:var(--green-bright);background:rgba(4,164,102,.08)}
   section[id],header[id]{scroll-margin-top:74px}
   @media(max-width:900px){.nav-links{display:none}.nav-toggle{display:flex}}
   @media(max-width:560px){
@@ -64,7 +64,7 @@
   .eyebrow{font-family:var(--display);font-size:12.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--green-bright);margin-bottom:26px}
   .emblem{width:180px;height:180px;margin:0 auto 28px;position:relative}
   h1{font-family:var(--display);font-weight:700;letter-spacing:.02em;font-size:clamp(38px,7vw,74px);line-height:.98;text-transform:uppercase}
-  h1 .white{color:var(--ink)}h1 .grn{color:var(--green-bright);text-shadow:0 0 26px rgba(32,196,84,.5)}
+  h1 .white{color:var(--ink)}h1 .grn{color:var(--green-bright);text-shadow:0 0 26px rgba(4,164,102,.5)}
   .tag{font-family:var(--display);font-size:clamp(14px,2.3vw,18px);letter-spacing:.24em;text-transform:uppercase;margin-top:18px;color:var(--muted)}
   .tag b{color:var(--ink);font-weight:600}
   .sub{max-width:600px;margin:24px auto 0;color:var(--muted);font-size:16.5px}
@@ -72,7 +72,7 @@
   .btn{font-family:var(--display);font-weight:600;letter-spacing:.06em;font-size:14px;text-transform:uppercase;
     padding:15px 30px;border-radius:2px;transition:.2s;cursor:pointer;border:none}
   .btn-primary{background:var(--green);color:#000}
-  .btn-primary:hover{background:var(--green-bright);box-shadow:0 0 26px rgba(32,196,84,.55);transform:translateY(-1px)}
+  .btn-primary:hover{background:var(--green-bright);box-shadow:0 0 26px rgba(4,164,102,.55);transform:translateY(-1px)}
   .btn-ghost{border:1px solid var(--forest-line);color:var(--ink);background:transparent}
   .btn-ghost:hover{border-color:var(--green);color:var(--green-bright)}
   .hero-code{margin-top:20px;font-family:var(--display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -99,7 +99,7 @@
   .portal .lede{color:var(--muted);font-size:15px;margin-bottom:22px}
   .plist{list-style:none}
   .plist li{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--hair);font-size:14.5px;align-items:flex-start}
-  .plist li::before{content:"";flex:none;width:7px;height:7px;margin-top:8px;background:var(--green-bright);border-radius:1px;box-shadow:0 0 8px rgba(32,196,84,.6)}
+  .plist li::before{content:"";flex:none;width:7px;height:7px;margin-top:8px;background:var(--green-bright);border-radius:1px;box-shadow:0 0 8px rgba(4,164,102,.6)}
   .plist li b{font-weight:600;color:var(--ink)}
   .plist li span{color:var(--muted)}
   .both{text-align:center;margin-top:26px;font-family:var(--display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -110,11 +110,11 @@
   @media(max-width:680px){.compare{grid-template-columns:1fr}}
   .comp-col{border-radius:6px;padding:30px 28px}
   .comp-col.old{background:var(--panel);border:1px solid var(--hair);opacity:.9}
-  .comp-col.new{background:linear-gradient(180deg,rgba(22,166,69,.1),var(--panel));border:1px solid var(--green);box-shadow:0 0 44px -14px rgba(32,196,84,.45)}
+  .comp-col.new{background:linear-gradient(180deg,rgba(4,164,102,.1),var(--panel));border:1px solid var(--green);box-shadow:0 0 44px -14px rgba(4,164,102,.45)}
   .comp-h{font-family:var(--display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
   .comp-col.new .comp-h{color:var(--green-bright)}
   .comp-fig{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1;color:var(--ink)}
-  .comp-col.new .comp-fig{color:var(--green-bright);text-shadow:0 0 24px rgba(32,196,84,.4)}
+  .comp-col.new .comp-fig{color:var(--green-bright);text-shadow:0 0 24px rgba(4,164,102,.4)}
   .comp-fig span{font-size:15px;color:var(--muted);font-weight:400;letter-spacing:.02em}
   .comp-sub{font-size:13px;color:var(--muted);margin:8px 0 18px;letter-spacing:.04em}
   .comp-col ul{list-style:none;font-size:14px}
@@ -128,7 +128,7 @@
   .card{background:var(--panel);padding:32px 28px;transition:.25s;position:relative}
   .card:hover{background:var(--panel-2)}
   .card::after{content:"";position:absolute;left:0;top:0;height:2px;width:0;background:var(--green);transition:.3s}
-  .card:hover::after{width:100%;box-shadow:0 0 14px rgba(32,196,84,.6)}
+  .card:hover::after{width:100%;box-shadow:0 0 14px rgba(4,164,102,.6)}
   .card .ic{width:42px;height:42px;color:var(--green-bright);margin-bottom:18px}
   .card h3{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:9px}
   .card p{color:var(--muted);font-size:14px}
@@ -141,7 +141,7 @@
   .ticks{list-style:none;margin-top:24px}
   .ticks li{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--hair);color:var(--ink);font-size:15px}
   .ticks li span{color:var(--green-bright);font-family:var(--display)}
-  .mock{background:var(--panel);border:1px solid var(--forest-line);border-radius:6px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(32,196,84,.28)}
+  .mock{background:var(--panel);border:1px solid var(--forest-line);border-radius:6px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(4,164,102,.28)}
   .mock-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--hair);background:var(--black)}
   .dot{width:10px;height:10px;border-radius:50%;background:#1c2a1f}.dot.g{background:var(--green)}
   .mock-title{margin-left:10px;font-family:var(--display);font-size:12px;letter-spacing:.1em;color:var(--muted)}
@@ -152,11 +152,11 @@
   .kpi .v{font-family:var(--display);font-weight:700;font-size:23px;color:var(--ink);margin-top:4px}
   .kpi .v.g{color:var(--green-bright)}
   .bars{display:flex;align-items:flex-end;gap:8px;height:110px;padding:16px;background:var(--panel-2);border:1px solid var(--hair);border-radius:4px}
-  .bar{flex:1;background:linear-gradient(var(--green-bright),var(--forest));border-radius:2px 2px 0 0;box-shadow:0 0 12px rgba(32,196,84,.25)}
+  .bar{flex:1;background:linear-gradient(var(--green-bright),var(--forest));border-radius:2px 2px 0 0;box-shadow:0 0 12px rgba(4,164,102,.25)}
   .log{margin-top:14px}
   .log-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--hair);border-radius:4px;margin-bottom:8px;font-size:13px}
   .pill{font-family:var(--display);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:2px;white-space:nowrap}
-  .pill.ok{background:rgba(32,196,84,.15);color:var(--green-bright);border:1px solid var(--green)}
+  .pill.ok{background:rgba(4,164,102,.15);color:var(--green-bright);border:1px solid var(--green)}
   .pill.warn{background:rgba(230,180,40,.12);color:#e6b428;border:1px solid #6b5410}
   .pill.stop{background:rgba(230,70,60,.14);color:#e6564a;border:1px solid #6b1d18}
 
@@ -173,7 +173,7 @@
   @media(max-width:980px){.price-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:520px){.price-grid{grid-template-columns:1fr}}
   .tier{background:var(--panel);border:1px solid var(--forest-line);border-radius:6px;padding:28px 24px;display:flex;flex-direction:column}
-  .tier.feature{border-color:var(--green);box-shadow:0 0 40px -12px rgba(32,196,84,.4)}
+  .tier.feature{border-color:var(--green);box-shadow:0 0 40px -12px rgba(4,164,102,.4)}
   .tier .badge{align-self:flex-start;font-family:var(--display);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
     color:#000;background:var(--green-bright);padding:3px 9px;border-radius:2px;margin-bottom:12px}
   .tier .name{font-family:var(--display);font-weight:600;font-size:20px;text-transform:uppercase;letter-spacing:.04em}
@@ -186,17 +186,17 @@
   .tier ul li:first-child::before{content:"\2713"}
   .tier .btn{margin-top:20px;text-align:center}
   .price-note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:26px}
-  .price-offer{background:linear-gradient(180deg,rgba(22,166,69,.14),var(--panel));border:2px solid var(--green);border-radius:12px;
-    padding:34px 28px;text-align:center;margin-bottom:24px;box-shadow:0 0 60px -18px rgba(32,196,84,.55)}
+  .price-offer{background:linear-gradient(180deg,rgba(4,164,102,.14),var(--panel));border:2px solid var(--green);border-radius:12px;
+    padding:34px 28px;text-align:center;margin-bottom:24px;box-shadow:0 0 60px -18px rgba(4,164,102,.55)}
   .price-offer .otag{display:inline-block;font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
     color:#04231a;background:var(--green-bright);padding:4px 12px;border-radius:3px;font-weight:700;margin-bottom:16px}
   .price-offer h3{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.4vw,34px);text-transform:uppercase;letter-spacing:.02em;margin:0;color:var(--ink)}
-  .price-offer .ofig{font-family:var(--display);font-weight:700;font-size:clamp(38px,7vw,52px);color:var(--green-bright);margin:12px 0 2px;text-shadow:0 0 26px rgba(32,196,84,.4)}
+  .price-offer .ofig{font-family:var(--display);font-weight:700;font-size:clamp(38px,7vw,52px);color:var(--green-bright);margin:12px 0 2px;text-shadow:0 0 26px rgba(4,164,102,.4)}
   .price-offer .ofig span{font-size:15px;color:var(--muted);font-weight:400;letter-spacing:.02em}
   .price-offer p{color:var(--muted);font-size:15px;line-height:1.6;max-width:680px;margin:12px auto 22px}
   .price-offer .obtn{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:14px;text-transform:uppercase;
     padding:16px 34px;border-radius:3px;text-decoration:none;background:var(--green);color:#fff;border:2px solid var(--green-bright);transition:.2s}
-  .price-offer .obtn:hover{background:var(--green-bright);box-shadow:0 0 26px rgba(32,196,84,.55)}
+  .price-offer .obtn:hover{background:var(--green-bright);box-shadow:0 0 26px rgba(4,164,102,.55)}
 
   /* quote */
   .quote{position:relative;z-index:1;text-align:center;padding:90px 0;background:linear-gradient(180deg,transparent,rgba(0,45,25,.25),transparent)}
@@ -212,7 +212,7 @@
   .signup{display:flex;gap:10px;max-width:460px;margin:0 auto;flex-wrap:wrap;justify-content:center}
   .signup input{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--forest-line);color:var(--ink);
     padding:15px 16px;border-radius:2px;font-family:var(--body);font-size:15px;outline:none;transition:.2s}
-  .signup input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(32,196,84,.2)}
+  .signup input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(4,164,102,.2)}
   .signup input::placeholder{color:var(--muted)}
   .cta small{display:block;margin-top:14px;color:var(--muted);font-size:12.5px;letter-spacing:.06em}
 
@@ -276,10 +276,10 @@
   <div class="wrap nav-in">
     <a href="#top" class="brand" aria-label="SacredOps home">
       <svg viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="40" fill="none" stroke="#20c454" stroke-width="4"/>
-        <g stroke="#20c454" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
-        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#20c454" stroke-width="3.4" transform="rotate(32 50 50)"/>
-        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#20c454" stroke-width="3.4" transform="rotate(-32 50 50)"/>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="4"/>
+        <g stroke="#04A466" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(32 50 50)"/>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(-32 50 50)"/>
         <circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
       <span><span class="s">SACRED</span><span class="o">OPS</span></span>
     </a>
@@ -311,14 +311,14 @@
     <div class="eyebrow rise d1">For contractors without a safety department</div>
     <div class="emblem rise d1">
       <svg viewBox="0 0 200 200" width="180" height="180" aria-label="SacredOps emblem" role="img">
-        <circle cx="100" cy="100" r="66" fill="#16a645" opacity=".16" filter="url(#soft)"/>
+        <circle cx="100" cy="100" r="66" fill="#04A466" opacity=".16" filter="url(#soft)"/>
         <g filter="url(#glow)" opacity=".92">
           <rect x="88" y="24" width="24" height="152" rx="3" fill="url(#crossV)"/>
           <rect x="24" y="88" width="152" height="24" rx="3" fill="url(#crossH)"/>
         </g>
         <g class="orbits" filter="url(#glow)">
           <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#2ecb5f" stroke-width="2.4" transform="rotate(32 100 100)"/>
-          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#20c454" stroke-width="2.4" transform="rotate(-32 100 100)"/>
+          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#04A466" stroke-width="2.4" transform="rotate(-32 100 100)"/>
         </g>
         <circle cx="100" cy="100" r="80" fill="none" stroke="#17b34a" stroke-width="2.4" filter="url(#glow)"/>
         <circle cx="100" cy="100" r="72.5" fill="none" stroke="#17b34a" stroke-width="1.7" opacity=".9"/>
@@ -609,7 +609,7 @@
         </g>
         <g class="orbits" filter="url(#glow)">
           <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#2ecb5f" stroke-width="2.6" transform="rotate(32 100 100)"/>
-          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#20c454" stroke-width="2.6" transform="rotate(-32 100 100)"/>
+          <ellipse cx="100" cy="100" rx="62" ry="25" fill="none" stroke="#04A466" stroke-width="2.6" transform="rotate(-32 100 100)"/>
         </g>
         <circle cx="100" cy="100" r="80" fill="none" stroke="#17b34a" stroke-width="2.6" filter="url(#glow)"/>
         <circle cx="100" cy="100" r="72.5" fill="none" stroke="#17b34a" stroke-width="1.8" opacity=".9"/>
@@ -638,10 +638,10 @@
       <div class="foot-brand">
         <a href="#top" class="brand" style="font-size:17px">
           <svg viewBox="0 0 100 100" aria-hidden="true">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#20c454" stroke-width="4"/>
-            <g stroke="#20c454" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
-            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#20c454" stroke-width="3.4" transform="rotate(32 50 50)"/>
-            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#20c454" stroke-width="3.4" transform="rotate(-32 50 50)"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="4"/>
+            <g stroke="#04A466" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
+            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(32 50 50)"/>
+            <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(-32 50 50)"/>
             <circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
           <span><span class="s">SACRED</span><span class="o">OPS</span></span>
         </a>
