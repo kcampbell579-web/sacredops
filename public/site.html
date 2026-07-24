@@ -111,17 +111,6 @@
     box-shadow:0 26px 64px rgba(0,0,0,.6),0 0 0 1px var(--forest-line);display:block;background:#0d0d0d}
   .phone-shot.lift{transform:translateY(22px)}
   @media(max-width:880px){.phone-shot{max-width:46%}.phone-shot.lift{transform:none}}
-  /* anti-copy caution tape + "there's more inside" tease on screenshots */
-  .shot{position:relative;display:inline-flex}
-  .shot.lift{transform:translateY(22px)}
-  @media(max-width:880px){.shot.lift{transform:none}}
-  .shot .phone-shot{transform:none}
-  .shot-more{position:absolute;left:7px;right:7px;bottom:7px;z-index:2;border-radius:0 0 20px 20px;
-    padding:60px 10px 14px;text-decoration:none;
-    background:linear-gradient(to top,rgba(13,13,13,.97) 34%,rgba(13,13,13,0));
-    color:var(--green-bright);font-family:var(--display);font-size:10.5px;font-weight:800;
-    letter-spacing:.05em;text-align:center;transition:color .15s}
-  .shot-more:hover{color:#fff}
   .feat{list-style:none}
   .feat li{display:flex;gap:13px;padding:13px 0;border-top:1px solid var(--hair);font-size:15px;align-items:flex-start;line-height:1.5}
   .feat li:first-child{border-top:none}
@@ -468,14 +457,8 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
     </div>
     <div class="showcase">
       <div class="phones">
-        <span class="shot">
-          <img class="phone-shot" src="/shots/sup-home.png" alt="SacredOps supervisor dashboard — live projects and compliance" loading="lazy" width="224">
-          <a class="shot-more" href="/supervisors">▶ Try the live demo →</a>
-        </span>
-        <span class="shot lift">
-          <img class="phone-shot" src="/shots/sup-training.png" alt="SacredOps training tracker — worker certifications and expirations" loading="lazy" width="224">
-          <a class="shot-more" href="/supervisors">▶ Try the live demo →</a>
-        </span>
+        <img class="phone-shot" src="/shots/sup-home.png" alt="SacredOps supervisor dashboard — live projects and compliance" loading="lazy" width="224">
+        <img class="phone-shot lift" src="/shots/sup-training.png" alt="SacredOps training tracker — worker certifications and expirations" loading="lazy" width="224">
       </div>
       <ul class="feat">
         <li><b>Live project dashboards</b><span> — crew on site, sign-in %, open inspections and compliance status across every job.</span></li>
@@ -485,7 +468,6 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
         <li><b>Incident reports</b><span> — auto tracking number, tap-the-body injury map and a full PDF in seconds.</span></li>
         <li><b>Payroll &amp; daily logs</b><span> — certified payroll with OT and fringe, exportable to accounting.</span></li>
       </ul>
-      <a href="/supervisors" class="btn btn-primary" style="margin-top:22px;display:inline-block">Try the live Supervisor demo →</a>
     </div>
   </div>
 </section>
@@ -507,16 +489,9 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
         <li><b>Forms &amp; permits</b><span> — fill out and sign permits without paper.</span></li>
         <li><b>Profile, résumé &amp; certs</b><span> — their training and certifications, always with them.</span></li>
       </ul>
-      <a href="/crews" class="btn btn-primary" style="margin-top:22px;display:inline-block">Try the live Worker demo →</a>
       <div class="phones">
-        <span class="shot">
-          <img class="phone-shot" src="/shots/wrk-home.png" alt="SacredOps worker portal home" loading="lazy" width="224">
-          <a class="shot-more" href="/crews">▶ Try the live demo →</a>
-        </span>
-        <span class="shot lift">
-          <img class="phone-shot" src="/shots/wrk-incident.png" alt="SacredOps worker incident report with body diagram" loading="lazy" width="224">
-          <a class="shot-more" href="/crews">▶ Try the live demo →</a>
-        </span>
+        <img class="phone-shot" src="/shots/wrk-home.png" alt="SacredOps worker portal home" loading="lazy" width="224">
+        <img class="phone-shot lift" src="/shots/wrk-incident.png" alt="SacredOps worker incident report with body diagram" loading="lazy" width="224">
       </div>
     </div>
   </div>
@@ -636,7 +611,7 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
       <h3>6-Month Business Plan</h3>
       <div class="ofig">$4,999 <span>one-time payment</span></div>
       <p>Get six months of SacredOps Business for up to 10 active job sites — unlimited workers, both portals, payroll register, portfolio oversight, and priority support.</p>
-      <a class="obtn" href="/supervisors">See what's included &rarr;</a>
+      <a class="obtn" target="_blank" rel="noopener" href="https://buy.stripe.com/REPLACE_6MONTH_OFFER">Get the 6-month Business offer &rarr;</a>
     </div>
 
     <div class="price-grid">
@@ -650,7 +625,7 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
           <li>SDS library &amp; OSHA board</li>
           <li>Toolbox talks &amp; sign-ins</li>
         </ul>
-        <a href="/pricing" class="btn btn-ghost">Compare plans</a>
+        <a target="_blank" rel="noopener" href="https://buy.stripe.com/bJecN7gJC4z0g3G5K07IY08" class="btn btn-ghost">Get started</a>
       </div>
       <div class="tier feature">
         <div class="badge">Most popular</div>
@@ -663,7 +638,7 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
           <li>Inspections &amp; incident tracking</li>
           <li>Certification tracking</li>
         </ul>
-        <a href="/pricing" class="btn btn-primary">Compare plans</a>
+        <a target="_blank" rel="noopener" href="https://buy.stripe.com/fZu8wRdxq5D42cQ3BS7IY09" class="btn btn-primary">Get started</a>
       </div>
       <div class="tier">
         <div class="name">Business</div>
@@ -675,7 +650,7 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
           <li>Portfolio oversight</li>
           <li>Priority support</li>
         </ul>
-        <a href="/pricing" class="btn btn-ghost">Compare plans</a>
+        <a target="_blank" rel="noopener" href="https://buy.stripe.com/28EcN72SM9Tk2cQ5K07IY07" class="btn btn-ghost">Get started</a>
       </div>
       <div class="tier">
         <div class="name">Enterprise</div>
