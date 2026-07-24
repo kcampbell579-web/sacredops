@@ -362,7 +362,9 @@ function loadSafetyLocs(){try{const v=window.localStorage.getItem(SLKEY);return 
 const SAFETY_CATS=[["assembly","Assembly Point","M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10zM12 8v3M12 14h.01"],["fire","Fire Extinguishers","M12 3c3 4 1 6 0 8 3-1 4-4 4-4 2 5-2 10-4 10s-6-3-4-8c1 2 3 2 3 2s-2-4 1-8z"],["spill","Spill Kits","M12 3s5 6 5 10a5 5 0 01-10 0c0-4 5-10 5-10z"],["firstaid","First Aid",'M4 7h16v12H4zM9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M9 13h6M12 10v6']];
 export default function App(){
   const[tab,setTab]=useState("home");
-  const[scr,setScr]=useState(null);
+  // The public /try demo can deep-link straight into a screen (e.g. the
+  // incident report) by setting window.__startScreen before this mounts.
+  const[scr,setScr]=useState(()=>{try{const s=window.__startScreen;if(s){delete window.__startScreen;return s;}}catch(e){}return null;});
   const[toast,setToast]=useState("");
   const[q,setQ]=useState("");
   const[zoom,setZoom]=useState(false);

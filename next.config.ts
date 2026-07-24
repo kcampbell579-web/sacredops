@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       // Product landing pages with the embedded live interactive demo.
       { source: "/supervisors", destination: "/supervisors.html" },
       { source: "/crews", destination: "/crews.html" },
+      { source: "/incident-reporting", destination: "/incident-reporting.html" },
     ];
   },
 };

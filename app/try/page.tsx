@@ -36,6 +36,12 @@ export default function TryDemo() {
     // Unlock every module for the demo (portals hide a module only when its
     // flag is explicitly false; an empty object shows everything).
     (window as unknown as { __sacredFeatures?: Record<string, boolean> }).__sacredFeatures = {};
+    // Optional deep-link: /try?role=worker&screen=incident opens straight to
+    // that screen (the Worker portal reads window.__startScreen on mount).
+    const screen = p.get("screen");
+    if (screen) {
+      (window as unknown as { __startScreen?: { t: string } }).__startScreen = { t: screen };
+    }
     try {
       setFramed(window.self !== window.top);
     } catch {
