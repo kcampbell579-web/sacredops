@@ -32,6 +32,15 @@ function track(event: string, params?: Record<string, unknown>) {
   try {
     const g = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
     if (g) g("event", event, params || {});
+    // Google Ads "Sign-up" conversion (AW-18341083534) — fire on any new-account
+    // creation (demo, company, or worker signup).
+    if (g && (event === "demo_signup" || event === "sign_up")) {
+      g("event", "conversion", {
+        send_to: "AW-18341083534/CBlPCPnQyNUcEI7z2qlE",
+        value: 1.0,
+        currency: "USD",
+      });
+    }
   } catch {
     /* analytics must never break signup */
   }
