@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       { source: "/crews", destination: "/crews.html" },
       { source: "/incident-reporting", destination: "/incident-reporting.html" },
       { source: "/pricing", destination: "/pricing.html" },
+      { source: "/contact", destination: "/contact.html" },
+      { source: "/contact-us", destination: "/contact.html" },
     ];
   },
 };
