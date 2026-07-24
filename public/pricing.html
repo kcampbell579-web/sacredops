@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SacredOps Pricing — Compare Plans, Flat by Job Site</title>
+<meta name="description" content="Compare SacredOps plans feature by feature. Flat by job site, never per seat — unlimited workers on every plan. Starter $149, Pro $399, Business $799, and Enterprise. See the live demo free, no card.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#050705;--panel:#0a0f0b;--panel-2:#0e150f;--forest:#002d19;--forest-line:#0a3d24;
+    --green:#04A466;--green-bright:#04A466;--lime:#04A466;--ink:#f2f5f0;--muted:#8ea394;
+    --hair:rgba(120,180,140,.14);
+    --display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--green);color:#000}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);
+    background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 0%,transparent 75%);opacity:.5}
+
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:19px}
+  .brand .s{color:var(--ink)}.brand .o{color:var(--green-bright)}
+  .brand svg{width:30px;height:30px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    padding:10px 18px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px;transition:.2s}
+  .nav-cta:hover{background:var(--green);color:#000;box-shadow:0 0 18px rgba(4,164,102,.45)}
+  @media(max-width:560px){.nav-in{height:58px}.brand{font-size:15px;gap:8px}.brand svg{width:24px;height:24px}
+    .nav-cta{padding:8px 12px;font-size:11px;white-space:nowrap}}
+
+  .hero{position:relative;z-index:1;text-align:center;padding:56px 0 10px}
+  .eyebrow{font-family:var(--display);font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--green-bright);margin-bottom:20px}
+  h1{font-family:var(--display);font-weight:700;letter-spacing:.01em;font-size:clamp(32px,6vw,58px);line-height:1.02;text-transform:uppercase}
+  h1 .grn{color:var(--green-bright);text-shadow:0 0 26px rgba(4,164,102,.5)}
+  .sub{max-width:640px;margin:20px auto 0;color:var(--muted);font-size:16.5px}
+
+  section.block{position:relative;z-index:1;padding:34px 0 70px}
+
+  /* comparison table */
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--forest-line);border-radius:12px;background:var(--panel)}
+  table.cmp{border-collapse:collapse;width:100%;min-width:760px}
+  table.cmp th,table.cmp td{padding:15px 16px;text-align:center;border-bottom:1px solid var(--hair);vertical-align:middle}
+  table.cmp thead th{position:sticky;top:0;background:var(--panel-2);z-index:3}
+  table.cmp .feat-col{text-align:left;position:sticky;left:0;background:var(--panel);z-index:2;min-width:220px;
+    font-size:14.5px;color:var(--ink)}
+  table.cmp thead .feat-col{z-index:4;background:var(--panel-2)}
+  table.cmp .cat td{background:var(--panel-2);text-align:left;font-family:var(--display);font-size:12px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--green-bright);padding:12px 16px}
+  .plan-name{font-family:var(--display);font-weight:700;font-size:19px;text-transform:uppercase;letter-spacing:.03em}
+  .plan-price{font-family:var(--display);font-weight:700;font-size:26px;margin-top:2px}
+  .plan-price small{font-size:13px;color:var(--muted);font-weight:500}
+  .plan-sites{font-size:12px;color:var(--muted);margin-top:2px}
+  .col-pop{background:rgba(4,164,102,.06)}
+  .col-pop.feat-col{background:var(--panel)}
+  .popbadge{display:inline-block;font-family:var(--display);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:#04231a;background:var(--green-bright);border-radius:3px;padding:3px 8px;margin-bottom:6px}
+  .yes{color:var(--green-bright);font-size:19px;font-weight:700}
+  .no{color:#3c4b41;font-size:17px}
+  .val{font-size:13.5px;color:var(--ink)}
+  .plan-cta{display:inline-block;margin-top:10px;font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.06em;
+    text-transform:uppercase;padding:10px 16px;border-radius:3px;transition:.2s;white-space:nowrap}
+  .plan-cta.primary{background:var(--green);color:#000}
+  .plan-cta.primary:hover{box-shadow:0 0 20px rgba(4,164,102,.5)}
+  .plan-cta.ghost{border:1px solid var(--forest-line);color:var(--ink)}
+  .plan-cta.ghost:hover{border-color:var(--green);color:var(--green-bright)}
+  .scroll-hint{display:none;text-align:center;color:var(--muted);font-size:12px;margin:0 0 12px;letter-spacing:.05em}
+  @media(max-width:760px){.scroll-hint{display:block}}
+
+  .note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:22px}
+  .note b{color:var(--ink)}
+
+  .cta-band{text-align:center;padding:8px 0 0}
+  .cta-band h2{font-family:var(--display);font-weight:600;font-size:clamp(24px,4vw,36px);text-transform:uppercase;margin-bottom:12px}
+  .cta-band h2 .grn{color:var(--green-bright)}
+  .cta-band p{color:var(--muted);max-width:540px;margin:0 auto 24px;font-size:16px}
+  .btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{font-family:var(--display);font-weight:600;letter-spacing:.06em;font-size:14px;text-transform:uppercase;
+    padding:15px 30px;border-radius:2px;transition:.2s;border:none}
+  .btn-primary{background:var(--green);color:#000}
+  .btn-primary:hover{box-shadow:0 0 26px rgba(4,164,102,.55);transform:translateY(-1px)}
+  .btn-ghost{border:1px solid var(--forest-line);color:var(--ink);background:transparent}
+  .btn-ghost:hover{border-color:var(--green);color:var(--green-bright)}
+
+  footer{position:relative;z-index:1;background:#000;border-top:1px solid var(--hair);padding:40px 0 30px;margin-top:60px}
+  .foot-bot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:var(--display);font-size:12px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .foot-bot a{color:var(--green-bright)}
+  .foot-note{margin-top:16px;font-size:12px;line-height:1.6;color:var(--muted);max-width:760px}
+  .foot-note a{color:var(--muted);text-decoration:underline}
+</style>
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EEZN8JVJFB');
+  gtag('event', 'view_pricing_compare');
+</script>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "xq4xlm8mes");
+</script>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,
+'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1573862441061857');
+fbq('track', 'PageView');
+fbq('trackCustom', 'ViewPricingCompare');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a href="/" class="brand" aria-label="SacredOps home">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="4"/>
+        <g stroke="#04A466" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(32 50 50)"/>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(-32 50 50)"/>
+        <circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
+      <span><span class="s">SACRED</span><span class="o">OPS</span></span>
+    </a>
+    <a href="https://demo.sacredops.app/" target="_blank" rel="noopener" class="nav-cta">Start free</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Pricing</div>
+    <h1>Compare plans, <span class="grn">flat by job site</span></h1>
+    <p class="sub">Every plan includes unlimited workers and both portals. You pay by the number of active job sites — never per seat. No setup fees, cancel anytime.</p>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap">
+    <div class="scroll-hint">← swipe to compare all plans →</div>
+    <div class="tbl-scroll">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th class="feat-col"></th>
+            <th>
+              <div class="plan-name">Starter</div>
+              <div class="plan-price">$149<small>/mo</small></div>
+              <div class="plan-sites">1 job site</div>
+              <a class="plan-cta ghost" href="/supervisors">See it live</a>
+            </th>
+            <th class="col-pop">
+              <div class="popbadge">Most popular</div>
+              <div class="plan-name">Pro</div>
+              <div class="plan-price">$399<small>/mo</small></div>
+              <div class="plan-sites">Up to 3 sites</div>
+              <a class="plan-cta primary" href="/supervisors">See it live</a>
+            </th>
+            <th>
+              <div class="plan-name">Business</div>
+              <div class="plan-price">$799<small>/mo</small></div>
+              <div class="plan-sites">Up to 10 sites</div>
+              <a class="plan-cta ghost" href="/supervisors">See it live</a>
+            </th>
+            <th>
+              <div class="plan-name">Enterprise</div>
+              <div class="plan-price">Custom</div>
+              <div class="plan-sites">Unlimited sites</div>
+              <a class="plan-cta ghost" href="mailto:sales@sacredops.app?subject=Enterprise%20plan">Talk to us</a>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat"><td colspan="5">Access</td></tr>
+          <tr><td class="feat-col">Active job sites</td><td class="val">1</td><td class="col-pop val">Up to 3</td><td class="val">Up to 10</td><td class="val">Unlimited</td></tr>
+          <tr><td class="feat-col">Workers included</td><td class="val">Unlimited</td><td class="col-pop val">Unlimited</td><td class="val">Unlimited</td><td class="val">Unlimited</td></tr>
+          <tr><td class="feat-col">Supervisor portal</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Worker portal</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+
+          <tr class="cat"><td colspan="5">Compliance &amp; safety</td></tr>
+          <tr><td class="feat-col">Toolbox talks &amp; sign-ins</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">SDS library &amp; OSHA board</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Forms &amp; permits → PDF</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Inspections &amp; checklists</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Incident reports &amp; body map</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Certification / training tracker</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">JSA / JHA generator</td><td class="no">—</td><td class="col-pop no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Personalized HASP / HazCom</td><td class="no">—</td><td class="col-pop no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+
+          <tr class="cat"><td colspan="5">Field operations</td></tr>
+          <tr><td class="feat-col">Multi-site attendance</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Daily logs &amp; expenses</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Certified payroll register</td><td class="no">—</td><td class="col-pop no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Subcontractor management</td><td class="no">—</td><td class="col-pop no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+
+          <tr class="cat"><td colspan="5">Oversight &amp; reporting</td></tr>
+          <tr><td class="feat-col">Reports dashboard</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">CSV export</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">Portfolio oversight (all projects)</td><td class="no">—</td><td class="col-pop no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td class="feat-col">SSO &amp; dedicated onboarding</td><td class="no">—</td><td class="col-pop no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+
+          <tr class="cat"><td colspan="5">Support</td></tr>
+          <tr><td class="feat-col">Support level</td><td class="val">Email</td><td class="col-pop val">Email</td><td class="val">Priority</td><td class="val">Dedicated</td></tr>
+
+          <tr>
+            <td class="feat-col"></td>
+            <td><a class="plan-cta ghost" href="/supervisors">See it live</a></td>
+            <td class="col-pop"><a class="plan-cta primary" href="/supervisors">See it live</a></td>
+            <td><a class="plan-cta ghost" href="/supervisors">See it live</a></td>
+            <td><a class="plan-cta ghost" href="mailto:sales@sacredops.app?subject=Enterprise%20plan">Talk to us</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">No setup fees · no per-seat charges · annual billing saves roughly two months. <b>Not sure which plan?</b> Try the live demo — it includes everything.</p>
+  </div>
+</section>
+
+<section class="block cta-band">
+  <div class="wrap">
+    <h2>See it before you <span class="grn">pick a plan</span></h2>
+    <p>Tap through the real app free — no card. Every feature above is unlocked in the demo.</p>
+    <div class="btns">
+      <a href="/supervisors" class="btn btn-primary">Try the live demo →</a>
+      <a href="/" class="btn btn-ghost">Back to home</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-bot">
+      <span>© 2026 SacredOps. Build Safer. Work Smarter.</span>
+      <span><a href="/">Home</a> &nbsp;·&nbsp; <a href="/supervisors">For supervisors</a> &nbsp;·&nbsp; <a href="/crews">For crews</a></span>
+    </div>
+    <p class="foot-note">
+      We improve our products and advertising by using Microsoft Clarity to see how you use our website.
+      By using our site, you agree that we and Microsoft can collect and use this data.
+      Our <a href="/privacy.html">privacy statement</a> has more details.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

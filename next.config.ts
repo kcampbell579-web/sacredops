@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       { source: "/supervisors", destination: "/supervisors.html" },
       { source: "/crews", destination: "/crews.html" },
       { source: "/incident-reporting", destination: "/incident-reporting.html" },
+      { source: "/pricing", destination: "/pricing.html" },
     ];
   },
 };
