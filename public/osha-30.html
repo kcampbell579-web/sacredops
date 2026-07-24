@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSHA 30-Hour Construction — Register | SacredOps</title>
+<meta name="description" content="Enroll in the OSHA 30-Hour Construction safety course. Register below and complete secure checkout.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#050705;--panel:#0a0f0b;--panel-2:#0e150f;--forest-line:#0a3d24;
+    --green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);
+    --display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--green);color:#000}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);
+    background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 0%,transparent 70%);opacity:.4}
+
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;padding:9px 15px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+
+  .hero{position:relative;z-index:1;text-align:center;padding:46px 0 8px}
+  .eyebrow{font-family:var(--display);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--green-bright);margin-bottom:16px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,50px);line-height:1.04;text-transform:uppercase}
+  h1 .grn{color:var(--green-bright);text-shadow:0 0 24px rgba(4,164,102,.4)}
+  .hero p{max-width:600px;margin:16px auto 0;color:var(--muted);font-size:16.5px}
+  .pricepill{display:inline-flex;align-items:baseline;gap:8px;margin-top:20px;background:rgba(4,164,102,.1);border:1px solid var(--forest-line);border-radius:999px;padding:10px 20px}
+  .pricepill b{font-family:var(--display);font-weight:700;font-size:24px;color:var(--green-bright)}
+  .pricepill span{font-size:13px;color:var(--muted)}
+  .hero .btns{display:flex;gap:13px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--display);font-weight:600;letter-spacing:.05em;
+    font-size:14px;text-transform:uppercase;padding:14px 26px;border-radius:3px;border:none;cursor:pointer;transition:.2s}
+  .btn-primary{background:var(--green);color:#04160e}
+  .btn-primary:hover{box-shadow:0 0 24px rgba(4,164,102,.5)}
+  .btn-ghost{border:1px solid var(--forest-line);color:var(--ink);background:transparent}
+
+  section.block{position:relative;z-index:1;padding:36px 0}
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start;max-width:1000px;margin:0 auto}
+  @media(max-width:840px){.layout{grid-template-columns:1fr;gap:26px}}
+  .sectag{font-family:var(--display);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green-bright);margin-bottom:14px}
+  h2{font-family:var(--display);font-weight:600;font-size:22px;text-transform:uppercase;margin-bottom:14px}
+  .feat{list-style:none}
+  .feat li{display:flex;gap:11px;padding:8px 0;font-size:14.5px;color:var(--ink);align-items:flex-start;border-top:1px solid var(--hair)}
+  .feat li:first-child{border-top:none}
+  .feat li svg{flex:none;margin-top:3px}
+  .feat li span{color:var(--muted)}
+  .whofor{margin-top:22px;background:var(--panel-2);border:1px solid var(--forest-line);border-radius:10px;padding:18px 20px}
+  .whofor b{color:var(--green-bright);font-family:var(--display);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+  .whofor p{color:var(--muted);font-size:14px;margin-top:6px}
+
+  /* form */
+  .card{background:var(--panel);border:1px solid var(--forest-line);border-radius:14px;padding:26px 24px}
+  .card h2{margin-bottom:6px}
+  .card .lead{color:var(--muted);font-size:14px;margin-bottom:18px}
+  label{display:block;font-family:var(--display);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-bright);margin:0 0 6px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:480px){.row2{grid-template-columns:1fr}}
+  .fld{margin-bottom:13px}
+  input,textarea,select{width:100%;background:var(--panel-2);border:1px solid var(--forest-line);border-radius:9px;
+    padding:12px 13px;font-size:14.5px;color:var(--ink);font-family:var(--body);outline:none;transition:.15s}
+  input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(4,164,102,.15)}
+  input::placeholder,textarea::placeholder{color:#5f7267}
+  textarea{resize:vertical;min-height:74px}
+  .subbtn{width:100%;font-family:var(--display);font-weight:600;letter-spacing:.05em;font-size:14px;text-transform:uppercase;
+    padding:15px;border-radius:5px;border:none;background:var(--green);color:#04160e;cursor:pointer;transition:.2s;margin-top:4px}
+  .subbtn:hover{box-shadow:0 0 24px rgba(4,164,102,.5)}
+  .subbtn:disabled{opacity:.7;cursor:default}
+  .formnote{font-size:11.5px;color:var(--muted);margin-top:11px;text-align:center}
+  .done{display:none;text-align:center;padding:8px 0}
+  .done h3{font-family:var(--display);font-size:20px;color:var(--green-bright);margin-bottom:8px}
+  .done p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .msg{display:none;border-radius:9px;padding:12px 14px;font-size:13.5px;margin-bottom:14px;background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.5);color:#f0b3b1}
+
+  footer{position:relative;z-index:1;background:#000;border-top:1px solid var(--hair);padding:30px 0;margin-top:40px;text-align:center}
+  footer .fb{font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  footer a{color:var(--green-bright)}
+</style>
+
+<!-- Google Analytics 4 + Google Ads -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EEZN8JVJFB');
+  gtag('config', 'AW-18341083534');
+</script>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");
+</script>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,
+'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1573862441061857');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a href="/" class="brand" aria-label="SacredOps home">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="4"/>
+        <g stroke="#04A466" stroke-width="4" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="96"/><line x1="4" y1="50" x2="96" y2="50"/></g>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(32 50 50)"/>
+        <ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(-32 50 50)"/>
+        <circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
+      <span>SACRED<span class="o">OPS</span></span>
+    </a>
+    <a href="#register" class="nav-cta">Register</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Safety training</div>
+    <h1>OSHA 30-Hour <span class="grn">Construction</span></h1>
+    <p>The 30-hour construction safety course for supervisors, foremen, and anyone who needs the training. Register below, then complete secure checkout.</p>
+    <!-- EDIT PRICE HERE to match your Stripe checkout amount -->
+    <div class="pricepill"><b>$189</b><span>per student · one-time</span></div>
+    <div class="btns">
+      <a href="#register" class="btn btn-primary">Register now →</a>
+      <a href="#covered" class="btn btn-ghost">What's covered</a>
+    </div>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap layout">
+    <div id="covered">
+      <div class="sectag">What's covered</div>
+      <h2>The full 30-hour construction outline</h2>
+      <ul class="feat">
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04A466" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><b>Intro to OSHA</b> <span>— rights, responsibilities & recordkeeping</span></div></li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04A466" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><b>The Focus Four</b> <span>— falls, struck-by, caught-in/between, electrocution</span></div></li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04A466" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><b>PPE & health hazards</b> <span>— protection, silica, noise & more</span></div></li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04A466" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><b>Scaffolds & excavations</b> <span>— safe work practices</span></div></li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04A466" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><b>Tools, materials handling & fire protection</b> <span>— hand/power tools, cranes, hazcom</span></div></li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04A466" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><b>Managing safety & health</b> <span>— building a site safety program</span></div></li>
+      </ul>
+      <div class="whofor">
+        <b>Who it's for</b>
+        <p>Supervisors, foremen, superintendents, and crew members who need the 30-hour construction safety training. <!-- If you are an OSHA-authorized Outreach trainer, add your card/completion details here. --></p>
+      </div>
+    </div>
+
+    <div class="card" id="register">
+      <h2>Register</h2>
+      <div class="lead">Enter the student's details. After you register, you'll continue to secure payment.</div>
+      <div id="errMsg" class="msg"></div>
+      <form id="regForm" novalidate>
+        <div class="row2">
+          <div class="fld"><label for="name">Full name *</label><input id="name" type="text" placeholder="Student name" autocomplete="name" required></div>
+          <div class="fld"><label for="company">Company</label><input id="company" type="text" placeholder="Company" autocomplete="organization"></div>
+        </div>
+        <div class="row2">
+          <div class="fld"><label for="email">Email *</label><input id="email" type="email" placeholder="you@company.com" autocomplete="email" required></div>
+          <div class="fld"><label for="phone">Phone</label><input id="phone" type="tel" placeholder="(555) 555-5555" autocomplete="tel"></div>
+        </div>
+        <div class="row2">
+          <div class="fld"><label for="title">Job title</label><input id="title" type="text" placeholder="Foreman, super, etc."></div>
+          <div class="fld"><label for="seats">Students</label><input id="seats" type="number" min="1" value="1"></div>
+        </div>
+        <div class="fld"><label for="notes">Anything we should know?</label><textarea id="notes" placeholder="Start date, group booking, questions…"></textarea></div>
+        <button class="subbtn" type="submit" id="subBtn">Register &amp; continue to payment →</button>
+        <div class="formnote">We use your details to enroll you and send your receipt. No spam.</div>
+      </form>
+      <div class="done" id="done">
+        <h3>You're registered ✓</h3>
+        <p id="doneMsg">One last step — complete secure checkout to lock in your seat.</p>
+        <a id="payBtn" class="subbtn" style="display:inline-block;text-decoration:none" href="#">Proceed to secure payment →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fb">© 2026 SacredOps · <a href="/">Home</a> · <a href="/contact-us">Contact</a> · <a href="/privacy.html">Privacy</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ⬇⬇⬇  PASTE YOUR STRIPE CHECKOUT LINK BETWEEN THE QUOTES  ⬇⬇⬇
+  var STRIPE_CHECKOUT = "";
+  // ⬆⬆⬆  e.g. "https://buy.stripe.com/xxxxxxxx"  (leave "" until you have it) ⬆⬆⬆
+  var API='https://demo.sacredops.app/api/leads';
+  var form=document.getElementById('regForm'), done=document.getElementById('done');
+  var err=document.getElementById('errMsg'), btn=document.getElementById('subBtn');
+  var payBtn=document.getElementById('payBtn'), doneMsg=document.getElementById('doneMsg');
+  function emailOk(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+  form.addEventListener('submit',function(ev){
+    ev.preventDefault(); err.style.display='none';
+    var name=document.getElementById('name').value.trim();
+    var email=document.getElementById('email').value.trim();
+    var phone=document.getElementById('phone').value.trim();
+    var company=document.getElementById('company').value.trim();
+    var title=document.getElementById('title').value.trim();
+    var seats=document.getElementById('seats').value.trim()||'1';
+    var notes=document.getElementById('notes').value.trim();
+    if(!name){ err.textContent='Please enter the student’s name.'; err.style.display='block'; return; }
+    if(!emailOk(email)){ err.textContent='Please enter a valid email so we can send the receipt.'; err.style.display='block'; return; }
+    var detail = 'OSHA 30 registration — '+(title?title+', ':'')+seats+' student(s)'+(notes?' · '+notes:'');
+    var companyName = (company||'—') + ' — '+detail;
+    btn.disabled=true; btn.textContent='Registering…';
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:name,email:email,phone:phone,company:company,companyName:companyName,message:detail})})
+      .then(function(r){ return r.ok?r.json():Promise.reject(); })
+      .then(function(){
+        try{ if(window.fbq) fbq('track','Lead',{content_name:'OSHA 30 registration'}); }catch(e){}
+        try{ if(window.gtag) gtag('event','generate_lead',{source:'osha30'}); }catch(e){}
+        form.style.display='none'; done.style.display='block';
+        if(STRIPE_CHECKOUT){ payBtn.href=STRIPE_CHECKOUT; }
+        else { payBtn.style.display='none'; doneMsg.textContent='Thanks! We’ll email you a secure payment link to complete your enrollment shortly.'; }
+      })
+      .catch(function(){
+        err.textContent='Something went wrong. Please try again, or email support@sacredops.app.';
+        err.style.display='block'; btn.disabled=false; btn.textContent='Register & continue to payment →';
+      });
+  });
+})();
+</script>
+
+</body>
+</html>
