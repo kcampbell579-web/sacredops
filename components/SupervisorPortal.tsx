@@ -161,6 +161,12 @@ const PROJECTS=[
 const PJKEY="sacredops_custom_projects";
 function loadCustomProjects(){try{const v=window.localStorage.getItem(PJKEY);return v?JSON.parse(v):[];}catch(e){return (window.__myprojects||[]);}}
 function saveCustomProjects(a){try{window.localStorage.setItem(PJKEY,JSON.stringify(a));}catch(e){window.__myprojects=a;}}
+// Archived job sites: completed projects the company keeps for their records but
+// no longer counts as "active" (they drop out of the Active Projects list and
+// off the active-site total that the plan is billed on).
+const ARCHKEY="sacredops_archived_projects";
+function loadArchived(){try{const v=window.localStorage.getItem(ARCHKEY);return v?JSON.parse(v):[];}catch(e){return (window.__archProj||[]);}}
+function saveArchived(a){try{window.localStorage.setItem(ARCHKEY,JSON.stringify(a));}catch(e){window.__archProj=a;}}
 const PNAMES=PROJECTS.map(p=>p.name);
 /* ================= TRAINING / CERTIFICATIONS ================= */
 // Certification catalog. months = how long the card stays valid; req = every
@@ -649,6 +655,15 @@ export default function App(){
   const[myProjects,setMyProjects]=useState(()=>loadCustomProjects());
   const[myInsps,setMyInsps]=useState(()=>loadMyInsps());const ALLINSPS=[...INSPS,...myInsps];
   const ALLP=[...PROJECTS,...myProjects];
+  // Archiving: archived projects stay in ALLP (records/history keep working) but
+  // are hidden from the Active Projects list and off the active-site count.
+  const[archived,setArchived]=useState(()=>loadArchived());
+  const[showArch,setShowArch]=useState(false);
+  const isArch=(id)=>archived.indexOf(id)>=0;
+  const activeP=ALLP.filter(p=>!isArch(p.id));
+  const archivedP=ALLP.filter(p=>isArch(p.id));
+  const archiveProj=(id)=>{const next=Array.from(new Set([...archived,id]));setArchived(next);saveArchived(next);setLastProj(null);setScr(null);show("Project archived — records kept, off your active count");};
+  const restoreProj=(id)=>{const next=archived.filter(x=>x!==id);setArchived(next);saveArchived(next);show("Project restored to active");};
   const PNAMES=ALLP.map(p=>p.name);
   const[q,setQ]=useState("");const[zoom,setZoom]=useState(false);const[signed,setSigned]=useState({});
   const maps=()=>{show("Opening directions to nearest hospital");window.open("https://maps.apple.com/?q=nearest%20hospital","_blank");};
@@ -792,7 +807,8 @@ export default function App(){
           <div style={{...glass,borderRadius:10,padding:"9px 11px",marginTop:9,fontSize:10.5,color:MU,lineHeight:1.45}}>Give the Bid / Contract # to any subcontractor joining this job — matching numbers is how their crew links into the same project.</div>
           <div style={{display:"flex",gap:8,marginTop:10}}><button onClick={addProject} style={{flex:1,background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>CREATE PROJECT</button><button onClick={()=>{setShowNewProj(false);setNpf({role:"GC"});}} style={{flex:1,background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>CANCEL</button></div>
         </div>)}
-        {ALLP.map(p=>(<button key={p.id} onClick={()=>openProj(p.id)} style={{...glass,width:"100%",textAlign:"left",borderRadius:18,padding:14,marginBottom:12,cursor:"pointer"}}>
+        {activeP.length===0&&<div style={{...glass,borderRadius:16,padding:"18px 16px",marginBottom:12,textAlign:"center",fontSize:12,color:MU,lineHeight:1.5}}>No active job sites. {archivedP.length>0?"Restore one from Archived below, or":"Tap"} + New Project to add one.</div>}
+        {activeP.map(p=>(<button key={p.id} onClick={()=>openProj(p.id)} style={{...glass,width:"100%",textAlign:"left",borderRadius:18,padding:14,marginBottom:12,cursor:"pointer"}}>
           <div style={{display:"flex",gap:12}}>
             <Thumb div={p.div} tag={p.role}/>
             <div style={{flex:1,minWidth:0}}>
@@ -813,6 +829,21 @@ export default function App(){
           </div>
           <div style={{marginTop:10}}><Bar pct={p.pct} c={p.pct>=90?SU:WN}/></div>
         </button>))}
+        {archivedP.length>0&&(<div style={{marginTop:4}}>
+          <button onClick={()=>setShowArch(v=>!v)} style={{width:"100%",background:"none",border:"1px solid "+HL,borderRadius:12,padding:"11px 13px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <span style={{fontSize:10,fontWeight:800,letterSpacing:1.5,color:MU,fontFamily:MONO}}>ARCHIVED ({archivedP.length})</span>
+            <span style={{color:AC,fontSize:13,fontWeight:800}}>{showArch?"–":"+"}</span>
+          </button>
+          {showArch&&archivedP.map(p=>(<div key={p.id} style={{...glass,borderRadius:14,padding:"11px 13px",marginTop:9,display:"flex",alignItems:"center",gap:11,opacity:0.9}}>
+            <div style={{flex:1,minWidth:0}}>
+              <button onClick={()=>openProj(p.id)} style={{background:"none",border:"none",padding:0,textAlign:"left",cursor:"pointer"}}>
+                <div style={{fontSize:12.5,fontWeight:800,color:TX,lineHeight:1.2}}>{p.name}</div>
+                <div style={{fontSize:10,color:MU,marginTop:2}}>{p.loc}{p.div?" · "+p.div:""} · archived</div>
+              </button>
+            </div>
+            <button onClick={()=>restoreProj(p.id)} style={{flexShrink:0,background:AC+"18",color:AC,border:"1px solid "+AC+"55",borderRadius:9,padding:"7px 12px",fontSize:10.5,fontWeight:800,cursor:"pointer",letterSpacing:0.3}}>RESTORE</button>
+          </div>))}
+        </div>)}
       </div>
 
       <div style={{padding:"18px 14px 4px"}}>
@@ -948,6 +979,14 @@ export default function App(){
     <div style={{...glass,borderRadius:12,padding:"11px 13px",marginBottom:8,fontSize:10.5,color:MU,lineHeight:1.5}}>Workers tap these on their project to get walking/driving directions, or see "in the vehicle" for mobile sites.</div>
 
     <div style={{marginTop:8}}><Eyebrow>Crew roster</Eyebrow></div>{CREW.slice(0,6).map((w,i)=>(<div key={i} style={{...glass,borderRadius:12,padding:"10px 12px",marginBottom:7,display:"flex",alignItems:"center",gap:11}}><div style={{width:32,height:32,borderRadius:16,background:AC+"22",border:"1.5px solid "+AC,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10.5,fontWeight:800,color:AC}}>{w.n.split(" ").map(x=>x[0]).join("")}</div><div style={{flex:1}}><div style={{fontSize:12.5,fontWeight:700,color:TX}}>{w.n}</div><div style={{fontSize:10.5,color:MU}}>{w.r} · {w.l}</div></div></div>))}
+    <div style={{marginTop:20,paddingTop:16,borderTop:"1px solid "+HL}}>
+      {isArch(p.id)?(
+        <button onClick={()=>{restoreProj(p.id);setScr(null);}} style={{width:"100%",background:AC+"18",color:AC,border:"1px solid "+AC+"55",borderRadius:12,padding:"13px",fontSize:12,fontWeight:800,cursor:"pointer",letterSpacing:0.3}}>↩ RESTORE TO ACTIVE</button>
+      ):(
+        <button onClick={()=>{if(typeof window!=="undefined"&&window.confirm("Archive "+p.name+"? It stays in your records but comes off your Active Projects list and your active-site count. You can restore it anytime."))archiveProj(p.id);}} style={{width:"100%",background:"rgba(255,255,255,0.05)",color:MU,border:"1px solid "+HL,borderRadius:12,padding:"13px",fontSize:12,fontWeight:800,cursor:"pointer",letterSpacing:0.3,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={MU} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5h18v4H3zM5 9v11h14V9M10 13h4"/></svg>ARCHIVE THIS JOB SITE</button>
+      )}
+      <div style={{fontSize:10,color:MU,textAlign:"center",marginTop:9,lineHeight:1.5}}>Completed projects can be archived so you keep the records without counting them against your plan&rsquo;s active job sites.</div>
+    </div>
   </Screen>);
   };
 
