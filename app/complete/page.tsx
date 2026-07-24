@@ -28,6 +28,14 @@ export default function Complete() {
     } catch {
       /* noop */
     }
+    // Google Ads "Subscribe" conversion (account AW-18341083534). The gtag base
+    // + Ads config load in app/layout.tsx, so gtag is available here.
+    try {
+      const g = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
+      if (g) g("event", "conversion", { send_to: "AW-18341083534/2lnpCPbf29UcEI7z2qlE" });
+    } catch {
+      /* noop */
+    }
   }, []);
 
   return (
