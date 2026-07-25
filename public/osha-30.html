@@ -40,6 +40,17 @@
   .pricepill{display:inline-flex;align-items:baseline;gap:8px;margin-top:20px;background:rgba(4,164,102,.1);border:1px solid var(--forest-line);border-radius:999px;padding:10px 20px}
   .pricepill b{font-family:var(--display);font-weight:700;font-size:24px;color:var(--green-bright)}
   .pricepill span{font-size:13px;color:var(--muted)}
+  /* pricing strip */
+  .pstrip{position:relative;z-index:1;background:linear-gradient(90deg,rgba(4,164,102,.15),rgba(4,164,102,.04));
+    border-top:1px solid var(--forest-line);border-bottom:1px solid var(--forest-line)}
+  .pstrip-in{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 0;flex-wrap:wrap}
+  .pstrip .pt{font-family:var(--display);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.02em}
+  .pstrip .pd{font-size:13px;color:var(--muted);margin-top:2px}
+  .pstrip-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .pstrip .pamt{font-family:var(--display);font-weight:700;font-size:26px;color:var(--green-bright)}
+  .pstrip .pamt span{font-size:13px;color:var(--muted);font-weight:500}
+  @media(max-width:600px){.pstrip-in{justify-content:center;text-align:center}
+    .pstrip-left,.pstrip-right{width:100%;justify-content:center}}
   .hero .btns{display:flex;gap:13px;justify-content:center;margin-top:22px;flex-wrap:wrap}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--display);font-weight:600;letter-spacing:.05em;
     font-size:14px;text-transform:uppercase;padding:14px 26px;border-radius:3px;border:none;cursor:pointer;transition:.2s}
@@ -143,11 +154,25 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
     <!-- EDIT PRICE HERE to match your Stripe checkout amount -->
     <div class="pricepill"><b>$175</b><span>per student · one-time</span></div>
     <div class="btns">
-      <a href="#register" class="btn btn-primary">Register now →</a>
+      <a class="btn btn-primary buynow" href="#register">Buy now →</a>
       <a href="#covered" class="btn btn-ghost">What's covered</a>
     </div>
   </div>
 </header>
+
+<div class="pstrip">
+  <div class="wrap pstrip-in">
+    <div class="pstrip-left">
+      <div class="pt">OSHA 30-Hour Construction</div>
+      <div class="pd">30-hour construction safety course · complete on any device</div>
+    </div>
+    <div class="pstrip-right">
+      <div class="pamt">$175 <span>/ student</span></div>
+      <a class="btn btn-primary buynow" href="#register">Buy now →</a>
+      <a class="btn btn-ghost" href="#register">Register with details</a>
+    </div>
+  </div>
+</div>
 
 <section class="block">
   <div class="wrap layout">
@@ -210,6 +235,15 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
   var STRIPE_CHECKOUT = "";
   // ⬆⬆⬆  e.g. "https://buy.stripe.com/xxxxxxxx"  (leave "" until you have it) ⬆⬆⬆
   var API='https://demo.sacredops.app/api/leads';
+  // "Buy now" buttons go straight to Stripe checkout when the link is set;
+  // otherwise they fall back to the registration form.
+  Array.prototype.forEach.call(document.querySelectorAll('.buynow'), function(a){
+    if(STRIPE_CHECKOUT){ a.setAttribute('href', STRIPE_CHECKOUT); a.setAttribute('target','_blank'); a.setAttribute('rel','noopener'); }
+    a.addEventListener('click', function(){
+      try{ if(window.fbq) fbq('track','InitiateCheckout',{content_name:'OSHA 30',value:175.0,currency:'USD'}); }catch(e){}
+      try{ if(window.gtag) gtag('event','begin_checkout',{value:175.0,currency:'USD',items:[{item_name:'OSHA 30'}]}); }catch(e){}
+    });
+  });
   var form=document.getElementById('regForm'), done=document.getElementById('done');
   var err=document.getElementById('errMsg'), btn=document.getElementById('subBtn');
   var payBtn=document.getElementById('payBtn'), doneMsg=document.getElementById('doneMsg');
