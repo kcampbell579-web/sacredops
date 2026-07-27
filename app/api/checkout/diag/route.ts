@@ -26,14 +26,20 @@ export async function GET(req: Request) {
 
   const out: Record<string, unknown> = { hasKey: !!key, keyMode: mode };
 
+  // Scrub any sk_/rk_ key material out of a message before returning it.
+  const scrub = (m: unknown) =>
+    String(m ?? "").replace(/(sk|rk)_(live|test)_[A-Za-z0-9]+/g, "$1_$2_***");
+
   const stripe = getStripe();
   if (stripe) {
     try {
       const c = await stripe.customers.list({ limit: 1 });
       out.canReachStripe = true;
       out.accountHasCustomers = c.data.length > 0;
-    } catch {
+    } catch (e) {
+      const err = e as { type?: string; code?: string; statusCode?: number; message?: string };
       out.canReachStripe = false;
+      out.stripeError = { type: err.type, code: err.code, status: err.statusCode, message: scrub(err.message) };
     }
 
     const email = url.searchParams.get("email");
