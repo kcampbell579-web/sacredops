@@ -21,6 +21,7 @@ export default function Complete() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState<Done | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const set = (k: keyof typeof f, v: string) => setF((o) => ({ ...o, [k]: v }));
 
   useEffect(() => {
@@ -29,6 +30,17 @@ export default function Complete() {
     try { w.fbq?.("track", "Subscribe"); } catch {}
     try { w.gtag?.("event", "purchase", { transaction_id: "sub_" + Date.now(), currency: "USD" }); } catch {}
     try { w.gtag?.("event", "conversion", { send_to: "AW-18341083534/2lnpCPbf29UcEI7z2qlE" }); } catch {}
+
+    // Stripe appends ?session_id={CHECKOUT_SESSION_ID} to this redirect. Use it
+    // to prefill the email they paid with — the server re-verifies it on submit.
+    const sid = new URLSearchParams(window.location.search).get("session_id");
+    if (sid) {
+      setSessionId(sid);
+      fetch(`/api/checkout/session?session_id=${encodeURIComponent(sid)}`)
+        .then((r) => r.json())
+        .then((d) => { if (d?.email) setF((o) => (o.email ? o : { ...o, email: d.email })); })
+        .catch(() => {});
+    }
   }, []);
 
   async function submit(e: React.FormEvent) {
@@ -41,7 +53,7 @@ export default function Complete() {
       const res = await fetch("/api/auth/signup-company", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(f),
+        body: JSON.stringify({ ...f, sessionId }),
       });
       const data = await res.json();
       if (!res.ok) {

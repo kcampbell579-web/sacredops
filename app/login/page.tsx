@@ -65,6 +65,7 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [next, setNext] = useState("/");
   const [createdCode, setCreatedCode] = useState<string | null>(null);
+  const [needsPay, setNeedsPay] = useState(false);
   // On worker.sacredops.app we show a worker-only sign-up (no demo, no company).
   const [workerOnly, setWorkerOnly] = useState(false);
   // On demo.sacredops.app we default to the demo sign-up but let people log in too.
@@ -145,6 +146,7 @@ export default function LoginPage() {
 
   async function submit() {
     setError("");
+    setNeedsPay(false);
     setBusy(true);
     try {
       let url = "";
@@ -181,6 +183,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Something went wrong.");
+        setNeedsPay(!!data.needsPayment);
         setBusy(false);
         return;
       }
@@ -401,6 +404,14 @@ export default function LoginPage() {
 
             {error && (
               <div style={{ color: DN, fontSize: 12, fontWeight: 600, margin: "2px 0 10px" }}>{error}</div>
+            )}
+            {needsPay && (
+              <a
+                href="https://www.sacredops.app/pricing"
+                style={{ display: "block", textAlign: "center", background: "#04A466", color: "#04231a", textDecoration: "none", borderRadius: 10, padding: "12px", fontSize: 13, fontWeight: 800, letterSpacing: 0.4, margin: "0 0 12px" }}
+              >
+                Choose a plan &amp; check out →
+              </a>
             )}
 
             <button
