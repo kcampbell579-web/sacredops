@@ -1,5 +1,29 @@
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
+
+// Email the platform owner(s) when a new lead / contact / registration comes in,
+// so nothing sits unseen in the dashboard. No-ops unless RESEND_API_KEY (and
+// OWNER_EMAILS) are configured; never blocks or fails the lead itself.
+async function notifyOwners(lead: { companyName: string; name: string; email: string; phone: string | null }) {
+  const owners = (process.env.OWNER_EMAILS || "")
+    .split(",").map((e) => e.trim()).filter(Boolean);
+  if (!owners.length) return;
+  const esc = (s: string) => String(s || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const html = `<div style="font-family:Arial,sans-serif;font-size:15px;color:#12211a">
+    <h2 style="margin:0 0 12px">New SacredOps lead</h2>
+    <p style="margin:0 0 6px"><b>Name:</b> ${esc(lead.name)}</p>
+    <p style="margin:0 0 6px"><b>Email:</b> <a href="mailto:${esc(lead.email)}">${esc(lead.email)}</a></p>
+    <p style="margin:0 0 6px"><b>Phone:</b> ${esc(lead.phone || "—")}</p>
+    <p style="margin:0 0 6px"><b>Company / details:</b> ${esc(lead.companyName)}</p>
+    <p style="margin:14px 0 0;color:#6b7d72;font-size:13px">See all leads: https://demo.sacredops.app/leads</p>
+  </div>`;
+  try {
+    await sendEmail({ to: owners.join(","), subject: `New lead: ${lead.name} (${lead.email})`, html });
+  } catch {
+    /* notification failure must never affect the lead */
+  }
+}
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -30,18 +54,19 @@ export async function POST(req: Request) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
     return Response.json({ error: "Enter a valid email address." }, { status: 400, headers: CORS });
   }
+  const leadData = {
+    companyName: String(companyName || company || "").trim() || "—",
+    name: cleanName,
+    email: cleanEmail,
+    phone: phone ? String(phone).trim() : null,
+  };
   try {
-    await prisma.lead.create({
-      data: {
-        companyName: String(companyName || company || "").trim() || "—",
-        name: cleanName,
-        email: cleanEmail,
-        phone: phone ? String(phone).trim() : null,
-      },
-    });
+    await prisma.lead.create({ data: leadData });
   } catch {
     return Response.json({ error: "Couldn't save your request. Please try again." }, { status: 500, headers: CORS });
   }
+  // Fire the owner notification but don't make the visitor wait on it.
+  void notifyOwners(leadData);
   return Response.json({ ok: true }, { headers: CORS });
 }
 
