@@ -145,5 +145,7 @@ export async function POST(req: Request) {
     ok: true,
     user: { name: user.name, role: user.role, companyName: company.name },
     joinCode: company.joinCode,
+    subdomain: company.subdomain,
+    plan: company.plan,
   });
 }
