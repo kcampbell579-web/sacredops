@@ -6,9 +6,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Require a paid Stripe subscription before a company account can be created.
-// Off by default so signups keep working until billing is verified end-to-end;
-// flip REQUIRE_PAID_SIGNUP=true in the environment to turn the gate on.
-const REQUIRE_PAID = /^(1|true|yes|on)$/i.test(process.env.REQUIRE_PAID_SIGNUP || "");
+// ON by default — to create a company you must have paid. Set
+// REQUIRE_PAID_SIGNUP=false only if you need to temporarily open free signups.
+// (The demo — /api/auth/demo-signup — is unaffected: it just joins the shared
+// demo sandbox and captures a lead, it never creates a company.)
+const REQUIRE_PAID = !/^(0|false|no|off)$/i.test(process.env.REQUIRE_PAID_SIGNUP || "");
 
 // Ask Stripe (not our DB) whether this email has an active subscription. Returns
 // the customer/subscription/plan when found, or null. Used to gate signup.

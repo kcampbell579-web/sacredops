@@ -56,7 +56,7 @@ export default function TryDemo() {
     <>
       {role === "worker" ? <WorkerPortal /> : <SupervisorPortal />}
       <a
-        href="https://demo.sacredops.app/"
+        href="https://www.sacredops.app/pricing"
         target={framed ? "_blank" : "_self"}
         rel="noopener"
         style={{
@@ -81,7 +81,7 @@ export default function TryDemo() {
           whiteSpace: "nowrap",
         }}
       >
-        Start free — no card →
+        See plans →
       </a>
     </>
   );
