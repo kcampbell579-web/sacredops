@@ -1,8 +1,37 @@
 import { prisma } from "@/lib/prisma";
 import { hashSecret, generateJoinCode, createSession, slugifySubdomain, RESERVED_SUBDOMAINS } from "@/lib/auth";
+import { getStripe, planForPrice } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// Require a paid Stripe subscription before a company account can be created.
+// Off by default so signups keep working until billing is verified end-to-end;
+// flip REQUIRE_PAID_SIGNUP=true in the environment to turn the gate on.
+const REQUIRE_PAID = /^(1|true|yes|on)$/i.test(process.env.REQUIRE_PAID_SIGNUP || "");
+
+// Ask Stripe (not our DB) whether this email has an active subscription. Returns
+// the customer/subscription/plan when found, or null. Used to gate signup.
+async function findPaidSubscription(email: string): Promise<
+  { customerId: string; subId: string; plan: string } | null
+> {
+  const stripe = getStripe();
+  if (!stripe) return null;
+  try {
+    const customers = await stripe.customers.list({ email, limit: 10 });
+    for (const c of customers.data) {
+      const subs = await stripe.subscriptions.list({ customer: c.id, status: "all", limit: 10 });
+      const active = subs.data.find((s) => s.status === "active" || s.status === "trialing");
+      if (active) {
+        const priceId = active.items?.data?.[0]?.price?.id;
+        return { customerId: c.id, subId: active.id, plan: planForPrice(priceId) || "pro" };
+      }
+    }
+  } catch {
+    /* treat Stripe errors as "not found" — caller decides how to fail */
+  }
+  return null;
+}
 
 // POST /api/auth/signup-company — create a new company + its first admin.
 // { companyName, name, email, phone, password }
@@ -19,6 +48,36 @@ export async function POST(req: Request) {
   const existing = await prisma.user.findUnique({ where: { email: normEmail } });
   if (existing) {
     return Response.json({ error: "That email is already registered." }, { status: 409 });
+  }
+
+  // Payment gate: require a paid Stripe subscription for this email before we
+  // create the account. When off, `paid` may still be found and attached so
+  // early subscribers get their plan; it just isn't required.
+  const paid = REQUIRE_PAID ? await findPaidSubscription(normEmail) : null;
+  if (REQUIRE_PAID) {
+    if (!getStripe()) {
+      return Response.json({ error: "Billing isn't set up yet — please contact support@sacredops.app." }, { status: 503 });
+    }
+    if (!paid) {
+      return Response.json(
+        {
+          error:
+            "We couldn't find a paid subscription for this email. Choose a plan and check out first, then create your account with the same email you paid with.",
+          needsPayment: true,
+          pricingUrl: "https://www.sacredops.app/pricing",
+        },
+        { status: 402 }
+      );
+    }
+    // One subscription = one company: block reusing a subscription already tied
+    // to an existing account.
+    const claimed = await prisma.company.findFirst({ where: { stripeCustomerId: paid.customerId } });
+    if (claimed) {
+      return Response.json(
+        { error: "This subscription is already linked to an account. Log in instead, or use a different email." },
+        { status: 409 }
+      );
+    }
   }
 
   // Generate a unique join code (retry on the rare collision).
@@ -45,7 +104,14 @@ export async function POST(req: Request) {
   }
 
   const company = await prisma.company.create({
-    data: { name: String(companyName).trim(), joinCode, subdomain },
+    data: {
+      name: String(companyName).trim(),
+      joinCode,
+      subdomain,
+      // When they arrived through a paid subscription, stamp the plan + Stripe
+      // linkage so their access matches what they bought right away.
+      ...(paid ? { plan: paid.plan, stripeCustomerId: paid.customerId, stripeSubId: paid.subId } : {}),
+    },
   });
   const user = await prisma.user.create({
     data: {
