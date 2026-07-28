@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --black:#050705;--panel:#0a0f0b;--panel-2:#0e150f;--forest:#002d19;--forest-line:#0a3d24;
@@ -552,36 +552,104 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
 </section>
 
 <!-- 8. COMPARISON -->
+<style>
+  #cmpw{--cardw:#101211;--linew:rgba(255,255,255,.08);--line2w:rgba(255,255,255,.14);--greenw:#04A466;--emw:#0BD67F;--whitew:#F6F8F7;--bodyw:#C0C8C5;--secw:#7d8783;color:var(--bodyw);font-family:"Inter",system-ui,sans-serif}
+  #cmpw *{box-sizing:border-box}
+  #cmpw .head{text-align:center;margin-bottom:38px}
+  #cmpw .eyebrow{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--emw);font-weight:600}
+  #cmpw h2.ch{font-family:"Space Grotesk",sans-serif;color:var(--whitew);font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.02em;margin:12px 0 10px;line-height:1.1;text-transform:none}
+  #cmpw .sub{font-size:16px;color:var(--secw);max-width:560px;margin:0 auto}
+  #cmpw .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+  #cmpw table{width:100%;border-collapse:separate;border-spacing:0;min-width:840px}
+  #cmpw th{vertical-align:bottom;padding:0 10px 20px;text-align:center;position:relative}
+  #cmpw th.ft{text-align:left;width:32%;padding-left:4px}
+  #cmpw .tier{position:relative;border-radius:16px 16px 0 0;padding:26px 16px 20px;background:var(--cardw);border:1px solid var(--linew);border-bottom:none}
+  #cmpw .tier.pop{background:linear-gradient(180deg,rgba(4,164,102,.14),var(--cardw));border-color:rgba(11,214,127,.45)}
+  #cmpw .tname{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--secw);font-weight:600}
+  #cmpw .tier.pop .tname{color:var(--emw)}
+  #cmpw .price{font-family:"Space Grotesk",sans-serif;color:var(--whitew);font-size:34px;font-weight:700;line-height:1.1;margin:8px 0 2px}
+  #cmpw .price span{font-family:"Inter";font-size:13px;color:var(--secw);font-weight:500}
+  #cmpw .price.cust{color:var(--emw);font-size:30px}
+  #cmpw .sites{font-size:12.5px;color:var(--secw)}
+  #cmpw .badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);white-space:nowrap;background:linear-gradient(180deg,var(--emw),var(--greenw));color:#04180f;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px}
+  #cmpw td.group{font-family:"Space Grotesk",sans-serif;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--emw);font-weight:600;padding:26px 4px 10px;background:transparent}
+  #cmpw td{padding:14px 10px;text-align:center;font-size:14px;border-bottom:1px solid var(--linew);background:var(--cardw)}
+  #cmpw td.ft{text-align:left;color:var(--bodyw);font-size:15px;padding-left:4px;background:transparent;border-bottom:1px solid var(--linew)}
+  #cmpw td.pop{background:rgba(4,164,102,.07);border-left:1px solid rgba(11,214,127,.28);border-right:1px solid rgba(11,214,127,.28)}
+  #cmpw tbody tr:hover td{background:#141716}
+  #cmpw tbody tr:hover td.pop{background:rgba(4,164,102,.11)}
+  #cmpw tbody tr:hover td.ft{background:transparent}
+  #cmpw .val{color:var(--whitew);font-weight:600;font-size:13.5px}
+  #cmpw .dash{color:#39403d;font-size:16px}
+  #cmpw .chk{display:inline-flex}
+  #cmpw td.cta{padding:24px 10px 26px;border-bottom:none;border-radius:0 0 16px 16px;border:1px solid var(--linew);border-top:none;background:var(--cardw)}
+  #cmpw td.cta.pop{border-color:rgba(11,214,127,.45)}
+  #cmpw .btn{display:block;font-weight:600;font-size:14px;padding:12px 10px;border-radius:11px;border:1px solid var(--line2w);color:var(--whitew);text-decoration:none;transition:.18s}
+  #cmpw .btn:hover{border-color:var(--emw);background:rgba(4,164,102,.1)}
+  #cmpw .btn.p{background:linear-gradient(180deg,var(--emw),var(--greenw));color:#04180f;border-color:transparent;box-shadow:0 6px 22px rgba(4,164,102,.3)}
+  #cmpw .btn.p:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(11,214,127,.42)}
+  #cmpw .note{text-align:center;margin-top:26px;font-size:13.5px;color:var(--secw)}
+  #cmpw .hint{display:none;text-align:center;font-size:12px;color:var(--secw);margin-bottom:12px}
+  @media(max-width:860px){#cmpw .hint{display:block}}
+</style>
 <section class="block band">
   <div class="wrap">
-    <div class="sec-head"><div class="sec-tag">Compare</div><h2>Compare SacredOps <span class="grn">plans</span></h2></div>
-    <div class="scroll-hint">← swipe to compare →</div>
-    <div class="tbl-scroll">
-      <table class="cmp">
-        <thead><tr><th class="feat-col">Capability</th><th>Starter</th><th class="col-pop">Pro</th><th>Business</th><th>Enterprise</th></tr></thead>
+    <div id="cmpw">
+      <div class="head">
+        <div class="eyebrow">Full comparison</div>
+        <h2 class="ch">Compare every plan</h2>
+        <p class="sub">Flat price per job site. Unlimited workers on every plan — never per seat.</p>
+      </div>
+      <div class="hint">← swipe to compare →</div>
+      <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="ft"></th>
+            <th><div class="tier"><div class="tname">Starter</div><div class="price">$149<span>/mo</span></div><div class="sites">1 job site</div></div></th>
+            <th><div class="tier pop"><div class="badge">Most Popular</div><div class="tname">Pro</div><div class="price">$399<span>/mo</span></div><div class="sites">Up to 3 sites</div></div></th>
+            <th><div class="tier"><div class="tname">Business</div><div class="price">$799<span>/mo</span></div><div class="sites">Up to 10 sites</div></div></th>
+            <th><div class="tier"><div class="tname">Enterprise</div><div class="price cust">Custom</div><div class="sites">Unlimited sites</div></div></th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><td class="feat-col">Active job sites</td><td>1</td><td class="col-pop">Up to 3</td><td>Up to 10</td><td>Unlimited</td></tr>
-          <tr><td class="feat-col">Unlimited workers</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Supervisor &amp; worker portals</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Toolbox talks &amp; sign-ins</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">SDS library &amp; OSHA board</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Forms &amp; PDF exports</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Daily logs &amp; expenses</td><td class="yes">✓</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Inspections &amp; checklists</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Incident &amp; injury reporting</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Certification tracking</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Reports &amp; CSV exports</td><td class="no">—</td><td class="col-pop yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Portfolio oversight</td><td class="no">—</td><td class="col-pop no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">JSA / JHA generator</td><td class="no">—</td><td class="col-pop no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Certified payroll register</td><td class="no">—</td><td class="col-pop no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Priority support</td><td class="no">—</td><td class="col-pop no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Personalized safety programs</td><td class="no">—</td><td class="col-pop no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">Subcontractor management</td><td class="no">—</td><td class="col-pop no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
-          <tr><td class="feat-col">SSO &amp; dedicated onboarding</td><td class="no">—</td><td class="col-pop no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td class="group" colspan="5">Core platform</td></tr>
+          <tr><td class="ft">Job sites included</td><td><span class="val">1</span></td><td class="pop"><span class="val">Up to 3</span></td><td><span class="val">Up to 10</span></td><td><span class="val">Unlimited</span></td></tr>
+          <tr><td class="ft">Unlimited workers</td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Worker + Supervisor portal</td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Forms &amp; permits → filled PDF</td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">SDS library &amp; OSHA board</td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Toolbox talks &amp; digital sign-ins</td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="group" colspan="5">Field &amp; compliance</td></tr>
+          <tr><td class="ft">GPS attendance</td><td><span class="val" style="font-weight:500;color:var(--secw);font-size:12.5px">Single site</span></td><td class="pop"><span class="val">Multi-site</span></td><td><span class="val">Multi-site</span></td><td><span class="val">Multi-site</span></td></tr>
+          <tr><td class="ft">Inspections &amp; walk-throughs</td><td><span class="dash">—</span></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Certification &amp; training tracking</td><td><span class="dash">—</span></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">OSHA 300 / 300A reporting</td><td><span class="dash">—</span></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Alerts &amp; reminders</td><td><span class="dash">—</span></td><td class="pop"><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="group" colspan="5">Operations</td></tr>
+          <tr><td class="ft">JSA / JHA generator</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">QR equipment registry</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Payroll register</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Expenses &amp; daily project logs</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">6-week look-ahead scheduler</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Subcontractor &amp; COI tracking</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="group" colspan="5">Enterprise &amp; service</td></tr>
+          <tr><td class="ft">Personalized HASP / HazCom plans</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Multi-company project linking</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Integrations, SSO &amp; onboarding</td><td><span class="dash">—</span></td><td class="pop"><span class="dash">—</span></td><td><span class="dash">—</span></td><td><svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0BD67F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></td></tr>
+          <tr><td class="ft">Support</td><td><span class="val" style="font-weight:500;color:var(--secw);font-size:12.5px">Email</span></td><td class="pop"><span class="val">Priority</span></td><td><span class="val">Priority</span></td><td><span class="val">Dedicated + advisory</span></td></tr>
+          <tr>
+            <td class="ft"></td>
+            <td class="cta"><a class="btn" href="https://buy.stripe.com/4gM9AMdwE40q6LU0OY2VG03" target="_blank" rel="noopener">Buy Now →</a></td>
+            <td class="cta pop"><a class="btn p" href="https://buy.stripe.com/9B63cobowcwW9Y6cxG2VG02" target="_blank" rel="noopener">Buy Now →</a></td>
+            <td class="cta"><a class="btn" href="https://buy.stripe.com/eVqdR20JSfJ85HQ55e2VG01" target="_blank" rel="noopener">Buy Now →</a></td>
+            <td class="cta"><a class="btn" href="mailto:sales@sacredops.app?subject=Enterprise%20plan">Contact Sales →</a></td>
+          </tr>
         </tbody>
       </table>
+      </div>
+      <p class="note">All plans include both portals. No setup fees, no per-seat charges. Cancel anytime.</p>
     </div>
-    <p class="qualifier"><b style="color:var(--ink)">Not sure which tier you need?</b> Start with the number of projects you're actively managing — you can move to another plan as your workload changes. <a href="#selector" style="color:var(--green-bright);text-decoration:none">Help me choose →</a></p>
   </div>
 </section>
 
@@ -637,15 +705,56 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
 </section>
 
 <!-- 12. FINAL CTA -->
+<style>
+  .pstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px;text-align:left}
+  @media(max-width:820px){.pstrip{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:460px){.pstrip{grid-template-columns:1fr}}
+  .pcard{background:rgba(255,255,255,.03);border:1px solid rgba(120,180,140,.16);border-radius:12px;padding:22px 18px;display:flex;flex-direction:column}
+  .pcard.feat{border-color:#04A466;box-shadow:0 0 34px -12px rgba(4,164,102,.5)}
+  .pc-tag{align-self:flex-start;font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#04231a;background:#04A466;padding:3px 8px;border-radius:3px;margin-bottom:8px}
+  .pc-name{font-family:'Chakra Petch',system-ui,sans-serif;font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.03em;color:#f2f5f0}
+  .pc-price{font-family:'Chakra Petch',system-ui,sans-serif;font-weight:700;font-size:30px;color:#fff;margin:6px 0 2px}
+  .pc-price small{font-size:13px;color:#8ea394;font-weight:400}
+  .pc-sites{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:#04A466;margin-bottom:16px}
+  .pc-btn{margin-top:auto;text-align:center;background:#04A466;color:#04231a;font-family:'Chakra Petch',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:13px;border-radius:8px;text-decoration:none;transition:.2s}
+  .pc-btn:hover{box-shadow:0 0 22px rgba(4,164,102,.5)}
+  .pc-btn.ghost{background:transparent;border:1px solid rgba(120,180,140,.3);color:#f2f5f0}
+</style>
 <section class="block band final">
   <div class="wrap">
-    <div class="sec-head" style="margin-bottom:0">
-      <h2>Choose the plan that fits <span class="grn">the work you're managing today.</span></h2>
-      <p>Start with one job site and move up as your company grows. Every plan includes unlimited workers, both portals, and straightforward monthly pricing.</p>
+    <div class="sec-head center" style="margin-bottom:0">
+      <h2>Pick your plan and <span class="grn">start today.</span></h2>
+      <p>Every plan includes unlimited workers and both portals. No setup fees, cancel anytime. Tap Buy Now to sign up in minutes.</p>
     </div>
-    <div class="btns">
-      <a href="#selector" class="btn btn-primary">Find my plan →</a>
-      <a href="/supervisors" class="btn btn-ghost">▶ Try the live demo</a>
+    <div class="pstrip">
+      <div class="pcard">
+        <div class="pc-name">Starter</div>
+        <div class="pc-price">$149<small>/mo</small></div>
+        <div class="pc-sites">1 job site</div>
+        <a href="https://buy.stripe.com/4gM9AMdwE40q6LU0OY2VG03" target="_blank" rel="noopener" class="pc-btn">Buy Now →</a>
+      </div>
+      <div class="pcard feat">
+        <div class="pc-tag">Most popular</div>
+        <div class="pc-name">Pro</div>
+        <div class="pc-price">$399<small>/mo</small></div>
+        <div class="pc-sites">Up to 3 sites</div>
+        <a href="https://buy.stripe.com/9B63cobowcwW9Y6cxG2VG02" target="_blank" rel="noopener" class="pc-btn">Buy Now →</a>
+      </div>
+      <div class="pcard">
+        <div class="pc-name">Business</div>
+        <div class="pc-price">$799<small>/mo</small></div>
+        <div class="pc-sites">Up to 10 sites</div>
+        <a href="https://buy.stripe.com/eVqdR20JSfJ85HQ55e2VG01" target="_blank" rel="noopener" class="pc-btn">Buy Now →</a>
+      </div>
+      <div class="pcard">
+        <div class="pc-name">Enterprise</div>
+        <div class="pc-price">Custom</div>
+        <div class="pc-sites">Unlimited sites</div>
+        <a href="mailto:sales@sacredops.app?subject=Enterprise%20plan" class="pc-btn ghost">Contact →</a>
+      </div>
+    </div>
+    <div class="btns" style="margin-top:22px">
+      <a href="/supervisors" class="btn btn-ghost">▶ Try the live demo first</a>
     </div>
     <div class="microcopy">No setup fees. No per-seat charges. No long-term contract.</div>
   </div>
@@ -655,7 +764,7 @@ src="https://www.facebook.com/tr?id=1573862441061857&ev=PageView&noscript=1"/></
   <div class="wrap">
     <div class="foot-bot">
       <span>© 2026 SacredOps. Build Safer. Work Smarter.</span>
-      <span><a href="/">Home</a> &nbsp;·&nbsp; <a href="/supervisors">For supervisors</a> &nbsp;·&nbsp; <a href="/crews">For crews</a> &nbsp;·&nbsp; <a href="/contact-us">Contact</a></span>
+      <span><a href="/">Home</a> &nbsp;·&nbsp; <a href="/about">About</a> &nbsp;·&nbsp; <a href="/supervisors">For supervisors</a> &nbsp;·&nbsp; <a href="/crews">For crews</a> &nbsp;·&nbsp; <a href="/contact-us">Contact</a></span>
     </div>
     <p class="foot-note">
       We improve our products and advertising by using Microsoft Clarity to see how you use our website.
