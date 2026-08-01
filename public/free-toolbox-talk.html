@@ -298,7 +298,20 @@ fbq('init','1573862441061857');fbq('track','PageView');
       emailSaved=email; localStorage.setItem('sacred_ttt_email',email); saveLead(email); fire();
       $('emailGate').classList.add('hidden');
     }
-    generatePDF();
+    var btn=this; btn.disabled=true; btn.textContent='Preparing…';
+    fetch('/api/tools/usage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool:'toolbox',email:email})})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        btn.disabled=false; btn.textContent='Download signed toolbox talk (PDF)';
+        if(d&&typeof d.count==='number'){ setCount(d.count); renderCounter(); }
+        if(d&&d.allowed===false){ setCount(FREE_LIMIT); renderCounter(); showPaywall(); return; }
+        generatePDF();
+      })
+      .catch(function(){
+        btn.disabled=false; btn.textContent='Download signed toolbox talk (PDF)';
+        if(count()>=FREE_LIMIT){ showPaywall(); return; }
+        setCount(count()+1); renderCounter(); generatePDF();
+      });
   };
   function err(m){ var e=$('err'); e.textContent=m; e.classList.add('err'); }
 
@@ -369,7 +382,6 @@ fbq('init','1573862441061857');fbq('track','PageView');
       doc.text('Generated free with SacredOps — unlimited talks + your whole safety program at sacredops.app', M, H-26);
     }
     doc.save('Toolbox-Talk-'+d.t.replace(/[^A-Za-z0-9]+/g,'-')+'.pdf');
-    setCount(count()+1); renderCounter();
     try{fbq('track','CompleteRegistration');}catch(e){}
     if(count()>=FREE_LIMIT){ setTimeout(showPaywall, 800); }
   }
