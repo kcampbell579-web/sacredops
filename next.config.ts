@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
       { source: "/contact-us", destination: "/contact.html" },
       { source: "/features", destination: "/features.html" },
       { source: "/about", destination: "/about.html" },
+      { source: "/free-toolbox-talk", destination: "/free-toolbox-talk.html" },
+      { source: "/toolbox-talk", destination: "/free-toolbox-talk.html" },
+      { source: "/toolbox", destination: "/free-toolbox-talk.html" },
       { source: "/about-us", destination: "/about.html" },
       { source: "/company", destination: "/about.html" },
       // OSHA 30 course: registration landing + obscure post-purchase thank-you.
