@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
       { source: "/free-toolbox-talk", destination: "/free-toolbox-talk.html" },
       { source: "/toolbox-talk", destination: "/free-toolbox-talk.html" },
       { source: "/toolbox", destination: "/free-toolbox-talk.html" },
+      { source: "/free-jsa", destination: "/free-jsa.html" },
+      { source: "/jsa", destination: "/free-jsa.html" },
+      { source: "/tools", destination: "/tools.html" },
+      { source: "/resources", destination: "/tools.html" },
+      { source: "/academy", destination: "/tools.html" },
       { source: "/about-us", destination: "/about.html" },
       { source: "/company", destination: "/about.html" },
       // OSHA 30 course: registration landing + obscure post-purchase thank-you.
