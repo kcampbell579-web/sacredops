@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free AHA Generator — Activity Hazard Analysis (EM 385) — SacredOps</title>
+<meta name="description" content="Build an Activity Hazard Analysis (AHA) in minutes — job steps, hazards, controls, RAC codes, equipment, training & inspection requirements. Free, no login. EM 385-1-1 format. By SacredOps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SacredOps">
+<meta property="og:title" content="Free AHA Generator — Activity Hazard Analysis">
+<meta property="og:description" content="Job steps, hazards, controls, RAC codes, equipment & training requirements. EM 385 format. Free — no login.">
+<meta property="og:url" content="https://www.sacredops.app/free-aha">
+<meta property="og:image" content="https://www.sacredops.app/og-aha.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free AHA Generator — Activity Hazard Analysis">
+<meta name="twitter:image" content="https://www.sacredops.app/og-aha.png">
+<style>
+  :root{--black:#050705;--panel:#0a0f0b;--forest-line:#0a3d24;--green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);--display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 0%,transparent 72%);opacity:.5}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:62px;max-width:920px;margin:0 auto;padding:0 20px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+  .hero{position:relative;z-index:1;text-align:center;padding:52px 0 26px}
+  .eyebrow{font-family:var(--display);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--green-bright);margin-bottom:16px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,50px);line-height:1.02;text-transform:uppercase}
+  h1 .grn{color:var(--green-bright)}
+  .lede{max-width:620px;margin:18px auto 0;color:var(--muted);font-size:16px}
+  .counter{display:inline-block;margin-top:18px;font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--hair);border-radius:20px;padding:7px 15px}
+  .counter b{color:var(--green-bright)}
+  main{position:relative;z-index:1;padding:14px 0 70px}
+  .card{background:var(--panel);border:1px solid var(--forest-line);border-radius:14px;padding:22px;margin-bottom:16px}
+  .step{font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-bright);margin-bottom:14px}
+  label{display:block;font-size:11px;font-weight:800;color:var(--green-bright);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-family:ui-monospace,Menlo,monospace}
+  input[type=text],input[type=email],textarea,select{width:100%;box-sizing:border-box;padding:12px 13px;background:rgba(255,255,255,.05);border:1px solid var(--hair);border-radius:10px;font-size:15px;color:var(--ink);outline:none;font-family:var(--body)}
+  textarea{min-height:64px;resize:vertical}
+  input::placeholder,textarea::placeholder{color:#5f7268}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+  .fld{margin-bottom:12px}
+  .task{border:1px solid var(--hair);border-radius:11px;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,.02)}
+  .task .thead{display:flex;align-items:flex-start;gap:11px;cursor:pointer}
+  .task .cbx{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid #3a5346;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.15s}
+  .task.on .cbx{background:var(--green);border-color:var(--green)}
+  .task .tn{font-weight:700;font-size:14.5px}
+  .task .td{font-size:13px;color:var(--muted);margin-top:3px}
+  .task.on{border-color:var(--green)}
+  .rac{display:none;gap:6px;margin-top:10px;padding-left:33px;align-items:center;flex-wrap:wrap}
+  .task.on .rac{display:flex}
+  .rac>span{font-size:10px;color:var(--muted);font-family:ui-monospace,monospace;margin-right:2px}
+  .rb{border:1px solid var(--hair);background:rgba(255,255,255,.04);color:var(--muted);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:800;cursor:pointer}
+  .rb.on{color:#04231a}
+  .rb.e.on{background:#E53935;border-color:#E53935;color:#fff}.rb.h.on{background:#EF7C00;border-color:#EF7C00}.rb.m.on{background:#E0B10A;border-color:#E0B10A}.rb.l.on{background:#04A466;border-color:#04A466}
+  .ppe{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .pp{display:flex;align-items:center;gap:9px;border:1px solid var(--hair);border-radius:9px;padding:10px 11px;cursor:pointer;font-size:13.5px}
+  .pp .cbx{width:18px;height:18px;border-radius:5px;border:2px solid #3a5346;flex:none;display:flex;align-items:center;justify-content:center}
+  .pp.on{border-color:var(--green)}.pp.on .cbx{background:var(--green);border-color:var(--green)}
+  .btn{display:block;width:100%;text-align:center;background:var(--green);color:#04231a;border:none;border-radius:12px;padding:16px;font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:.2s}
+  .btn:hover{box-shadow:0 0 24px rgba(4,164,102,.5)}
+  .btn:disabled{opacity:.5}
+  .btn-ghost{background:transparent;border:1px solid var(--forest-line);color:var(--ink)}
+  .note{text-align:center;font-size:12.5px;color:var(--muted);margin-top:12px}
+  .msg{border-radius:10px;padding:11px 13px;font-size:13.5px;margin-top:12px;display:none}
+  .msg.err{display:block;background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.5);color:#f0b3b1}
+  .hidden{display:none}
+  .ac{position:absolute;left:0;right:0;top:100%;z-index:30;background:#0d130f;border:1px solid var(--forest-line);border-radius:10px;margin-top:4px;max-height:250px;overflow:auto;box-shadow:0 14px 34px rgba(0,0,0,.55)}
+  .acitem{padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--hair)}
+  .acitem:last-child{border-bottom:none}
+  .acitem:hover{background:rgba(4,164,102,.12)}
+  .acitem b{display:block;font-size:13.5px;color:var(--ink);font-weight:600}
+  .acitem span{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  .acloading{padding:10px 12px;font-size:12.5px;color:var(--muted)}
+  .paywall{text-align:center}
+  .paywall .big{font-family:var(--display);font-size:26px;text-transform:uppercase;margin:6px 0 10px}
+  .paywall .big .grn{color:var(--green-bright)}
+  .paywall p{color:var(--muted);font-size:15px;max-width:520px;margin:0 auto 20px}
+  .racguide{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .foot{position:relative;z-index:1;text-align:center;padding:26px 0;border-top:1px solid var(--hair);font-size:12.5px;color:var(--muted)}
+  .foot a:hover{color:var(--green-bright)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EEZN8JVJFB');gtag('config','AW-18341083534');</script>
+<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");</script>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1573862441061857');fbq('track','PageView');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<nav><div class="nav-in">
+  <a class="brand" href="/"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#04A466" stroke-width="5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#04A466" stroke-width="5"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg><span>SACRED<span class="o">OPS</span></span></a>
+  <a class="nav-cta" href="/pricing">Get unlimited</a>
+</div></nav>
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Free tool · no login · EM 385 format</div>
+  <h1>AHA <span class="grn">generator</span></h1>
+  <p class="lede">Build an Activity Hazard Analysis in minutes — job steps, hazards, controls, RAC codes, plus equipment, training and inspection requirements.</p>
+  <div class="counter" id="counter"></div>
+</div></header>
+<main><div class="wrap">
+  <div id="builder">
+    <div class="card">
+      <div class="step">Step 1 — Activity details</div>
+      <div class="fld"><label>Contract / project</label><input type="text" id="proj" placeholder="Contract # / project name"></div>
+      <div class="fld"><label>Activity / work task</label><input type="text" id="loc" placeholder="e.g. Structural steel coating — high-pressure wash"></div>
+      <div class="grid2">
+        <div class="fld"><label>Date</label><input type="text" id="date" placeholder="MM/DD/YYYY"></div>
+        <div class="fld"><label>Prepared by</label><input type="text" id="by" placeholder="Your name"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Competent / qualified person(s)</label><input type="text" id="cp" placeholder="Name(s) & role"></div>
+        <div class="fld"><label>Overall risk (RAC)</label><select id="orac"><option value="">Select…</option><option value="L">L — Low</option><option value="M">M — Moderate</option><option value="H">H — High</option><option value="E">E — Extremely High</option></select></div>
+      </div>
+      <div class="fld" style="position:relative"><label>Nearest hospital</label><input type="text" id="hosp" placeholder="Start typing a hospital name…" autocomplete="off"><div id="hospAC" class="ac hidden"></div></div>
+    </div>
+    <div class="card">
+      <div class="step">Step 2 — Job steps &amp; RAC</div>
+      <div class="racguide"><b style="color:#04A466">RAC:</b> L Low · M Moderate · H High · E Extremely High</div>
+      <div id="tasks" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <div class="step">Step 3 — Requirements</div>
+      <div class="fld"><label>Equipment to be used</label><textarea id="equip" placeholder="e.g. Aerial lift, pressure washer, rigging, hand tools"></textarea></div>
+      <div class="fld"><label>Training requirements</label><textarea id="train" placeholder="e.g. Fall protection, aerial lift, competent person, site orientation"></textarea></div>
+      <div class="fld"><label>Inspection requirements</label><textarea id="insp" placeholder="e.g. Daily harness &amp; lift inspection, pre-task equipment check"></textarea></div>
+      <label style="margin-top:6px">PPE required</label>
+      <div class="ppe" id="ppe" style="margin-top:6px"></div>
+    </div>
+    <div class="card">
+      <div class="step">Step 4 — Download</div>
+      <div id="emailGate"><label for="email">Your email (to send you the PDF)</label><input type="email" id="email" placeholder="you@company.com" autocomplete="email"><div class="note" style="text-align:left;margin-top:8px">We'll email you the AHA and occasional safety tips. No spam.</div></div>
+      <button class="btn" id="genBtn" style="margin-top:14px">Download AHA (PDF)</button>
+      <div class="msg err" id="err"></div>
+      <div class="note">Free version is watermarked. <a href="/pricing" style="color:var(--green-bright)">Remove the watermark →</a></div>
+    </div>
+  </div>
+  <div class="card paywall hidden" id="paywall">
+    <div class="step">You've used your 3 free AHAs</div>
+    <div class="big">Keep your crew <span class="grn">covered.</span></div>
+    <p>Get <b style="color:var(--ink)">unlimited, watermark-free AHAs &amp; JSAs</b> — saved to your account — plus toolbox talks, permits, inspections, SDS and your whole safety operation on your crew's phones.</p>
+    <a class="btn" id="buyBtn" href="https://buy.stripe.com/4gM9AMdwE40q6LU0OY2VG03" target="_blank" rel="noopener">Get unlimited — $149/mo →</a>
+    <a class="btn btn-ghost" href="/pricing" style="margin-top:10px">See all plans</a>
+  </div>
+</div></main>
+<div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/tools">More free tools</a> · <a href="/pricing">Pricing</a> · <a href="/supervisors">Live demo</a> · <a href="/contact-us">Contact</a></div></div>
+<script defer src="/chat-widget.js"></script>
+<script>
+/* Nearest-hospital autocomplete — OpenStreetMap Nominatim (free, no key). */
+(function(){
+  var inp=document.getElementById('hosp'), box=document.getElementById('hospAC'); if(!inp||!box) return;
+  var geo=null,t=null,picked=false;
+  try{ if(navigator.geolocation) navigator.geolocation.getCurrentPosition(function(p){geo={lat:p.coords.latitude,lon:p.coords.longitude};},function(){},{timeout:6000,maximumAge:600000}); }catch(e){}
+  function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function hide(){box.classList.add('hidden');box.innerHTML='';}
+  inp.addEventListener('input',function(){picked=false;var q=inp.value.trim();clearTimeout(t);if(q.length<3){hide();return;}box.classList.remove('hidden');box.innerHTML='<div class="acloading">Searching hospitals…</div>';t=setTimeout(function(){run(q);},450);});
+  function run(q){var url='https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q='+encodeURIComponent(q+' hospital');if(geo){var d=0.7;url+='&viewbox='+(geo.lon-d)+','+(geo.lat-d)+','+(geo.lon+d)+','+(geo.lat+d)+'&bounded=0';}fetch(url,{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(list){if(picked)return;if(!list||!list.length){box.innerHTML='<div class="acloading">No match — type it manually.</div>';return;}box.innerHTML='';list.forEach(function(it){var a=it.address||{};var name=a.hospital||a.amenity||a.building||(it.display_name.split(',')[0]);var row=document.createElement('div');row.className='acitem';row.innerHTML='<b>'+esc(name)+'</b><span>'+esc(it.display_name)+'</span>';row.onclick=function(){inp.value=it.display_name;picked=true;hide();};box.appendChild(row);});}).catch(function(){box.innerHTML='<div class="acloading">Couldn’t reach the map service — type it manually.</div>';});}
+  document.addEventListener('click',function(e){if(e.target!==inp&&!box.contains(e.target)){hide();}});
+})();
+</script>
+<script>
+(function(){
+  var FREE_LIMIT=3;
+  var TASKS=[
+    {id:"setup",n:"Mobilization & site setup",h:"Struck-by, trips, uncontrolled access",c:"Establish access/egress, barricade the area, brief the crew, keep walkways clear"},
+    {id:"exc",n:"Excavation & trenching",h:"Cave-in, engulfment, buried utilities",c:"Competent person on site, slope/bench/shore per soil, call 811, daily inspection, ladder every 25 ft"},
+    {id:"heights",n:"Working at heights",h:"Falls to lower level",c:"Guardrails or personal fall arrest at 6 ft, inspect harness/lanyard, use rated anchors (5,000 lb)"},
+    {id:"rope",n:"Rope access / suspended work",h:"Falls, dropped objects, anchor failure",c:"Rigging plan, dual-rope system, rated anchors, competent rigger, exclusion zone below"},
+    {id:"ladder",n:"Ladder use",h:"Falls, ladder slip-out",c:"Inspect before use, 4:1 angle, tie off top, maintain 3-point contact"},
+    {id:"scaffold",n:"Scaffolding",h:"Falls, scaffold collapse",c:"Competent person erects & inspects each shift, fully planked, guardrails, proper access"},
+    {id:"crane",n:"Crane & rigging lifts",h:"Struck-by, dropped/swinging load, tip-over",c:"Lift plan on file, rated & inspected rigging, tag lines, barricade swing radius, qualified operator/signal person"},
+    {id:"silica",n:"Concrete cutting / grinding",h:"Silica dust, noise, flying debris",c:"Wet or vacuum dust controls (Table 1), respirator, hearing & eye protection"},
+    {id:"pressure",n:"High-pressure washing",h:"Injection injury, slips, flying debris",c:"Rated hoses/wands, dead-man valve, exclusion zone, face/eye protection, sure footing"},
+    {id:"abate",n:"Asbestos / lead abatement",h:"Airborne contaminant, exposure",c:"Licensed abatement, containment, negative air, respirators, monitoring, decon"},
+    {id:"hotwork",n:"Hot work / welding",h:"Fire, burns, toxic fumes",c:"Hot work permit, fire watch, remove combustibles, ventilation, extinguisher on hand"},
+    {id:"elec",n:"Electrical work",h:"Shock, arc flash, electrocution",c:"Lockout/tagout, qualified worker only, GFCI on temp power, proper PPE, verify de-energized"},
+    {id:"confined",n:"Confined space entry",h:"Hazardous atmosphere, engulfment",c:"Entry permit, atmospheric testing, attendant + retrieval, ventilation, communication plan"},
+    {id:"material",n:"Material handling / lifting",h:"Strains, struck-by, pinch points",c:"Use mechanical aids/team lift, clear the path, proper technique, secure loads"},
+    {id:"tools",n:"Power tool use",h:"Lacerations, eye injury, entanglement",c:"Guards in place, inspect tools & cords, eye/face protection, no loose clothing"},
+    {id:"traffic",n:"Equipment / vehicle operations",h:"Struck-by, backover",c:"Spotters, hi-vis, eye contact with operators, back-up alarms, stay out of swing/blind zones"}
+  ];
+  var PPE=["Hard hat","Safety glasses","Hi-vis vest","Cut-resistant gloves","Steel-toe boots","Hearing protection","Respirator","Face shield","Fall protection harness"];
+  var rac={}, ppeOn={};
+  var $=function(id){return document.getElementById(id);};
+  function count(){return parseInt(localStorage.getItem('sacred_aha_count')||'0',10);}
+  function setCount(n){localStorage.setItem('sacred_aha_count',String(n));}
+  var emailSaved=localStorage.getItem('sacred_aha_email')||"";
+  function renderCounter(){var left=Math.max(0,FREE_LIMIT-count());$('counter').innerHTML=left>0?('<b>'+left+'</b> of '+FREE_LIMIT+' free AHAs left'):'Free limit reached';}
+
+  var tc=$('tasks');
+  TASKS.forEach(function(t){
+    var d=document.createElement('div'); d.className='task'; d.dataset.id=t.id;
+    d.innerHTML='<div class="thead"><div class="cbx"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#04231a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><div><div class="tn">'+t.n+'</div><div class="td"><b style="color:#c9d6ce">Hazards:</b> '+t.h+'</div></div></div>'+
+      '<div class="rac"><span>RAC</span><button class="rb l" data-r="L">L</button><button class="rb m" data-r="M">M</button><button class="rb h" data-r="H">H</button><button class="rb e" data-r="E">E</button></div>';
+    var head=d.querySelector('.thead');
+    head.onclick=function(){ d.classList.toggle('on'); if(d.classList.contains('on')&&!rac[t.id]){rac[t.id]='M';paint(d,t.id);} };
+    d.querySelectorAll('.rb').forEach(function(b){ b.onclick=function(e){e.stopPropagation();rac[t.id]=b.dataset.r;paint(d,t.id);}; });
+    tc.appendChild(d);
+  });
+  function paint(d,id){ d.querySelectorAll('.rb').forEach(function(b){ b.classList.toggle('on', rac[id]&&b.dataset.r===rac[id]); }); }
+
+  var pc=$('ppe');
+  PPE.forEach(function(p,i){ var d=document.createElement('div'); d.className='pp'; d.innerHTML='<div class="cbx"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#04231a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>'+p; d.onclick=function(){ppeOn[i]=!ppeOn[i];d.classList.toggle('on',ppeOn[i]);}; pc.appendChild(d); });
+
+  function fire(){try{fbq('track','Lead');}catch(e){}try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}try{gtag('event','generate_lead');}catch(e){}}
+  function saveLead(email){try{fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,companyName:'AHA Generator tool'})});}catch(e){}}
+  function showPaywall(){$('builder').classList.add('hidden');$('paywall').classList.remove('hidden');try{fbq('track','InitiateCheckout');}catch(e){}window.scrollTo({top:0,behavior:'smooth'});}
+  $('buyBtn').onclick=function(){try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE'});}catch(e){}};
+  function err(m){var e=$('err');e.textContent=m;e.classList.add('err');}
+
+  $('genBtn').onclick=function(){
+    $('err').classList.remove('err');
+    var chosen=TASKS.filter(function(t){return $('tasks').querySelector('[data-id="'+t.id+'"]').classList.contains('on');});
+    if(!chosen.length){err('Select at least one job step.');return;}
+    if(count()>=FREE_LIMIT){showPaywall();return;}
+    var email=emailSaved;
+    if(!email){ email=($('email').value||'').trim(); if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err('Enter a valid email to get your PDF.');return;} emailSaved=email;localStorage.setItem('sacred_aha_email',email);saveLead(email);fire();$('emailGate').classList.add('hidden'); }
+    var btn=this;btn.disabled=true;btn.textContent='Preparing…';
+    fetch('/api/tools/usage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool:'aha',email:email})})
+      .then(function(r){return r.json();})
+      .then(function(d){ btn.disabled=false;btn.textContent='Download AHA (PDF)'; if(d&&typeof d.count==='number'){setCount(d.count);renderCounter();} if(d&&d.allowed===false){setCount(FREE_LIMIT);renderCounter();showPaywall();return;} generatePDF(chosen); })
+      .catch(function(){ btn.disabled=false;btn.textContent='Download AHA (PDF)'; if(count()>=FREE_LIMIT){showPaywall();return;} setCount(count()+1);renderCounter();generatePDF(chosen); });
+  };
+
+  function generatePDF(chosen){
+    if(!(window.jspdf&&window.jspdf.jsPDF)){err('Still loading — try again in a second.');return;}
+    var jsPDF=window.jspdf.jsPDF;
+    var doc=new jsPDF({unit:'pt',format:'letter',orientation:'landscape'});
+    var W=792,H=612,M=40,y=0;
+    var val=function(id){return ($(id).value||'').trim();};
+    var today=val('date')||new Date().toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'});
+    doc.setFillColor(5,7,5);doc.rect(0,0,W,56,'F');doc.setFillColor(4,164,102);doc.rect(0,56,W,3,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text('SACRED',M,36);var sw=doc.getTextWidth('SACRED');doc.setTextColor(4,164,102);doc.text('OPS',M+sw,36);
+    doc.setTextColor(180,196,186);doc.setFont('helvetica','normal');doc.setFontSize(11);doc.text('ACTIVITY HAZARD ANALYSIS (AHA)',W-M,36,{align:'right'});
+    y=78;
+    doc.setFontSize(9);
+    function detail(x,label,v){doc.setTextColor(120,135,126);doc.setFont('helvetica','bold');doc.text(label.toUpperCase(),x,y);doc.setTextColor(25,35,29);doc.setFont('helvetica','normal');doc.text(String(v||'—'),x,y+13);}
+    var racName={L:'L — Low',M:'M — Moderate',H:'H — High',E:'E — Extremely High'};
+    detail(M,'Contract / project',val('proj')); detail(M+300,'Activity',val('loc')); detail(W-M-150,'Date',today);
+    y+=32;
+    detail(M,'Prepared by',val('by')); detail(M+300,'Competent / qualified person(s)',val('cp')); detail(W-M-150,'Overall RAC',racName[val('orac')]||'—');
+    y+=30;
+    var c0=M,c1=M+190,c2=M+430,cR=W-M-56,tblW=W-2*M;
+    function rcCol(r){return r==='E'?[229,57,53]:r==='H'?[239,124,0]:r==='M'?[224,177,10]:[4,164,102];}
+    doc.setFillColor(10,40,24);doc.rect(M,y,tblW,22,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text('JOB STEPS',c0+6,y+15);doc.text('HAZARDS',c1+6,y+15);doc.text('CONTROLS',c2+6,y+15);doc.text('RAC',cR+6,y+15);
+    y+=22;
+    function ensure(n){if(y+n>H-64){doc.addPage();y=50;}}
+    chosen.forEach(function(t,i){
+      doc.setFont('helvetica','normal');doc.setFontSize(8.6);doc.setTextColor(30,40,34);
+      var a=doc.splitTextToSize(t.n,c1-c0-12),b=doc.splitTextToSize(t.h,c2-c1-12),cc=doc.splitTextToSize(t.c,cR-c2-12);
+      var lines=Math.max(a.length,b.length,cc.length,1),rh=Math.max(24,lines*10+8);
+      ensure(rh);
+      if(i%2){doc.setFillColor(245,248,246);doc.rect(M,y,tblW,rh,'F');}
+      var col=rcCol(rac[t.id]||'M');doc.setFillColor(col[0],col[1],col[2]);doc.rect(cR,y,56,rh,'F');
+      doc.setTextColor(30,40,34);doc.text(a,c0+6,y+13);doc.text(b,c1+6,y+13);doc.text(cc,c2+6,y+13);
+      doc.setTextColor((rac[t.id]==='M')?30:255,(rac[t.id]==='M')?30:255,(rac[t.id]==='M')?30:255);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(rac[t.id]||'M',cR+28,y+rh/2+4,{align:'center'});
+      doc.setDrawColor(205,215,209);doc.setLineWidth(.5);doc.rect(M,y,tblW,rh);[c1,c2,cR].forEach(function(x){doc.line(x,y,x,y+rh);});
+      y+=rh;
+    });
+    y+=14;
+    function block(title,text){ ensure(46); doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(4,140,88);doc.text(title.toUpperCase(),M,y);y+=13; doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(30,40,34); var lines=doc.splitTextToSize(text||'As required by the task and site rules.',tblW); lines.forEach(function(l){ensure(13);doc.text(l,M,y);y+=13;}); y+=8; }
+    var ppeList=PPE.filter(function(p,i){return ppeOn[i];});
+    block('Equipment to be used', val('equip'));
+    block('Training requirements', val('train'));
+    block('Inspection requirements', val('insp'));
+    block('PPE required', ppeList.length?ppeList.join(', '):'');
+    ensure(50);doc.setDrawColor(150,160,153);doc.setLineWidth(1);
+    doc.line(M,y+24,M+230,y+24);doc.line(W-M-230,y+24,W-M,y+24);
+    doc.setFontSize(9);doc.setTextColor(90,100,94);doc.text('Prepared by',M,y+36);doc.text('Reviewed / accepted by',W-M-230,y+36);
+    var pages=doc.getNumberOfPages();
+    for(var p=1;p<=pages;p++){doc.setPage(p);
+      if(doc.setGState){try{doc.setGState(new doc.GState({opacity:0.10}));}catch(e){}}
+      doc.setTextColor(4,164,102);doc.setFont('helvetica','bold');doc.setFontSize(52);doc.text('SAMPLE • SACREDOPS',W/2,H/2,{align:'center',angle:20});
+      doc.setFontSize(15);doc.text('Subscribe at sacredops.app to remove watermark',W/2,H/2+36,{align:'center',angle:20});
+      if(doc.setGState){try{doc.setGState(new doc.GState({opacity:1}));}catch(e){}}
+      doc.setTextColor(150,164,155);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('Generated free with SacredOps — unlimited AHAs + your whole safety program at sacredops.app',M,H-20);
+    }
+    doc.save('AHA-'+(val('proj')||'form').replace(/[^A-Za-z0-9-]/g,'').slice(0,24)+'.pdf');
+    try{fbq('track','CompleteRegistration');}catch(e){}
+    if(count()>=FREE_LIMIT){setTimeout(showPaywall,800);}
+  }
+  renderCounter();
+})();
+</script>
+</body>
+</html>

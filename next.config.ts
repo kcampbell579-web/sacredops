@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
       { source: "/toolbox", destination: "/free-toolbox-talk.html" },
       { source: "/free-jsa", destination: "/free-jsa.html" },
       { source: "/jsa", destination: "/free-jsa.html" },
+      { source: "/free-aha", destination: "/free-aha.html" },
+      { source: "/aha", destination: "/free-aha.html" },
       { source: "/tools", destination: "/tools.html" },
       { source: "/resources", destination: "/tools.html" },
       { source: "/academy", destination: "/tools.html" },
