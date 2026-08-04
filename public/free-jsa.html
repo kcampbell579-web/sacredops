@@ -74,6 +74,13 @@
   .msg{border-radius:10px;padding:11px 13px;font-size:13.5px;margin-top:12px;display:none}
   .msg.err{display:block;background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.5);color:#f0b3b1}
   .hidden{display:none}
+  .ac{position:absolute;left:0;right:0;top:100%;z-index:30;background:#0d130f;border:1px solid var(--forest-line);border-radius:10px;margin-top:4px;max-height:250px;overflow:auto;box-shadow:0 14px 34px rgba(0,0,0,.55)}
+  .acitem{padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--hair)}
+  .acitem:last-child{border-bottom:none}
+  .acitem:hover{background:rgba(4,164,102,.12)}
+  .acitem b{display:block;font-size:13.5px;color:var(--ink);font-weight:600}
+  .acitem span{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  .acloading{padding:10px 12px;font-size:12.5px;color:var(--muted)}
   .paywall{text-align:center}
   .paywall .big{font-family:var(--display);font-size:26px;text-transform:uppercase;margin:6px 0 10px}
   .paywall .big .grn{color:var(--green-bright)}
@@ -114,7 +121,7 @@
       </div>
       <div class="grid2">
         <div class="fld"><label>Muster point</label><input type="text" id="muster" placeholder="e.g. North gate parking"></div>
-        <div class="fld"><label>Nearest hospital</label><input type="text" id="hosp" placeholder="Name / address"></div>
+        <div class="fld" style="position:relative"><label>Nearest hospital</label><input type="text" id="hosp" placeholder="Start typing a hospital name…" autocomplete="off"><div id="hospAC" class="ac hidden"></div></div>
       </div>
     </div>
     <div class="card">
@@ -143,6 +150,48 @@
 </div></main>
 <div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/tools">More free tools</a> · <a href="/pricing">Pricing</a> · <a href="/supervisors">Live demo</a> · <a href="/contact-us">Contact</a></div></div>
 <script defer src="/chat-widget.js"></script>
+<script>
+/* Nearest-hospital autocomplete — OpenStreetMap Nominatim (free, no API key).
+   Searches as you type, biased to the user's location if they allow it, and
+   fills the field with the hospital's full name + address on select. */
+(function(){
+  var inp=document.getElementById('hosp'), box=document.getElementById('hospAC');
+  if(!inp||!box) return;
+  var geo=null, t=null, picked=false;
+  try{ if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
+    function(p){ geo={lat:p.coords.latitude,lon:p.coords.longitude}; }, function(){}, {timeout:6000,maximumAge:600000}); }catch(e){}
+  function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function hide(){ box.classList.add('hidden'); box.innerHTML=''; }
+  inp.addEventListener('input',function(){
+    picked=false; var q=inp.value.trim();
+    clearTimeout(t);
+    if(q.length<3){ hide(); return; }
+    box.classList.remove('hidden'); box.innerHTML='<div class="acloading">Searching hospitals…</div>';
+    t=setTimeout(function(){ run(q); }, 450);
+  });
+  function run(q){
+    var url='https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q='+encodeURIComponent(q+' hospital');
+    if(geo){ var d=0.7; url+='&viewbox='+(geo.lon-d)+','+(geo.lat-d)+','+(geo.lon+d)+','+(geo.lat+d)+'&bounded=0'; }
+    fetch(url,{headers:{'Accept':'application/json'}})
+      .then(function(r){return r.json();})
+      .then(function(list){
+        if(picked) return;
+        if(!list||!list.length){ box.innerHTML='<div class="acloading">No match — type the name &amp; address manually.</div>'; return; }
+        box.innerHTML='';
+        list.forEach(function(it){
+          var a=it.address||{};
+          var name=a.hospital||a.amenity||a.building||(it.display_name.split(',')[0]);
+          var row=document.createElement('div'); row.className='acitem';
+          row.innerHTML='<b>'+esc(name)+'</b><span>'+esc(it.display_name)+'</span>';
+          row.onclick=function(){ inp.value=it.display_name; picked=true; hide(); };
+          box.appendChild(row);
+        });
+      })
+      .catch(function(){ box.innerHTML='<div class="acloading">Couldn’t reach the map service — type it manually.</div>'; });
+  }
+  document.addEventListener('click',function(e){ if(e.target!==inp && !box.contains(e.target)){ hide(); } });
+})();
+</script>
 <script>
 (function(){
   var FREE_LIMIT=3;
