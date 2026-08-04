@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       { source: "/StIsidore", destination: "/StIsidore.html" },
       { source: "/StMichael", destination: "/StMichael.html" },
       { source: "/StExpeditus", destination: "/StExpeditus.html" },
+      { source: "/StJosephTheWorker", destination: "/StJosephTheWorker.html" },
       // Product landing pages with the embedded live interactive demo.
       { source: "/supervisors", destination: "/supervisors.html" },
       { source: "/crews", destination: "/crews.html" },
