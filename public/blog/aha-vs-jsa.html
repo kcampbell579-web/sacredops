@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AHA vs JSA: what's the difference? | SacredOps</title>
+<meta name="description" content="An AHA and a JSA look almost identical, but on a federal job the difference matters. Here is when you need an Activity Hazard Analysis instead of a JSA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SacredOps">
+<meta property="og:title" content="AHA vs JSA: what's the difference?">
+<meta property="og:description" content="An AHA and a JSA look almost identical, but on a federal job the difference matters. Here is when you need an Activity Hazard Analysis instead of a JSA.">
+<meta property="og:url" content="https://www.sacredops.app/blog/aha-vs-jsa">
+<meta property="og:image" content="https://www.sacredops.app/og-tools.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.sacredops.app/og-tools.png">
+<style>
+  :root{--black:#050705;--panel:#0a0f0b;--forest-line:#0a3d24;--green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);--display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:720px;margin:0 auto;padding:0 22px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 45% at 50% 0%,#000 0%,transparent 70%);opacity:.5}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1000px;margin:0 auto;padding:0 22px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+  main.art{position:relative;z-index:1;padding:46px 0 60px}
+  .cat{font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-bright);margin-bottom:14px}
+  main.art h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.1;margin-bottom:26px}
+  .body p{color:#d3ddd6;font-size:16.5px;margin-bottom:18px}
+  .body h3{font-family:var(--display);font-weight:600;font-size:21px;color:var(--ink);margin:30px 0 12px}
+  .body ul{list-style:none;margin:0 0 18px}
+  .body li{position:relative;padding:7px 0 7px 22px;color:#d3ddd6;font-size:16px}
+  .body li::before{content:"";position:absolute;left:0;top:15px;width:7px;height:7px;background:var(--green-bright);border-radius:2px}
+  .body b{color:var(--ink);font-weight:600}
+  .cta{margin-top:38px;padding:28px 24px;border:1px solid var(--forest-line);border-radius:14px;background:radial-gradient(400px 200px at 50% 0%,rgba(4,164,102,.12),transparent 70%);text-align:center}
+  .cta h3{font-family:var(--display);font-size:20px;text-transform:uppercase;margin-bottom:8px}
+  .cta h3 .grn{color:var(--green-bright)}
+  .cta p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .btn{display:inline-block;font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;padding:13px 26px;border-radius:3px;background:var(--green);color:#04231a}
+  .back{margin-top:30px;font-size:13.5px}
+  .back a{color:var(--green-bright);font-weight:700}
+  .foot{position:relative;z-index:1;text-align:center;padding:26px 0;border-top:1px solid var(--hair);font-size:12.5px;color:var(--muted);margin-top:30px}
+  .foot a:hover{color:var(--green-bright)}
+</style>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EEZN8JVJFB');gtag('config','AW-18341083534');</script>
+<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");</script>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1573862441061857');fbq('track','PageView');</script>
+
+</head>
+<body>
+<nav><div class="nav-in">
+  <a class="brand" href="/"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#04A466" stroke-width="5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#04A466" stroke-width="5"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg><span>SACRED<span class="o">OPS</span></span></a>
+  <a class="nav-cta" href="/tools">Free tools</a>
+</div></nav>
+<main class="art"><div class="wrap">
+  <div class="cat">AHA vs JSA &middot; 5 min read</div>
+  <h1>AHA vs JSA: what's the difference?</h1>
+  <div class="body"><p>An AHA and a JSA look almost identical &mdash; both break work into steps, identify hazards, and list controls. So why do some jobs demand one and not the other? The short answer: who you are working for.</p>
+<h3>The JSA &mdash; the general standard</h3>
+<p>A Job Safety Analysis (JSA/JHA) is the everyday hazard-analysis tool used across construction and general industry. OSHA recommends the practice, and most private and commercial projects run on JSAs.</p>
+<h3>The AHA &mdash; the federal standard</h3>
+<p>An Activity Hazard Analysis (AHA) is the format required by the U.S. Army Corps of Engineers safety manual, EM 385-1-1, on federal and USACE projects. If you are doing government work, your safety plan almost certainly requires AHAs, not JSAs.</p>
+<h3>What the AHA adds</h3>
+<p>An AHA is a JSA with more structure. On top of steps, hazards, and controls, an AHA typically requires:</p>
+<ul>
+<li><b>RAC (Risk Assessment Code):</b> a formal risk rating &mdash; Low, Moderate, High, or Extremely High &mdash; for each step and overall.</li>
+<li><b>Equipment to be used</b> on the activity.</li>
+<li><b>Training requirements</b> for the workers involved.</li>
+<li><b>Inspection requirements</b> for equipment and the work.</li>
+<li><b>Competent / qualified persons</b> named for the activity.</li>
+</ul>
+<h3>Which one do you need?</h3>
+<ul>
+<li><b>Private / commercial work:</b> a JSA is standard.</li>
+<li><b>Federal / USACE / EM 385 contracts:</b> you need an AHA, in the required format, accepted before the activity starts.</li>
+</ul>
+<p>When in doubt, check your contract's safety requirements &mdash; they will specify. If the words "EM 385" or "AHA" appear, use an AHA.</p></div>
+  <div class="cta"><h3>Build a free <span class='grn'>AHA</span></h3><p>Activity Hazard Analysis in EM 385 format &mdash; job steps, hazards, controls, RAC codes, equipment and training. Free, no login.</p><a class="btn" href="/free-aha">Open the AHA generator</a></div>
+  <div class="back"><a href="/blog">&larr; All articles</a></div>
+</div></main>
+<div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/blog">Blog</a> · <a href="/tools">Free tools</a> · <a href="/pricing">Pricing</a> · <a href="/about">About</a></div></div>
+<script defer src="/chat-widget.js"></script>
+</body>
+</html>

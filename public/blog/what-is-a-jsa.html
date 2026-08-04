@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is a JSA? A simple guide for contractors | SacredOps</title>
+<meta name="description" content="Job Safety Analysis explained in plain English: what a JSA is, why it protects you, its core structure, and how to build one in minutes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SacredOps">
+<meta property="og:title" content="What is a JSA? A simple guide for contractors">
+<meta property="og:description" content="Job Safety Analysis explained in plain English: what a JSA is, why it protects you, its core structure, and how to build one in minutes.">
+<meta property="og:url" content="https://www.sacredops.app/blog/what-is-a-jsa">
+<meta property="og:image" content="https://www.sacredops.app/og-tools.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.sacredops.app/og-tools.png">
+<style>
+  :root{--black:#050705;--panel:#0a0f0b;--forest-line:#0a3d24;--green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);--display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:720px;margin:0 auto;padding:0 22px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 45% at 50% 0%,#000 0%,transparent 70%);opacity:.5}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1000px;margin:0 auto;padding:0 22px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+  main.art{position:relative;z-index:1;padding:46px 0 60px}
+  .cat{font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-bright);margin-bottom:14px}
+  main.art h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.1;margin-bottom:26px}
+  .body p{color:#d3ddd6;font-size:16.5px;margin-bottom:18px}
+  .body h3{font-family:var(--display);font-weight:600;font-size:21px;color:var(--ink);margin:30px 0 12px}
+  .body ul{list-style:none;margin:0 0 18px}
+  .body li{position:relative;padding:7px 0 7px 22px;color:#d3ddd6;font-size:16px}
+  .body li::before{content:"";position:absolute;left:0;top:15px;width:7px;height:7px;background:var(--green-bright);border-radius:2px}
+  .body b{color:var(--ink);font-weight:600}
+  .cta{margin-top:38px;padding:28px 24px;border:1px solid var(--forest-line);border-radius:14px;background:radial-gradient(400px 200px at 50% 0%,rgba(4,164,102,.12),transparent 70%);text-align:center}
+  .cta h3{font-family:var(--display);font-size:20px;text-transform:uppercase;margin-bottom:8px}
+  .cta h3 .grn{color:var(--green-bright)}
+  .cta p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .btn{display:inline-block;font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;padding:13px 26px;border-radius:3px;background:var(--green);color:#04231a}
+  .back{margin-top:30px;font-size:13.5px}
+  .back a{color:var(--green-bright);font-weight:700}
+  .foot{position:relative;z-index:1;text-align:center;padding:26px 0;border-top:1px solid var(--hair);font-size:12.5px;color:var(--muted);margin-top:30px}
+  .foot a:hover{color:var(--green-bright)}
+</style>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EEZN8JVJFB');gtag('config','AW-18341083534');</script>
+<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");</script>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1573862441061857');fbq('track','PageView');</script>
+
+</head>
+<body>
+<nav><div class="nav-in">
+  <a class="brand" href="/"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#04A466" stroke-width="5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#04A466" stroke-width="5"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg><span>SACRED<span class="o">OPS</span></span></a>
+  <a class="nav-cta" href="/tools">Free tools</a>
+</div></nav>
+<main class="art"><div class="wrap">
+  <div class="cat">JSA / JHA &middot; 6 min read</div>
+  <h1>What is a JSA? A simple guide for contractors</h1>
+  <div class="body"><p>A JSA &mdash; Job Safety Analysis (also called a JHA, Job Hazard Analysis) &mdash; is a simple document that breaks a task into steps, identifies the hazard in each step, and lists the controls that keep your crew safe. It is one of the most effective safety tools there is, and one of the most misunderstood.</p>
+<h3>JSA vs JHA &mdash; are they different?</h3>
+<p>No. Job Safety Analysis and Job Hazard Analysis are two names for the same thing. Use whichever your company or client prefers.</p>
+<h3>Why it matters</h3>
+<p>Two reasons. First, it works &mdash; walking through a task before you do it catches hazards you would otherwise meet the hard way. Second, it protects you. When something goes wrong, a signed JSA shows you identified the risk and controlled it. Without one, you are exposed.</p>
+<h3>The anatomy of a JSA</h3>
+<p>Every JSA has the same core structure, usually three or four columns:</p>
+<ul>
+<li><b>Task step:</b> break the job into its basic steps, in order.</li>
+<li><b>Hazards:</b> what could hurt someone in that step &mdash; falls, struck-by, caught-between, exposure.</li>
+<li><b>Controls:</b> how you eliminate or reduce each hazard, following the hierarchy of controls.</li>
+<li><b>Risk rating:</b> many JSAs rate each step low, medium, or high so the crew focuses on the worst risks.</li>
+</ul>
+<p>Add the job details (project, date, prepared by, competent person), the PPE required, and the nearest hospital, and you have a complete JSA.</p>
+<h3>Common mistakes</h3>
+<ul>
+<li><b>Too generic.</b> A JSA copied from another job does not reflect today's hazards. Tailor it.</li>
+<li><b>Controls that are not specific.</b> "Be careful" is not a control. "Guardrails at the leading edge" is.</li>
+<li><b>No signatures.</b> An unsigned JSA is a draft, not a record.</li>
+</ul>
+<h3>Build one in minutes</h3>
+<p>You do not need a Word template from 2014. Pick your tasks, and the hazards and controls fill in &mdash; then rate the risk, add PPE, and download a clean PDF.</p></div>
+  <div class="cta"><h3>Build a free <span class='grn'>JSA</span> now</h3><p>Pick your tasks, we add the hazards and controls, you rate the risk. Download a professional JSA PDF. Free, no login.</p><a class="btn" href="/free-jsa">Open the JSA builder</a></div>
+  <div class="back"><a href="/blog">&larr; All articles</a></div>
+</div></main>
+<div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/blog">Blog</a> · <a href="/tools">Free tools</a> · <a href="/pricing">Pricing</a> · <a href="/about">About</a></div></div>
+<script defer src="/chat-widget.js"></script>
+</body>
+</html>

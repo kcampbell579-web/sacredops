@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why your crew won't report near-misses (and how to fix it) | SacredOps</title>
+<meta name="description" content="Near-misses are the cheapest safety lesson you will ever get, and the one everyone skips. The problem is not discipline. It is friction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SacredOps">
+<meta property="og:title" content="Why your crew won't report near-misses (and how to fix it)">
+<meta property="og:description" content="Near-misses are the cheapest safety lesson you will ever get, and the one everyone skips. The problem is not discipline. It is friction.">
+<meta property="og:url" content="https://www.sacredops.app/blog/near-miss-reporting">
+<meta property="og:image" content="https://www.sacredops.app/og-tools.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.sacredops.app/og-tools.png">
+<style>
+  :root{--black:#050705;--panel:#0a0f0b;--forest-line:#0a3d24;--green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);--display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:720px;margin:0 auto;padding:0 22px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 45% at 50% 0%,#000 0%,transparent 70%);opacity:.5}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1000px;margin:0 auto;padding:0 22px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+  main.art{position:relative;z-index:1;padding:46px 0 60px}
+  .cat{font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-bright);margin-bottom:14px}
+  main.art h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.1;margin-bottom:26px}
+  .body p{color:#d3ddd6;font-size:16.5px;margin-bottom:18px}
+  .body h3{font-family:var(--display);font-weight:600;font-size:21px;color:var(--ink);margin:30px 0 12px}
+  .body ul{list-style:none;margin:0 0 18px}
+  .body li{position:relative;padding:7px 0 7px 22px;color:#d3ddd6;font-size:16px}
+  .body li::before{content:"";position:absolute;left:0;top:15px;width:7px;height:7px;background:var(--green-bright);border-radius:2px}
+  .body b{color:var(--ink);font-weight:600}
+  .cta{margin-top:38px;padding:28px 24px;border:1px solid var(--forest-line);border-radius:14px;background:radial-gradient(400px 200px at 50% 0%,rgba(4,164,102,.12),transparent 70%);text-align:center}
+  .cta h3{font-family:var(--display);font-size:20px;text-transform:uppercase;margin-bottom:8px}
+  .cta h3 .grn{color:var(--green-bright)}
+  .cta p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .btn{display:inline-block;font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;padding:13px 26px;border-radius:3px;background:var(--green);color:#04231a}
+  .back{margin-top:30px;font-size:13.5px}
+  .back a{color:var(--green-bright);font-weight:700}
+  .foot{position:relative;z-index:1;text-align:center;padding:26px 0;border-top:1px solid var(--hair);font-size:12.5px;color:var(--muted);margin-top:30px}
+  .foot a:hover{color:var(--green-bright)}
+</style>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EEZN8JVJFB');gtag('config','AW-18341083534');</script>
+<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");</script>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1573862441061857');fbq('track','PageView');</script>
+
+</head>
+<body>
+<nav><div class="nav-in">
+  <a class="brand" href="/"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#04A466" stroke-width="5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#04A466" stroke-width="5"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg><span>SACRED<span class="o">OPS</span></span></a>
+  <a class="nav-cta" href="/tools">Free tools</a>
+</div></nav>
+<main class="art"><div class="wrap">
+  <div class="cat">Reporting &middot; 4 min read</div>
+  <h1>Why your crew won't report near-misses (and how to fix it)</h1>
+  <div class="body"><p>A near-miss is the cheapest safety lesson you will ever get &mdash; a warning with no injury, no damage, no cost. It is the exact event that, next time, becomes the real thing. And it is the one almost nobody reports.</p>
+<h3>Why crews do not report</h3>
+<p>It is tempting to call it a discipline problem &mdash; people do not care, train harder, remind more. But that is rarely it. Two things actually kill near-miss reporting:</p>
+<ul>
+<li><b>Friction.</b> Your best foreman will not stop a job with a truck at the dock and two guys short to go find a terminal, log in, and type. "Later" never comes.</li>
+<li><b>Fear.</b> If reporting a near-miss gets someone written up, reporting stops. Blame and data do not coexist.</li>
+</ul>
+<h3>How to fix it</h3>
+<ul>
+<li><b>Make it take 30 seconds.</b> Let people report the way they already communicate &mdash; say it out loud or snap a photo, from the phone in their hand, at the moment it happens.</li>
+<li><b>Separate reporting from blame.</b> A near-miss is a gift, not a violation. Thank the person who raised it.</li>
+<li><b>Act on them.</b> Nothing kills reporting faster than reports that vanish. Close the loop and people keep reporting.</li>
+</ul>
+<h3>The bottom line</h3>
+<p>Every time reporting improves, it is not because people started caring more. It is because someone made it take less. Lower the friction and your leading indicators &mdash; the ones that prevent the real incident &mdash; finally show up.</p></div>
+  <div class="cta"><h3>See reporting that takes <span class='grn'>30 seconds</span></h3><p>SacredOps puts sign-ins, toolbox talks, permits and incident reports on your crew's phones. Try the live demo &mdash; no signup.</p><a class="btn" href="/supervisors">Try the live demo</a></div>
+  <div class="back"><a href="/blog">&larr; All articles</a></div>
+</div></main>
+<div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/blog">Blog</a> · <a href="/tools">Free tools</a> · <a href="/pricing">Pricing</a> · <a href="/about">About</a></div></div>
+<script defer src="/chat-widget.js"></script>
+</body>
+</html>

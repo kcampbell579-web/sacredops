@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety Blog — Practical OSHA & field-safety guides | SacredOps</title>
+<meta name="description" content="Practical guides on toolbox talks, JSAs, AHAs, OSHA compliance and running field safety for construction & warehouse crews. From SacredOps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SacredOps">
+<meta property="og:title" content="SacredOps Safety Blog">
+<meta property="og:description" content="Practical guides on toolbox talks, JSAs, AHAs and OSHA compliance for construction crews.">
+<meta property="og:url" content="https://www.sacredops.app/blog">
+<meta property="og:image" content="https://www.sacredops.app/og-tools.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.sacredops.app/og-tools.png">
+<style>
+  :root{--black:#050705;--panel:#0a0f0b;--forest-line:#0a3d24;--green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);--display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 0%,transparent 70%);opacity:.5}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1000px;margin:0 auto;padding:0 22px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+  .hero{position:relative;z-index:1;text-align:center;padding:60px 0 26px}
+  .eyebrow{font-family:var(--display);font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--green-bright);margin-bottom:16px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,50px);line-height:1.02;text-transform:uppercase}
+  h1 .grn{color:var(--green-bright)}
+  .lede{max-width:600px;margin:18px auto 0;color:var(--muted);font-size:16px}
+  main{position:relative;z-index:1;padding:20px 0 70px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  a.post{background:var(--panel);border:1px solid var(--forest-line);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;transition:.16s}
+  a.post:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 10px 30px -14px rgba(4,164,102,.5)}
+  .cat{font-family:var(--display);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-bright);margin-bottom:10px}
+  .post h2{font-family:var(--display);font-weight:600;font-size:20px;line-height:1.15;margin-bottom:8px;text-transform:none;letter-spacing:0}
+  .post p{color:var(--muted);font-size:14px;flex:1}
+  .post .go{margin-top:14px;font-size:12.5px;font-weight:800;color:var(--green-bright)}
+  .read{font-size:11.5px;color:var(--muted);margin-top:8px}
+  .cta-band{position:relative;z-index:1;text-align:center;margin-top:40px;padding:44px 24px;border:1px solid var(--hair);border-radius:16px;background:radial-gradient(500px 240px at 50% 0%,rgba(4,164,102,.12),transparent 70%)}
+  .cta-band h3{font-family:var(--display);font-size:clamp(20px,4vw,28px);text-transform:uppercase;margin-bottom:10px}
+  .cta-band h3 .grn{color:var(--green-bright)}
+  .cta-band p{color:var(--muted);max-width:520px;margin:0 auto 20px;font-size:15px}
+  .btn{display:inline-block;font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;padding:14px 28px;border-radius:3px;background:var(--green);color:#04231a}
+  .foot{position:relative;z-index:1;text-align:center;padding:26px 0;border-top:1px solid var(--hair);font-size:12.5px;color:var(--muted)}
+  .foot a:hover{color:var(--green-bright)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EEZN8JVJFB');gtag('config','AW-18341083534');</script>
+<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");</script>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1573862441061857');fbq('track','PageView');</script>
+</head>
+<body>
+<nav><div class="nav-in">
+  <a class="brand" href="/"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#04A466" stroke-width="5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#04A466" stroke-width="5"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg><span>SACRED<span class="o">OPS</span></span></a>
+  <a class="nav-cta" href="/tools">Free tools</a>
+</div></nav>
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">The SacredOps blog</div>
+  <h1>Field safety, <span class="grn">made practical</span></h1>
+  <p class="lede">Straight-talking guides on toolbox talks, JSAs, AHAs and OSHA compliance — written for the people actually running the jobs.</p>
+</div></header>
+<main><div class="wrap">
+  <div class="grid">
+    <a class="post" href="/blog/toolbox-talks-that-get-signed">
+      <div class="cat">Toolbox talks</div>
+      <h2>How to run a toolbox talk your crew actually signs</h2>
+      <p>Most toolbox talks fail for one reason — friction. Here's how to run one in five minutes that your whole crew signs, every morning.</p>
+      <div class="read">5 min read</div>
+      <div class="go">Read the guide →</div>
+    </a>
+    <a class="post" href="/blog/what-is-a-jsa">
+      <div class="cat">JSA / JHA</div>
+      <h2>What is a JSA? A simple guide for contractors</h2>
+      <p>Job Safety Analysis explained in plain English — what it is, why it protects you, and how to build one in minutes (with a free template).</p>
+      <div class="read">6 min read</div>
+      <div class="go">Read the guide →</div>
+    </a>
+    <a class="post" href="/blog/aha-vs-jsa">
+      <div class="cat">AHA vs JSA</div>
+      <h2>AHA vs JSA: what's the difference?</h2>
+      <p>They look almost identical — but on a federal job the difference matters. Here's when you need an Activity Hazard Analysis instead of a JSA.</p>
+      <div class="read">5 min read</div>
+      <div class="go">Read the guide →</div>
+    </a>
+    <a class="post" href="/blog/near-miss-reporting">
+      <div class="cat">Reporting</div>
+      <h2>Why your crew won't report near-misses (and how to fix it)</h2>
+      <p>Near-misses are the cheapest safety lesson you'll ever get — and the one everyone skips. The problem isn't discipline. It's friction.</p>
+      <div class="read">4 min read</div>
+      <div class="go">Read the guide →</div>
+    </a>
+  </div>
+  <div class="cta-band">
+    <h3>Skip the templates — <span class="grn">use the free tools</span></h3>
+    <p>Build a toolbox talk, JSA, or AHA in minutes and download a ready-to-use PDF. No login, 3 free.</p>
+    <a class="btn" href="/tools">Open the free tools</a>
+  </div>
+</div></main>
+<div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/">Home</a> · <a href="/tools">Free tools</a> · <a href="/pricing">Pricing</a> · <a href="/about">About</a></div></div>
+<script defer src="/chat-widget.js"></script>
+</body>
+</html>
