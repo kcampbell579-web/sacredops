@@ -666,6 +666,9 @@ export default function App(){
   const restoreProj=(id)=>{const next=archived.filter(x=>x!==id);setArchived(next);saveArchived(next);show("Project restored to active");};
   const PNAMES=ALLP.map(p=>p.name);
   const[q,setQ]=useState("");const[zoom,setZoom]=useState(false);const[signed,setSigned]=useState({});
+  // Logged-in user's name, so forms can default "Prepared by" to whoever's signed in.
+  const[meName,setMeName]=useState("");
+  useEffect(()=>{let on=true;fetch("/api/auth/me").then(r=>r.json()).then(d=>{if(on&&d&&d.user&&d.user.name)setMeName(d.user.name);}).catch(()=>{});return()=>{on=false;};},[]);
   const maps=()=>{show("Opening directions to nearest hospital");window.open("https://maps.apple.com/?q=nearest%20hospital","_blank");};
   const sticker=(e)=>{loadQRCode().then(Q=>Q.toDataURL("https://sacredops.app/inspect/"+e.id,{width:600,margin:1})).then(qr=>{const c=document.createElement("canvas");c.width=600;c.height=780;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,600,780);x.fillStyle="#003B22";x.fillRect(0,0,600,90);x.fillStyle="#fff";x.font="bold 34px sans-serif";x.textAlign="center";x.fillText("SACRED OPS",300,56);const img=new Image();img.onload=()=>{x.drawImage(img,90,130,420,420);x.fillStyle="#0D0D0D";x.font="bold 30px sans-serif";x.fillText(e.type,300,610);x.fillStyle="#555";x.font="24px sans-serif";x.fillText("SN "+e.serial+"  \u00b7  "+e.id,300,648);x.fillStyle="#04A466";x.font="bold 24px sans-serif";x.fillText("SCAN TO INSPECT",300,700);const a=document.createElement("a");a.href=c.toDataURL("image/png");a.download="QR_"+e.id+".png";a.click();show("Sticker downloaded");};img.src=qr;}).catch(()=>show("Could not build sticker"));};
 
@@ -673,7 +676,27 @@ export default function App(){
   const inp={width:"100%",boxSizing:"border-box",padding:"11px 12px",background:"rgba(255,255,255,0.05)",border:"1px solid "+HL,borderRadius:11,fontSize:13,color:TX,outline:"none"};
   function L({children}){return <div style={{fontSize:9.5,fontWeight:800,color:AC,margin:"0 0 4px",letterSpacing:0.8,fontFamily:MONO}}>{String(children).toUpperCase()}</div>;}
   function Field({label,children}){return <div style={{marginBottom:11}}><L>{label}</L>{children}</div>;}
-  function T({v,set,ph,type}){const isD=type==="date",isTm=type==="time";const pl=ph||(isD?"MM/DD/YYYY":isTm?"HH:MM AM/PM":"");return <input type="text" inputMode={isD||isTm?"numeric":undefined} value={v||""} onChange={e=>set(e.target.value)} placeholder={pl} style={inp}/>;}
+  // Auto-format date/time as the user types so the field is always clean
+  // (07282026 → 07/28/2026, 0630 → 06:30) while keeping the numeric keypad.
+  const fmtDate=(val)=>{const d=String(val).replace(/\D/g,"").slice(0,8);if(d.length<=2)return d;if(d.length<=4)return d.slice(0,2)+"/"+d.slice(2);return d.slice(0,2)+"/"+d.slice(2,4)+"/"+d.slice(4);};
+  const fmtTime=(val)=>{const d=String(val).replace(/\D/g,"").slice(0,4);if(d.length<=2)return d;return d.slice(0,2)+":"+d.slice(2);};
+  function T({v,set,ph,type}){const isD=type==="date",isTm=type==="time";const pl=ph||(isD?"MM/DD/YYYY":isTm?"HH:MM":"");const h=(x)=>set(isD?fmtDate(x):isTm?fmtTime(x):x);return <input type="text" inputMode={isD||isTm?"numeric":undefined} value={v||""} onChange={e=>h(e.target.value)} placeholder={pl} style={inp}/>;}
+  // Nearest-hospital type-ahead via OpenStreetMap (free, no key). Fills the full
+  // name + address on select; biases to the user's location when allowed.
+  function HospitalField({v,set}){
+    const[res,setRes]=useState(null);const[open,setOpen]=useState(false);const tRef=useRef(null);const geoRef=useRef(null);
+    useEffect(()=>{try{if(typeof navigator!=="undefined"&&navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>{geoRef.current={lat:p.coords.latitude,lon:p.coords.longitude};},()=>{},{timeout:6000,maximumAge:600000});}catch(e){}},[]);
+    const run=(query)=>{let url="https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q="+encodeURIComponent(query+" hospital");const g=geoRef.current;if(g){const d=0.7;url+="&viewbox="+(g.lon-d)+","+(g.lat-d)+","+(g.lon+d)+","+(g.lat+d)+"&bounded=0";}fetch(url,{headers:{Accept:"application/json"}}).then(r=>r.json()).then(list=>setRes(Array.isArray(list)?list:[])).catch(()=>setRes([]));};
+    const onType=(val)=>{set(val);setOpen(true);if(tRef.current)clearTimeout(tRef.current);const q=String(val).trim();if(q.length<3){setRes(null);return;}setRes("loading");tRef.current=setTimeout(()=>run(q),450);};
+    return <div style={{position:"relative"}}>
+      <input type="text" value={v||""} onChange={e=>onType(e.target.value)} onBlur={()=>setTimeout(()=>setOpen(false),200)} placeholder="Start typing a hospital name…" autoComplete="off" style={inp}/>
+      {open&&res&&<div style={{position:"absolute",left:0,right:0,top:"100%",zIndex:60,background:"#0d130f",border:"1px solid "+HL,borderRadius:10,marginTop:4,maxHeight:230,overflowY:"auto",boxShadow:"0 14px 34px rgba(0,0,0,0.55)"}}>
+        {res==="loading"?<div style={{padding:"10px 12px",fontSize:12,color:MU}}>Searching hospitals…</div>
+        :res.length===0?<div style={{padding:"10px 12px",fontSize:12,color:MU}}>No match — type it manually.</div>
+        :res.map((it,i)=>{const a=it.address||{};const nm=a.hospital||a.amenity||a.building||String(it.display_name).split(",")[0];return <div key={i} onMouseDown={()=>{set(it.display_name);setOpen(false);setRes(null);}} style={{padding:"10px 12px",cursor:"pointer",borderBottom:"1px solid "+HL}}><div style={{fontSize:12.5,fontWeight:600,color:TX}}>{nm}</div><div style={{fontSize:10.5,color:MU,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{it.display_name}</div></div>;})}
+      </div>}
+    </div>;
+  }
   function TA({v,set,ph,h=68}){return <textarea value={v||""} onChange={e=>set(e.target.value)} placeholder={ph||""} style={{...inp,height:h,resize:"none"}}/>;}
   function Sel({v,set,opts}){return <select value={v||""} onChange={e=>set(e.target.value)} style={inp}><option value="">Select…</option>{opts.map(o=><option key={o}>{o}</option>)}</select>;}
   function Chk({on,set,label}){return <button onClick={()=>set(!on)} style={{display:"flex",alignItems:"center",gap:9,width:"100%",textAlign:"left",background:on?AC+"18":"rgba(255,255,255,0.04)",border:"1px solid "+(on?AC:HL),borderRadius:10,padding:"9px 11px",marginBottom:7,cursor:"pointer"}}><span style={{width:18,height:18,borderRadius:5,border:"1.5px solid "+(on?AC:MU),background:on?AC:"transparent",color:"#04231a",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,flexShrink:0}}>{on?"✓":""}</span><span style={{fontSize:12,color:TX,lineHeight:1.3}}>{label}</span></button>;}
@@ -1382,6 +1405,8 @@ export default function App(){
 
   const JSAGenerator=()=>{
     const[f,setF]=useState({proj:PROJECTS[0].name});const s=(k,v)=>setF(o=>({...o,[k]:v}));
+    // Default "Prepared by" to the signed-in user (unless they've typed one).
+    useEffect(()=>{if(meName)setF(o=>o.by?o:{...o,by:meName});},[meName]);
     const[sel,setSel]=useState({});const[risk,setRisk]=useState({});const[ppe,setPpe]=useState({});const sig=useRef(null);
     const[custom,setCustom]=useState(loadTasks());const[nt,setNt]=useState({cat:"Custom"});const setN=(k,v)=>setNt(o=>({...o,[k]:v}));const[showAdd,setShowAdd]=useState(false);
     const ALL=[...TASKLIB,...custom];
@@ -1391,8 +1416,9 @@ export default function App(){
     return(<Screen title="JSA / JHA Builder" sub="Select task steps → generate a Job Safety Analysis">
       <Row2><div style={{flex:1}}><Field label="Job number"><T v={f.jobNo} set={v=>s("jobNo",v)} ph="e.g. 24-118"/></Field></div><div style={{flex:1}}><Field label="Project"><Sel v={f.proj} set={v=>s("proj",v)} opts={PNAMES}/></Field></div></Row2>
       <Field label="Task / work location"><T v={f.loc} set={v=>s("loc",v)}/></Field>
-      <Row2><div style={{flex:1}}><Field label="Date"><T v={f.date} set={v=>s("date",v)} type="date"/></Field></div><div style={{flex:1}}><Field label="Prepared by / competent person"><T v={f.by} set={v=>s("by",v)}/></Field></div></Row2>
-      <Row2><div style={{flex:1}}><Field label="Muster point"><T v={f.muster} set={v=>s("muster",v)}/></Field></div><div style={{flex:1}}><Field label="Nearest hospital"><T v={f.hosp} set={v=>s("hosp",v)}/></Field></div></Row2>
+      <Row2><div style={{flex:1}}><Field label="Date"><T v={f.date} set={v=>s("date",v)} type="date"/></Field></div><div style={{flex:1}}><Field label="Prepared by"><T v={f.by} set={v=>s("by",v)} ph="You"/></Field></div></Row2>
+      <Row2><div style={{flex:1}}><Field label="Competent person"><T v={f.cp} set={v=>s("cp",v)} ph="Name (if different)"/></Field></div><div style={{flex:1}}><Field label="Muster point"><T v={f.muster} set={v=>s("muster",v)}/></Field></div></Row2>
+      <Field label="Nearest hospital"><HospitalField v={f.hosp} set={v=>s("hosp",v)}/></Field>
       <SecHead>PPE required</SecHead>{PPE.map((x,i)=><Chk key={i} label={x} on={ppe[i]} set={()=>setPpe(o=>({...o,[i]:!o[i]}))}/>)}
       <SecHead>Select task steps</SecHead>
       {cats.map(cat=>(<div key={cat}><div style={{fontSize:9.5,fontWeight:800,color:MU,letterSpacing:1.2,margin:"12px 0 6px",fontFamily:MONO}}>{cat.toUpperCase()}</div>
@@ -1407,7 +1433,7 @@ export default function App(){
       {showAdd?(<div style={{...glass,borderRadius:14,padding:12,marginTop:10}}><L>New task step</L><Row2><div style={{flex:2}}><T v={nt.name} set={v=>setN("name",v)} ph="Task step name"/></div><div style={{flex:1}}><T v={nt.cat} set={v=>setN("cat",v)} ph="Category"/></div></Row2><div style={{height:8}}/><T v={nt.hazard} set={v=>setN("hazard",v)} ph="Hazard(s)"/><div style={{height:8}}/><TA v={nt.control} set={v=>setN("control",v)} ph="Controls / safe procedure"/><div style={{display:"flex",gap:8,marginTop:10}}><button onClick={addTask} style={{flex:1,background:AC,color:"#04231a",border:"none",borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>SAVE TASK</button><button onClick={()=>{setShowAdd(false);setNt({cat:"Custom"});}} style={{flex:1,background:"rgba(255,255,255,0.06)",color:TX,border:"1px solid "+HL,borderRadius:10,padding:"11px",fontSize:11.5,fontWeight:800,cursor:"pointer"}}>CANCEL</button></div></div>):(<button onClick={()=>setShowAdd(true)} style={{...glass,width:"100%",borderRadius:12,padding:"12px",marginTop:10,cursor:"pointer",color:AC,fontWeight:800,fontSize:12,border:"1px dashed "+AC+"66"}}>+ Add a custom task step</button>)}
       <div style={{...glass,borderRadius:12,padding:"11px 13px",marginTop:12,fontSize:12,fontWeight:700,color:chosen.length?AC:MU}}>{chosen.length} task step{chosen.length===1?"":"s"} selected</div>
       <div style={{marginTop:14}}><L>Prepared-by signature</L><SigPad capRef={sig}/></div>
-      <Submit label="GENERATE JSA (PDF)" onClick={()=>{if(!chosen.length){show("Select at least one task step");return;}dl({file:"JSA_"+String(f.jobNo||"").replace(/[^A-Za-z0-9-]/g,"")+".pdf",title:"Job Safety Analysis (JSA / JHA)",meta:[["Job #",f.jobNo],["Project",f.proj],["Date",f.date],["Prepared by",f.by]],sections:[{h:"Project Details",rows:[["Job number",f.jobNo],["Project",f.proj],["Task / work location",f.loc],["Date",f.date],["Prepared by / competent person",f.by],["Muster point",f.muster],["Nearest hospital",f.hosp]]},{h:"PPE Required",checks:PPE.map((x,i)=>[x,!!ppe[i]])},{h:"Task Steps, Hazards & Controls",jsa:chosen.map(t=>({step:t.name,hazard:t.hazard,control:t.control,risk:risk[t.id]||"3"}))}],sigs:[{role:"Prepared by / competent person",name:f.by,date:f.date,img:sig.current&&sig.current()}]});}}/>
+      <Submit label="GENERATE JSA (PDF)" onClick={()=>{if(!chosen.length){show("Select at least one task step");return;}dl({file:"JSA_"+String(f.jobNo||"").replace(/[^A-Za-z0-9-]/g,"")+".pdf",title:"Job Safety Analysis (JSA / JHA)",meta:[["Job #",f.jobNo],["Project",f.proj],["Date",f.date],["Prepared by",f.by]],sections:[{h:"Project Details",rows:[["Job number",f.jobNo],["Project",f.proj],["Task / work location",f.loc],["Date",f.date],["Prepared by",f.by],["Competent person",f.cp||f.by],["Muster point",f.muster],["Nearest hospital",f.hosp]]},{h:"PPE Required",checks:PPE.map((x,i)=>[x,!!ppe[i]])},{h:"Task Steps, Hazards & Controls",jsa:chosen.map(t=>({step:t.name,hazard:t.hazard,control:t.control,risk:risk[t.id]||"3"}))}],sigs:[{role:"Prepared by",name:f.by,date:f.date,img:sig.current&&sig.current()}]});}}/>
     </Screen>);
   };
   const PlanView=({p})=>(<Screen title={p.title} sub={p.subtitle}>
