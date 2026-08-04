@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
       { source: "/contact-us", destination: "/contact.html" },
       { source: "/features", destination: "/features.html" },
       { source: "/about", destination: "/about.html" },
+      { source: "/privacy", destination: "/privacy.html" },
+      { source: "/privacy-policy", destination: "/privacy.html" },
       { source: "/blog", destination: "/blog.html" },
       { source: "/blog/:slug", destination: "/blog/:slug.html" },
       { source: "/free-toolbox-talk", destination: "/free-toolbox-talk.html" },
