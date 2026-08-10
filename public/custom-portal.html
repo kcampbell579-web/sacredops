@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Portal — Your own branded safety app | SacredOps</title>
+<meta name="description" content="Your own white-label field-safety app — your logo, your branding, features built to your workflow, unlimited users. $999 setup, then $499/mo. By SacredOps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SacredOps">
+<meta property="og:title" content="Custom Portal — Your own branded safety app">
+<meta property="og:description" content="Your logo, your branding, features built to your workflow, unlimited users. $999 setup, then $499/mo.">
+<meta property="og:url" content="https://www.sacredops.app/custom-portal">
+<meta property="og:image" content="https://www.sacredops.app/og-tools.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://www.sacredops.app/og-tools.png">
+<style>
+  :root{--black:#050705;--panel:#0a0f0b;--panel-2:#0e150f;--forest-line:#0a3d24;--green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);--display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 0%,transparent 70%);opacity:.5}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1000px;margin:0 auto;padding:0 22px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+  .hero{position:relative;z-index:1;text-align:center;padding:64px 0 20px}
+  .eyebrow{font-family:var(--display);font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--green-bright);margin-bottom:16px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,6vw,54px);line-height:1.02;text-transform:uppercase}
+  h1 .grn{color:var(--green-bright)}
+  .lede{max-width:640px;margin:20px auto 0;color:var(--muted);font-size:17px}
+  section{position:relative;z-index:1;padding:36px 0}
+  .sec-tag{font-family:var(--display);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--green-bright);display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .sec-tag::before{content:"";width:32px;height:1px;background:var(--green)}
+  h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,4vw,32px);text-transform:uppercase;letter-spacing:.01em;margin-bottom:14px}
+  h2 .grn{color:var(--green-bright)}
+  .vals{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:800px){.vals{grid-template-columns:1fr}}
+  .val{background:var(--panel);border:1px solid var(--forest-line);border-radius:12px;padding:22px 20px}
+  .val .ic{font-size:24px;margin-bottom:10px}
+  .val h3{font-family:var(--display);font-weight:600;font-size:16px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:6px;color:var(--ink)}
+  .val p{color:var(--muted);font-size:14px}
+  .price-box{background:linear-gradient(180deg,rgba(4,164,102,.10),var(--panel));border:1px solid var(--green);border-radius:16px;padding:34px 28px;text-align:center;box-shadow:0 0 50px -18px rgba(4,164,102,.6)}
+  .price-box .big{font-family:var(--display);font-weight:700;font-size:clamp(36px,7vw,56px);color:#fff;line-height:1}
+  .price-box .big small{font-size:20px;color:var(--muted);font-weight:400}
+  .price-box .setup{font-family:var(--display);font-size:15px;color:var(--green-bright);letter-spacing:.05em;text-transform:uppercase;margin-top:10px}
+  .price-box ul{list-style:none;max-width:460px;margin:22px auto 0;text-align:left}
+  .price-box li{padding:8px 0 8px 26px;position:relative;color:#d3ddd6;font-size:15px}
+  .price-box li::before{content:"✓";position:absolute;left:0;color:var(--green-bright);font-weight:800}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:800px){.steps{grid-template-columns:1fr}}
+  .stepc{background:var(--panel);border:1px solid var(--hair);border-radius:12px;padding:20px}
+  .stepc .n{font-family:var(--display);color:var(--green-bright);font-size:13px;font-weight:700;letter-spacing:.1em;margin-bottom:8px}
+  .stepc h3{font-family:var(--display);font-size:16px;text-transform:uppercase;margin-bottom:6px}
+  .stepc p{color:var(--muted);font-size:14px}
+  .form{max-width:520px;margin:0 auto;background:var(--panel);border:1px solid var(--forest-line);border-radius:16px;padding:26px}
+  label{display:block;font-size:11px;font-weight:800;color:var(--green-bright);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-family:ui-monospace,Menlo,monospace}
+  input,textarea{width:100%;box-sizing:border-box;padding:12px 13px;background:rgba(255,255,255,.05);border:1px solid var(--hair);border-radius:10px;font-size:15px;color:var(--ink);outline:none;font-family:var(--body);margin-bottom:13px}
+  input::placeholder,textarea::placeholder{color:#5f7268}
+  .btn{display:block;width:100%;text-align:center;background:var(--green);color:#04231a;border:none;border-radius:12px;padding:15px;font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:.2s}
+  .btn:hover{box-shadow:0 0 24px rgba(4,164,102,.5)}
+  .msg{border-radius:10px;padding:12px 14px;font-size:14px;margin-top:12px;display:none}
+  .msg.ok{background:rgba(4,164,102,.12);border:1px solid var(--green);color:#bff3d8}
+  .msg.err{background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.5);color:#f0b3b1}
+  .foot{position:relative;z-index:1;text-align:center;padding:26px 0;border-top:1px solid var(--hair);font-size:12.5px;color:var(--muted);margin-top:20px}
+  .foot a:hover{color:var(--green-bright)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EEZN8JVJFB');gtag('config','AW-18341083534');</script>
+<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");</script>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1573862441061857');fbq('track','PageView');</script>
+</head>
+<body>
+<nav><div class="nav-in">
+  <a class="brand" href="/"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#04A466" stroke-width="5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#04A466" stroke-width="5"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg><span>SACRED<span class="o">OPS</span></span></a>
+  <a class="nav-cta" href="#start">Start now</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Custom Portal · White-label</div>
+  <h1>Your own safety app.<br><span class="grn">Your logo. Your rules.</span></h1>
+  <p class="lede">Give your whole company a field-safety app that looks like <em>you</em> built it — your branding, the features you want, and unlimited users on every job site.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="sec-tag">What you get</div>
+  <div class="vals">
+    <div class="val"><div class="ic">🎨</div><h3>Your branding</h3><p>Your logo, your colors, your company name throughout the worker and supervisor portals — your crews see your brand, not ours.</p></div>
+    <div class="val"><div class="ic">🧩</div><h3>Built your way</h3><p>We configure the forms, workflows, and features around how your company actually runs — not a one-size-fits-all template.</p></div>
+    <div class="val"><div class="ic">♾️</div><h3>Unlimited users</h3><p>Every worker, supervisor, and subcontractor — no per-seat fees, no counting heads. Add your whole workforce.</p></div>
+    <div class="val"><div class="ic">📱</div><h3>On every phone</h3><p>No app store, no installs. Your crews open their portal in a browser and add it to their home screen.</p></div>
+    <div class="val"><div class="ic">🛟</div><h3>Done-for-you setup</h3><p>We brand it, load your forms and job sites, and get your team running — you don't lift a finger on the tech.</p></div>
+    <div class="val"><div class="ic">📊</div><h3>The full platform</h3><p>Sign-ins, toolbox talks, permits, SDS, inspections, JSAs, incident reports and oversight — all included.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="price-box">
+    <div class="sec-tag" style="justify-content:center">Simple pricing</div>
+    <div class="big">$499<small>/mo</small></div>
+    <div class="setup">+ $999 one-time setup &amp; branding</div>
+    <ul>
+      <li>Unlimited users — your whole workforce</li>
+      <li>Fully branded portal (your logo &amp; colors)</li>
+      <li>Features configured to your workflow</li>
+      <li>Every module included — nothing held back</li>
+      <li>Priority support &amp; onboarding</li>
+      <li>Cancel anytime — no long-term contract</li>
+    </ul>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-tag">How it works</div>
+  <div class="steps">
+    <div class="stepc"><div class="n">01</div><h3>Kickoff</h3><p>A short call to learn your trades, forms, and how your company runs safety today.</p></div>
+    <div class="stepc"><div class="n">02</div><h3>We build it</h3><p>We brand the portal with your logo, load your forms and job sites, and configure the features you want.</p></div>
+    <div class="stepc"><div class="n">03</div><h3>Launch</h3><p>Your branded app goes live and your crews start using it on their phones — with our team on hand.</p></div>
+  </div>
+</div></section>
+
+<section id="start"><div class="wrap">
+  <div class="sec-tag" style="justify-content:center">Start your custom portal</div>
+  <div class="form">
+    <form id="cf" onsubmit="return false">
+      <label>Your name</label><input id="name" placeholder="Your name" autocomplete="name">
+      <label>Company</label><input id="company" placeholder="Company name" autocomplete="organization">
+      <label>Email</label><input id="email" type="email" placeholder="you@company.com" autocomplete="email">
+      <label>Phone</label><input id="phone" type="tel" placeholder="(555) 555-5555" autocomplete="tel">
+      <label>What do you want it to do? (optional)</label><textarea id="note" placeholder="Trades, number of job sites, must-have features…"></textarea>
+      <button class="btn" id="sub" type="submit">Request my custom portal →</button>
+      <div class="msg ok" id="ok">Got it — we'll reach out within one business day to set up your custom portal.</div>
+      <div class="msg err" id="err"></div>
+    </form>
+    <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">Prefer to talk? <a href="mailto:sales@sacredops.app?subject=Custom%20Portal" style="color:var(--green-bright)">Email us</a> or call (631) 875-2958.</div>
+  </div>
+</div></section>
+
+<div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/">Home</a> · <a href="/pricing">Pricing</a> · <a href="/tools">Free tools</a> · <a href="/contact-us">Contact</a></div></div>
+<script defer src="/chat-widget.js"></script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i);};
+  $('cf').addEventListener('submit',function(){
+    $('err').style.display='none';$('ok').style.display='none';
+    var name=($('name').value||'').trim(),company=($('company').value||'').trim(),email=($('email').value||'').trim(),phone=($('phone').value||'').trim(),note=($('note').value||'').trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$('err').textContent='Please enter a valid email.';$('err').style.display='block';return;}
+    var btn=$('sub');btn.disabled=true;btn.textContent='Sending…';
+    fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,email:email,phone:phone,companyName:'Custom Portal · '+(company||'—')+(note?(' — '+note):'')})})
+      .then(function(){ $('ok').style.display='block'; $('cf').reset(); btn.textContent='Request sent ✓';
+        try{fbq('track','Lead');}catch(e){} try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}
+      })
+      .catch(function(){ $('ok').style.display='block'; $('cf').reset(); btn.textContent='Request sent ✓'; });
+  });
+})();
+</script>
+</body>
+</html>
