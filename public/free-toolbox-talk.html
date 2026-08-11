@@ -341,7 +341,7 @@ fbq('init','1573862441061857');fbq('track','PageView');
   }
   $('addCrew').onclick=addCrew;
 
-  function fire(){ try{fbq('track','Lead');}catch(e){} try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){} try{gtag('event','generate_lead');}catch(e){} }
+  function fire(){ try{fbq('track','Lead');}catch(e){} try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){} try{gtag('event','generate_lead',{tool:'toolbox',event_label:'Toolbox Talk generator',currency:'USD',value:1});}catch(e){} try{gtag('event','tool_lead',{tool:'toolbox'});}catch(e){} }
 
   function saveLead(email){
     try{ fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},
