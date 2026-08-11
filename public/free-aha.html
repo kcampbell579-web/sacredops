@@ -211,7 +211,7 @@
   var pc=$('ppe');
   PPE.forEach(function(p,i){ var d=document.createElement('div'); d.className='pp'; d.innerHTML='<div class="cbx"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#04231a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>'+p; d.onclick=function(){ppeOn[i]=!ppeOn[i];d.classList.toggle('on',ppeOn[i]);}; pc.appendChild(d); });
 
-  function fire(){try{fbq('track','Lead');}catch(e){}try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}try{gtag('event','generate_lead');}catch(e){}}
+  function fire(){try{fbq('track','Lead');}catch(e){}try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}try{gtag('event','generate_lead',{tool:'aha',event_label:'AHA generator',currency:'USD',value:1});}catch(e){}try{gtag('event','tool_lead',{tool:'aha'});}catch(e){}}
   function saveLead(email){try{fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,companyName:'AHA Generator tool'})});}catch(e){}}
   function showPaywall(){$('builder').classList.add('hidden');$('paywall').classList.remove('hidden');try{fbq('track','InitiateCheckout');}catch(e){}window.scrollTo({top:0,behavior:'smooth'});}
   $('buyBtn').onclick=function(){try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE'});}catch(e){}};

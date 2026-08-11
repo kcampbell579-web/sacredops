@@ -676,7 +676,7 @@
   function setCount(n){localStorage.setItem('sacred_standdown_count',String(n));}
   var emailSaved=localStorage.getItem('sacred_standdown_email')||"";
   function renderCounter(){var left=Math.max(0,FREE_LIMIT-count());$('counter').innerHTML=left>0?('<b>'+left+'</b> of '+FREE_LIMIT+' free reports left'):'Free limit reached';}
-  function fire(){try{fbq('track','Lead');}catch(e){}try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}try{gtag('event','generate_lead');}catch(e){}}
+  function fire(){try{fbq('track','Lead');}catch(e){}try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}try{gtag('event','generate_lead',{tool:'standdown',event_label:'Stand-Down / Near-Miss generator',currency:'USD',value:1});}catch(e){}try{gtag('event','tool_lead',{tool:'standdown'});}catch(e){}}
   function saveLead(email){try{fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,companyName:'Stand-Down / Near-Miss generator'})});}catch(e){}}
   function showPaywall(){$('builder').classList.add('hidden');$('paywall').classList.remove('hidden');try{fbq('track','InitiateCheckout');}catch(e){}window.scrollTo({top:0,behavior:'smooth'});}
   $('buyBtn').onclick=function(){try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE'});}catch(e){}};
