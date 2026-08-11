@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Stand-Down / Near-Miss Report Generator — SacredOps</title>
+<meta name="description" content="Build a thorough safety stand-down & near-miss report in minutes. Classify the event, and the app opens only the relevant question set — excavation, fall, struck-by, electrical, rigging, traffic & more. Root cause, corrective actions, before-work-resumes checklist. Free, no login. By SacredOps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SacredOps">
+<meta property="og:title" content="Free Stand-Down / Near-Miss Report Generator">
+<meta property="og:description" content="Classify the event and the app opens only the relevant questions. Root cause, corrective actions & before-work-resumes checklist. Free — no login.">
+<meta property="og:url" content="https://www.sacredops.app/free-standdown">
+<meta property="og:image" content="https://www.sacredops.app/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free Stand-Down / Near-Miss Report Generator">
+<meta name="twitter:image" content="https://www.sacredops.app/og-tools.png">
+<style>
+  :root{--black:#050705;--panel:#0a0f0b;--forest-line:#0a3d24;--green:#04A466;--green-bright:#04A466;--ink:#f2f5f0;--muted:#8ea394;--hair:rgba(120,180,140,.14);--display:'Chakra Petch',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 0%,transparent 72%);opacity:.5}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.72);border-bottom:1px solid var(--hair)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:62px;max-width:920px;margin:0 auto;padding:0 20px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:18px}
+  .brand .o{color:var(--green-bright)}
+  .brand svg{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(4,164,102,.6))}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--green);color:var(--green-bright);border-radius:2px}
+  .hero{position:relative;z-index:1;text-align:center;padding:52px 0 26px}
+  .eyebrow{font-family:var(--display);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--green-bright);margin-bottom:16px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,5.4vw,48px);line-height:1.02;text-transform:uppercase}
+  h1 .grn{color:var(--green-bright)}
+  .lede{max-width:640px;margin:18px auto 0;color:var(--muted);font-size:16px}
+  .counter{display:inline-block;margin-top:18px;font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--hair);border-radius:20px;padding:7px 15px}
+  .counter b{color:var(--green-bright)}
+  main{position:relative;z-index:1;padding:14px 0 70px}
+  .card{background:var(--panel);border:1px solid var(--forest-line);border-radius:14px;padding:22px;margin-bottom:16px}
+  .step{font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-bright);margin-bottom:6px}
+  .stephint{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  label{display:block;font-size:11px;font-weight:800;color:var(--green-bright);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-family:ui-monospace,Menlo,monospace}
+  input[type=text],input[type=email],input[type=date],input[type=time],textarea,select{width:100%;box-sizing:border-box;padding:12px 13px;background:rgba(255,255,255,.05);border:1px solid var(--hair);border-radius:10px;font-size:15px;color:var(--ink);outline:none;font-family:var(--body)}
+  textarea{min-height:64px;resize:vertical}
+  input::placeholder,textarea::placeholder{color:#5f7268}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+  .fld{margin-bottom:12px}
+  /* event-type chips */
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-top:4px}
+  .ty{display:flex;align-items:center;gap:9px;border:1px solid var(--hair);border-radius:11px;padding:12px 12px;cursor:pointer;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.02);transition:.15s}
+  .ty .ic{font-size:17px;line-height:1}
+  .ty.on{border-color:var(--green);background:rgba(4,164,102,.12)}
+  .ty .ck{margin-left:auto;width:16px;height:16px;border-radius:5px;border:2px solid #3a5346;flex:none;display:flex;align-items:center;justify-content:center}
+  .ty.on .ck{background:var(--green);border-color:var(--green)}
+  .ty .ck svg{display:none}.ty.on .ck svg{display:block}
+  /* tri-state question rows */
+  .q{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--hair)}
+  .q:last-child{border-bottom:none}
+  .q .qt{flex:1;font-size:14px;color:#d7e3db}
+  .tri{display:flex;gap:5px;flex:none}
+  .tb{border:1px solid var(--hair);background:rgba(255,255,255,.04);color:var(--muted);border-radius:7px;padding:6px 11px;font-size:11.5px;font-weight:800;cursor:pointer;letter-spacing:.02em}
+  .tb.y.on{background:#04A466;border-color:#04A466;color:#04231a}
+  .tb.n.on{background:#E53935;border-color:#E53935;color:#fff}
+  .tb.na.on{background:#42504a;border-color:#42504a;color:#e6efe9}
+  .gnote{margin-top:12px}
+  .gnote textarea{min-height:52px}
+  /* accordion */
+  .acc{border:1px solid var(--hair);border-radius:11px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.02)}
+  .acc .ah{display:flex;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;font-weight:700;font-size:14.5px}
+  .acc .ah .chev{margin-left:auto;transition:.2s;color:var(--muted)}
+  .acc.open .ah .chev{transform:rotate(90deg)}
+  .acc .abody{display:none;padding:4px 15px 14px}
+  .acc.open .abody{display:block}
+  .acc .cnt{font-size:11px;color:var(--muted);font-weight:600;background:rgba(4,164,102,.14);border:1px solid var(--hair);border-radius:20px;padding:2px 9px}
+  /* corrective action rows */
+  .carow{border:1px solid var(--hair);border-radius:11px;padding:12px;margin-bottom:10px;background:rgba(255,255,255,.02)}
+  .rmca{background:none;border:none;color:#e88;font-size:12px;cursor:pointer;font-weight:700;margin-top:6px}
+  .addbtn{background:transparent;border:1px dashed var(--forest-line);color:var(--green-bright);border-radius:10px;padding:11px;width:100%;cursor:pointer;font-weight:700;font-size:13.5px}
+  .btn{display:block;width:100%;text-align:center;background:var(--green);color:#04231a;border:none;border-radius:12px;padding:16px;font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:.2s}
+  .btn:hover{box-shadow:0 0 24px rgba(4,164,102,.5)}
+  .btn:disabled{opacity:.5}
+  .btn-ghost{background:transparent;border:1px solid var(--forest-line);color:var(--ink)}
+  .note{text-align:center;font-size:12.5px;color:var(--muted);margin-top:12px}
+  .msg{border-radius:10px;padding:11px 13px;font-size:13.5px;margin-top:12px;display:none}
+  .msg.err{display:block;background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.5);color:#f0b3b1}
+  .hidden{display:none}
+  .empty{font-size:13.5px;color:var(--muted);padding:6px 2px}
+  .paywall{text-align:center}
+  .paywall .big{font-family:var(--display);font-size:26px;text-transform:uppercase;margin:6px 0 10px}
+  .paywall .big .grn{color:var(--green-bright)}
+  .paywall p{color:var(--muted);font-size:15px;max-width:520px;margin:0 auto 20px}
+  .foot{position:relative;z-index:1;text-align:center;padding:26px 0;border-top:1px solid var(--hair);font-size:12.5px;color:var(--muted)}
+  .foot a:hover{color:var(--green-bright)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEZN8JVJFB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EEZN8JVJFB');gtag('config','AW-18341083534');</script>
+<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xq4xlm8mes");</script>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1573862441061857');fbq('track','PageView');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<nav><div class="nav-in">
+  <a class="brand" href="/"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#04A466" stroke-width="5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#04A466" stroke-width="5"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg><span>SACRED<span class="o">OPS</span></span></a>
+  <a class="nav-cta" href="/pricing">Get unlimited</a>
+</div></nav>
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Free tool · no login · smart intake</div>
+  <h1>Stand-Down &amp; <span class="grn">near-miss</span> report</h1>
+  <p class="lede">Answer a few questions to classify the event — then the app opens <b style="color:#cfe3d7">only the relevant deep-dive set</b> (excavation, fall, struck-by, electrical, rigging, traffic &amp; more). No 100-question wall. A thorough report with root cause, corrective actions and a before-work-resumes checklist.</p>
+  <div class="counter" id="counter"></div>
+</div></header>
+<main><div class="wrap">
+  <div id="builder">
+
+    <!-- STEP 1 — THE EVENT -->
+    <div class="card">
+      <div class="step">Step 1 — The event</div>
+      <div class="stephint">The basics. Fill what you know — anything left blank is simply left off the report.</div>
+      <div class="fld"><label>What happened? (near-miss description)</label><textarea id="what" placeholder="In plain language: what occurred, and what almost went wrong."></textarea></div>
+      <div class="grid3">
+        <div class="fld"><label>Date</label><input type="date" id="date"></div>
+        <div class="fld"><label>Time</label><input type="time" id="time"></div>
+        <div class="fld"><label>Near-miss ref #</label><input type="text" id="ref" placeholder="e.g. NM-2026-014"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Project / jobsite</label><input type="text" id="proj" placeholder="Project name or number"></div>
+        <div class="fld"><label>Exact location</label><input type="text" id="loc" placeholder="Building, area, grid, station…"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Task being performed</label><input type="text" id="task" placeholder="What the crew was doing"></div>
+        <div class="fld"><label>Phase of work</label><input type="text" id="phase" placeholder="e.g. Excavation, steel erection, fit-out"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Who was involved</label><input type="text" id="involved" placeholder="Name(s) / crew"></div>
+        <div class="fld"><label>Who witnessed it</label><input type="text" id="witness" placeholder="Name(s)"></div>
+      </div>
+      <div class="fld"><label>Equipment, tools, vehicles or materials involved</label><input type="text" id="equip" placeholder="e.g. Excavator, grinder, pipe, forklift"></div>
+      <div class="fld"><label>Who was notified</label><input type="text" id="notified" placeholder="Supervisor, PM, safety, owner…"></div>
+      <div class="fld" style="position:relative"><label>Nearest hospital</label><input type="text" id="hosp" placeholder="Start typing a hospital name…" autocomplete="off"><div id="hospAC" class="ac hidden" style="position:absolute;left:0;right:0;top:100%;z-index:30;background:#0d130f;border:1px solid var(--forest-line);border-radius:10px;margin-top:4px;max-height:250px;overflow:auto;box-shadow:0 14px 34px rgba(0,0,0,.55)"></div></div>
+      <div id="grp-core"></div>
+    </div>
+
+    <!-- STEP 2 — CLASSIFY -->
+    <div class="card">
+      <div class="step">Step 2 — What type of event was it?</div>
+      <div class="stephint">Pick all that apply. This is what keeps it fast — only the sets you choose open below.</div>
+      <div class="types" id="types"></div>
+    </div>
+
+    <!-- STEP 3 — POTENTIAL SEVERITY -->
+    <div class="card">
+      <div class="step">Step 3 — What could have happened?</div>
+      <div class="stephint">The point of a near-miss: the outcome you avoided.</div>
+      <div class="grid2">
+        <div class="fld"><label>Reasonable worst-case outcome</label><select id="worst"><option value="">Select…</option><option>Fatality</option><option>Serious / life-altering injury</option><option>Lost-time injury</option><option>Recordable / medical injury</option><option>First-aid injury</option><option>Property damage</option><option>Environmental release</option><option>Public impact</option></select></div>
+        <div class="fld"><label>How close to injury / fatality?</label><select id="close"><option value="">Select…</option><option>Very close — inches / seconds away</option><option>Close</option><option>Some margin remained</option><option>Not close</option></select></div>
+      </div>
+      <div class="fld"><label>What prevented it from being worse?</label><select id="prevented"><option value="">Select…</option><option>Luck / chance</option><option>An existing control worked</option><option>Someone's intervention</option><option>Personal protective equipment</option><option>Combination of the above</option></select></div>
+      <div id="grp-potential"></div>
+    </div>
+
+    <!-- STEP 4 — DYNAMIC DEEP DIVE -->
+    <div class="card">
+      <div class="step">Step 4 — Event deep-dive</div>
+      <div class="stephint">These sections appear based on Step 2. Answer Yes / No / N/A — skip anything that doesn't apply.</div>
+      <div id="deepdive"><div class="empty">Choose one or more event types in Step 2 and the matching questions open here.</div></div>
+    </div>
+
+    <!-- STEP 5 — CONTRIBUTING FACTORS -->
+    <div class="card">
+      <div class="step">Step 5 — Contributing factors <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional — tap to open)</span></div>
+      <div class="stephint">The system side. Collapsed so the field crew can skip — open the ones worth digging into.</div>
+      <div id="factors"></div>
+    </div>
+
+    <!-- STEP 6 — ROOT CAUSE -->
+    <div class="card">
+      <div class="step">Step 6 — Root cause (the 5 whys)</div>
+      <div class="stephint">Keep asking "why" until you reach the system, not just the person.</div>
+      <div class="fld"><label>1. Why did the near miss happen?</label><textarea id="why1"></textarea></div>
+      <div class="fld"><label>2. Why was that condition / hazard present?</label><textarea id="why2"></textarea></div>
+      <div class="fld"><label>3. Why did the existing control fail (or not exist)?</label><textarea id="why3"></textarea></div>
+      <div class="fld"><label>4. Why wasn't it caught beforehand (JHA, inspection, supervision)?</label><textarea id="why4"></textarea></div>
+      <div class="fld"><label>5. Why did the system / organization allow it?</label><textarea id="why5"></textarea></div>
+      <div class="grid2">
+        <div class="fld"><label>Primary nature</label><select id="nature"><option value="">Select…</option><option>Mostly a system / management-system gap</option><option>Mostly individual behavior</option><option>Both — behavior made likely by the system</option></select></div>
+        <div class="fld"><label>Organizational / management factor</label><input type="text" id="orgfactor" placeholder="e.g. Schedule pressure, planning gap, staffing"></div>
+      </div>
+    </div>
+
+    <!-- STEP 7 — STAND-DOWN DISCUSSION -->
+    <div class="card">
+      <div class="step">Step 7 — Stand-down discussion</div>
+      <div class="stephint">Ask the crew directly. Capture what they say.</div>
+      <div id="grp-standown"></div>
+      <div class="fld" style="margin-top:12px"><label>Crew responses / lessons learned</label><textarea id="crewnotes" placeholder="What went wrong in their words · what they'd do differently · where else we're exposed · anything they're uncomfortable with"></textarea></div>
+    </div>
+
+    <!-- STEP 8 — CORRECTIVE ACTIONS -->
+    <div class="card">
+      <div class="step">Step 8 — Corrective actions</div>
+      <div class="stephint">Who does what, by when — and who verifies it's done.</div>
+      <div id="grp-corr"></div>
+      <div id="cas" style="margin-top:12px"></div>
+      <button class="addbtn" id="addCA">+ Add corrective action</button>
+    </div>
+
+    <!-- STEP 9 — BEFORE WORK RESUMES -->
+    <div class="card">
+      <div class="step">Step 9 — Before work resumes</div>
+      <div class="stephint">The forcing checklist. These always print on the report.</div>
+      <div id="grp-resume"></div>
+    </div>
+
+    <!-- STEP 10 — DOCUMENTATION -->
+    <div class="card">
+      <div class="step">Step 10 — Documentation &amp; sign-off</div>
+      <div class="grid2">
+        <div class="fld"><label>Person leading the stand-down</label><input type="text" id="leader" placeholder="Name & title"></div>
+        <div class="fld"><label>Supervisor</label><input type="text" id="sup" placeholder="Name"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Safety representative</label><input type="text" id="safety" placeholder="Name"></div>
+        <div class="fld"><label>Companies / trades attending</label><input type="text" id="trades" placeholder="e.g. GC + 3 subs"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label># of attendees</label><input type="text" id="attn" placeholder="e.g. 14"></div>
+        <div class="fld"><label>Authorization to resume — by</label><input type="text" id="authby" placeholder="Name of person authorizing"></div>
+      </div>
+      <div id="grp-doc"></div>
+    </div>
+
+    <!-- STEP 11 — DOWNLOAD -->
+    <div class="card">
+      <div class="step">Step 11 — Download</div>
+      <div id="emailGate"><label for="email">Your email (to send you the PDF)</label><input type="email" id="email" placeholder="you@company.com" autocomplete="email"><div class="note" style="text-align:left;margin-top:8px">We'll email you the report and occasional safety tips. No spam.</div></div>
+      <button class="btn" id="genBtn" style="margin-top:14px">Download Stand-Down Report (PDF)</button>
+      <div class="msg err" id="err"></div>
+      <div class="note">Free version is watermarked. <a href="/pricing" style="color:var(--green-bright)">Remove the watermark →</a></div>
+    </div>
+  </div>
+
+  <div class="card paywall hidden" id="paywall">
+    <div class="step">You've used your 3 free reports</div>
+    <div class="big">Keep your crew <span class="grn">covered.</span></div>
+    <p>Get <b style="color:var(--ink)">unlimited, watermark-free stand-down &amp; near-miss reports</b> — saved to your account, routed to the right people, with corrective-action tracking — plus JSAs, AHAs, toolbox talks, permits and inspections on your crew's phones.</p>
+    <a class="btn" id="buyBtn" href="https://buy.stripe.com/4gM9AMdwE40q6LU0OY2VG03" target="_blank" rel="noopener">Get unlimited — $149/mo →</a>
+    <a class="btn btn-ghost" href="/pricing" style="margin-top:10px">See all plans</a>
+  </div>
+</div></main>
+<div class="foot"><div class="wrap">© 2026 SacredOps · <a href="/tools">More free tools</a> · <a href="/pricing">Pricing</a> · <a href="/supervisors">Live demo</a> · <a href="/privacy">Privacy</a> · <a href="/contact-us">Contact</a></div></div>
+<script defer src="/chat-widget.js"></script>
+<script>
+/* Nearest-hospital autocomplete — OpenStreetMap Nominatim (free, no key). */
+(function(){
+  var inp=document.getElementById('hosp'), box=document.getElementById('hospAC'); if(!inp||!box) return;
+  var geo=null,t=null,picked=false;
+  try{ if(navigator.geolocation) navigator.geolocation.getCurrentPosition(function(p){geo={lat:p.coords.latitude,lon:p.coords.longitude};},function(){},{timeout:6000,maximumAge:600000}); }catch(e){}
+  function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function hide(){box.classList.add('hidden');box.innerHTML='';}
+  inp.addEventListener('input',function(){picked=false;var q=inp.value.trim();clearTimeout(t);if(q.length<3){hide();return;}box.classList.remove('hidden');box.innerHTML='<div style="padding:10px 12px;font-size:12.5px;color:#8ea394">Searching hospitals…</div>';t=setTimeout(function(){run(q);},450);});
+  function run(q){var url='https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q='+encodeURIComponent(q+' hospital');if(geo){var d=0.7;url+='&viewbox='+(geo.lon-d)+','+(geo.lat-d)+','+(geo.lon+d)+','+(geo.lat+d)+'&bounded=0';}fetch(url,{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(list){if(picked)return;if(!list||!list.length){box.innerHTML='<div style="padding:10px 12px;font-size:12.5px;color:#8ea394">No match — type it manually.</div>';return;}box.innerHTML='';list.forEach(function(it){var a=it.address||{};var name=a.hospital||a.amenity||a.building||(it.display_name.split(',')[0]);var row=document.createElement('div');row.style.cssText='padding:10px 12px;cursor:pointer;border-bottom:1px solid rgba(120,180,140,.14)';row.innerHTML='<b style="display:block;font-size:13.5px;color:#f2f5f0;font-weight:600">'+esc(name)+'</b><span style="display:block;font-size:11.5px;color:#8ea394;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">'+esc(it.display_name)+'</span>';row.onmouseover=function(){row.style.background='rgba(4,164,102,.12)';};row.onmouseout=function(){row.style.background='';};row.onclick=function(){inp.value=it.display_name;picked=true;hide();};box.appendChild(row);});}).catch(function(){box.innerHTML='<div style="padding:10px 12px;font-size:12.5px;color:#8ea394">Couldn’t reach the map service — type it manually.</div>';});}
+  document.addEventListener('click',function(e){if(e.target!==inp&&!box.contains(e.target)){hide();}});
+})();
+</script>
+<script>
+(function(){
+  var FREE_LIMIT=3;
+  var $=function(id){return document.getElementById(id);};
+
+  /* ---- Question data ---------------------------------------------------- */
+  // Core intake yes/no items
+  var CORE=[
+    {id:'c_sub',t:'Was a subcontractor involved?'},
+    {id:'c_barr',t:'Was the area barricaded or controlled?'},
+    {id:'c_stop',t:'Was work stopped immediately?'}
+  ];
+  var POTENTIAL=[
+    {id:'p_kill',t:'Could someone have been killed?'},
+    {id:'p_serious',t:'Could someone have been seriously injured?'},
+    {id:'p_prop',t:'Could it have caused property damage?'},
+    {id:'p_public',t:'Could it have affected the public?'},
+    {id:'p_env',t:'Could it have caused an environmental release?'}
+  ];
+  // Event-type deep dives
+  var GEXC=[
+    {id:'e_cp',t:'Was a competent person designated?'},
+    {id:'e_insp',t:'Was the excavation inspected before entry?'},
+    {id:'e_prot',t:'Was a protective system required?'},
+    {id:'e_slope',t:'Was sloping / benching / shielding / shoring adequate?'},
+    {id:'e_box',t:'Was a trench box used?'},
+    {id:'e_spoil',t:'Was spoil kept at least 2 ft from the edge?'},
+    {id:'e_egress',t:'Was safe access / egress provided?'},
+    {id:'e_ladder',t:'Was a ladder within 25 ft of workers?'},
+    {id:'e_util',t:'Were underground utilities located (811)?'},
+    {id:'e_water',t:'Was there water accumulation?'},
+    {id:'e_adj',t:'Were adjacent structures / loads considered?'},
+    {id:'e_atmos',t:'Was atmospheric testing required?'},
+    {id:'e_mobile',t:'Was mobile equipment operating near the edge?'},
+    {id:'e_fall',t:'Was there a fall hazard into the excavation?'}
+  ];
+  var GFALL=[
+    {id:'f_exp',t:'Was someone exposed to a fall?'},
+    {id:'f_req',t:'Was fall protection required?'},
+    {id:'f_guard',t:'Was guardrail protection provided?'},
+    {id:'f_pfas',t:'Was personal fall-arrest equipment used?'},
+    {id:'f_tied',t:'Was the employee tied off?'},
+    {id:'f_anchor',t:'Was the anchorage appropriate (rated)?'},
+    {id:'f_lanyard',t:'Was the lanyard / SRL compatible with the task?'},
+    {id:'f_swing',t:'Was there a swing-fall hazard?'},
+    {id:'f_ladder',t:'Was ladder use involved?'},
+    {id:'f_lpos',t:'Was the ladder positioned correctly?'},
+    {id:'f_3pt',t:'Was three-point contact maintained?'},
+    {id:'f_scaf',t:'Was scaffold protection adequate?'}
+  ];
+  var GSTRUCK=[
+    {id:'s_obj',t:'Was a moving, flying or falling object involved?'},
+    {id:'s_lof',t:'Was anyone in the line of fire?'},
+    {id:'s_ez',t:'Was an exclusion zone established?'},
+    {id:'s_secure',t:'Were loads / materials secured?'},
+    {id:'s_tether',t:'Were tools tethered when working at height?'},
+    {id:'s_ppe',t:'Was PPE (hard hat / face) adequate for the energy?'}
+  ];
+  var GCAUGHT=[
+    {id:'cb_pinch',t:'Were pinch / crush points present?'},
+    {id:'cb_between',t:'Was anyone between equipment and a fixed object?'},
+    {id:'cb_swing',t:'Was anyone inside the swing radius?'},
+    {id:'cb_block',t:'Was equipment blocked / chocked / de-energized?'},
+    {id:'cb_loto',t:'Was LOTO required for the pinch hazard?'},
+    {id:'cb_clear',t:'Was there adequate clearance to work safely?'}
+  ];
+  var GELEC=[
+    {id:'el_energ',t:'Was energized equipment involved?'},
+    {id:'el_iso',t:'Was electrical energy isolated?'},
+    {id:'el_loto',t:'Was lockout / tagout required?'},
+    {id:'el_lotook',t:'Was LOTO applied correctly?'},
+    {id:'el_verify',t:'Was voltage verified (de-energized)?'},
+    {id:'el_ohl',t:'Were overhead power lines present?'},
+    {id:'el_mad',t:'Was minimum approach distance maintained?'},
+    {id:'el_gfci',t:'Were GFCIs used on temporary power?'},
+    {id:'el_cords',t:'Were cords / temp wiring free of damage?'},
+    {id:'el_qual',t:'Was an electrically qualified person required?'},
+    {id:'el_arc',t:'Was arc-flash PPE required?'}
+  ];
+  var GEQUIP=[
+    {id:'eq_right',t:'Was the correct tool / equipment being used?'},
+    {id:'eq_insp',t:'Was the equipment inspected before use?'},
+    {id:'eq_dmg',t:'Was the equipment free of damage?'},
+    {id:'eq_ok',t:'Was it operating correctly?'},
+    {id:'eq_guard',t:'Were guards installed?'},
+    {id:'eq_safety',t:'Were safety devices functional?'},
+    {id:'eq_alarm',t:'Were alarms / cameras / proximity / backup alarms working?'},
+    {id:'eq_limits',t:'Was equipment used within manufacturer limits?'},
+    {id:'eq_mod',t:'Was the equipment free of unauthorized modifications?'},
+    {id:'eq_pm',t:'Was preventive maintenance current?'},
+    {id:'eq_see',t:'Could the operator see the work area?'},
+    {id:'eq_spotreq',t:'Was a spotter required?'},
+    {id:'eq_spotuse',t:'Was a spotter used?'},
+    {id:'eq_spotpos',t:'Was the spotter positioned safely?'},
+    {id:'eq_comm',t:'Could operator and spotter communicate clearly?'}
+  ];
+  var GRIG=[
+    {id:'r_susp',t:'Was a suspended load involved?'},
+    {id:'r_under',t:'Was anyone under or near the load?'},
+    {id:'r_ez',t:'Was an exclusion zone established?'},
+    {id:'r_insp',t:'Were rigging components inspected?'},
+    {id:'r_rated',t:'Was rigging rated for the load?'},
+    {id:'r_weight',t:'Was the load weight known?'},
+    {id:'r_cg',t:'Was the center of gravity considered?'},
+    {id:'r_rigger',t:'Was a qualified rigger used?'},
+    {id:'r_signal',t:'Was a qualified signal person used?'},
+    {id:'r_comm',t:'Was operator ↔ signal-person communication clear?'},
+    {id:'r_tag',t:'Were taglines used where needed?'},
+    {id:'r_wind',t:'Was wind / weather a factor?'},
+    {id:'r_setup',t:'Was the crane set up properly?'},
+    {id:'r_outrig',t:'Were outriggers fully deployed?'},
+    {id:'r_ground',t:'Were ground conditions adequate?'}
+  ];
+  var GTRAF=[
+    {id:'t_plan',t:'Was there a traffic-control plan?'},
+    {id:'t_sep',t:'Were pedestrians and equipment separated?'},
+    {id:'t_path',t:'Was there an established travel path?'},
+    {id:'t_rev',t:'Was reversing necessary?'},
+    {id:'t_backspot',t:'Was a spotter used during backing?'},
+    {id:'t_blind',t:'Were blind spots considered?'},
+    {id:'t_swing',t:'Were workers clear of the swing radius?'},
+    {id:'t_ez',t:'Was an exclusion zone established?'},
+    {id:'t_control',t:'Were cones / barricades / flaggers used?'},
+    {id:'t_park',t:'Was equipment parked / secured properly?'},
+    {id:'t_brake',t:'Was the parking brake applied?'},
+    {id:'t_chock',t:'Were wheel chocks used?'},
+    {id:'t_belt',t:'Was seat-belt use verified?'}
+  ];
+  var GENV=[
+    {id:'v_weather',t:'Did weather contribute?'},
+    {id:'v_cond',t:'Rain / snow / ice / mud / wind / heat / poor visibility?'},
+    {id:'v_light',t:'Was lighting adequate?'},
+    {id:'v_house',t:'Was housekeeping adequate?'},
+    {id:'v_surface',t:'Was the walking surface stable?'},
+    {id:'v_noise',t:'Was noise affecting communication?'},
+    {id:'v_air',t:'Were airborne contaminants present?'},
+    {id:'v_chem',t:'Were fumes / dust / chemicals involved?'},
+    {id:'v_diff',t:'Were site conditions different from when planned?'},
+    {id:'v_others',t:'Were other contractors creating hazards nearby?'}
+  ];
+  // Cross-cutting factors
+  var GPRE=[
+    {id:'j_jha',t:'Was a JHA / JSA completed before work began?'},
+    {id:'j_pretask',t:'Was a pre-task plan completed?'},
+    {id:'j_tbt',t:'Was a toolbox talk conducted?'},
+    {id:'j_disc',t:'Were the hazards discussed with the crew?'},
+    {id:'j_addr',t:'Did the JHA / JSA address the hazard involved?'},
+    {id:'j_follow',t:'Were the listed controls being followed?'},
+    {id:'j_generic',t:'Was the JHA / JSA too generic?'},
+    {id:'j_changed',t:'Had conditions changed since it was completed?'},
+    {id:'j_updated',t:'Was it updated when conditions changed?'},
+    {id:'j_understood',t:'Did every employee understand it?'},
+    {id:'j_signed',t:'Did employees sign / acknowledge it?'},
+    {id:'j_subs',t:'Were subcontractors included in planning?'},
+    {id:'j_simul',t:'Was simultaneous work by other trades considered?'},
+    {id:'j_cp',t:'Was a competent person designated and present?'}
+  ];
+  var GHAZ=[
+    {id:'h_known',t:'Was the hazard known beforehand?'},
+    {id:'h_vis',t:'Was it visible?'},
+    {id:'h_disc',t:'Was it discussed?'},
+    {id:'h_before',t:'Had this hazard occurred before?'},
+    {id:'h_similar',t:'Has a similar near miss happened previously?'},
+    {id:'h_insp',t:'Was it identified during inspections?'},
+    {id:'h_rep',t:'Was it previously reported?'},
+    {id:'h_signs',t:'Were warning signs present?'},
+    {id:'h_barr',t:'Were barricades / exclusion zones adequate?'},
+    {id:'h_new',t:'Did changing conditions create a new hazard?'}
+  ];
+  var GPROC=[
+    {id:'pr_written',t:'Was there a written procedure for the task?'},
+    {id:'pr_followed',t:'Was it followed?'},
+    {id:'pr_practical',t:'Was it practical for actual field conditions?'},
+    {id:'pr_knew',t:'Did workers know it?'},
+    {id:'pr_avail',t:'Was it available at the work location?'},
+    {id:'pr_conflict',t:'Was there a conflict between procedure and normal practice?'},
+    {id:'pr_short',t:'Was a shortcut taken?'},
+    {id:'pr_accepted',t:'Is the shortcut commonly accepted on site?'},
+    {id:'pr_supknew',t:'Did supervision know the shortcut was used?'},
+    {id:'pr_outdated',t:'Has the procedure become outdated?'}
+  ];
+  var GTRAIN=[
+    {id:'tr_trained',t:'Were all involved properly trained?'},
+    {id:'tr_osha',t:'Was required OSHA training current?'},
+    {id:'tr_task',t:'Was task-specific training provided?'},
+    {id:'tr_qual',t:'Was the employee qualified for the task?'},
+    {id:'tr_opqual',t:'Was the equipment operator qualified?'},
+    {id:'tr_refresh',t:'Was refresher training needed?'},
+    {id:'tr_prior',t:'Had the employee performed this task before?'},
+    {id:'tr_haz',t:'Did the employee understand the hazards?'},
+    {id:'tr_stop',t:'Did they know when they were required to stop work?'},
+    {id:'tr_emerg',t:'Were they trained on emergency procedures?'},
+    {id:'tr_sup',t:'Was the supervisor adequately trained?'}
+  ];
+  var GSUP=[
+    {id:'su_present',t:'Was a supervisor present?'},
+    {id:'su_aware',t:'Was the supervisor aware the task was underway?'},
+    {id:'su_approve',t:'Did the supervisor approve the work plan?'},
+    {id:'su_oversight',t:'Was adequate oversight provided?'},
+    {id:'su_uncorr',t:'Were unsafe conditions observed but not corrected?'},
+    {id:'su_tolerated',t:'Were unsafe behaviors previously tolerated?'},
+    {id:'su_prod',t:'Was production prioritized over safety?'},
+    {id:'su_review',t:'Did the supervisor conduct a pre-task review?'},
+    {id:'su_roles',t:'Were roles and responsibilities clearly assigned?'}
+  ];
+  var GPPE=[
+    {id:'pe_worn',t:'Was the correct PPE being worn?'},
+    {id:'pe_fit',t:'Was the PPE properly fitted?'},
+    {id:'pe_insp',t:'Was PPE inspected before use?'},
+    {id:'pe_special',t:'Was specialized PPE required?'},
+    {id:'pe_severity',t:'Would different PPE have reduced potential severity?'},
+    {id:'pe_avail',t:'Was PPE readily available?'},
+    {id:'pe_trained',t:'Were workers trained in its use?'}
+  ];
+  var GHUM=[
+    {id:'hf_fatigue',t:'Was fatigue a factor?'},
+    {id:'hf_ot',t:'Was overtime being worked?'},
+    {id:'hf_distract',t:'Was the employee distracted?'},
+    {id:'hf_time',t:'Was there time pressure?'},
+    {id:'hf_rush',t:'Was anyone rushing?'},
+    {id:'hf_compl',t:'Was complacency a factor?'},
+    {id:'hf_repeat',t:'Was the task repetitive?'},
+    {id:'hf_famil',t:'Did familiarity reduce hazard awareness?'},
+    {id:'hf_speak',t:'Was the employee uncomfortable speaking up?'},
+    {id:'hf_norm',t:'Was there normalization of unsafe practice?'}
+  ];
+  var GEMER=[
+    {id:'em_knew',t:'Did workers know what to do when it occurred?'},
+    {id:'em_erp',t:'Was the emergency response plan followed?'},
+    {id:'em_comm',t:'Was emergency communication effective?'},
+    {id:'em_rescue',t:'Was rescue equipment available?'},
+    {id:'em_firstaid',t:'Was first-aid equipment available?'},
+    {id:'em_routes',t:'Were emergency access routes clear?'},
+    {id:'em_access',t:'Could responders access the area?'},
+    {id:'em_special',t:'Was specialized rescue required?'},
+    {id:'em_plan',t:'Was a rescue plan in place?'}
+  ];
+  var GSTAND=[
+    {id:'sd_elsewhere',t:'Could this happen elsewhere on this project?'},
+    {id:'sd_same',t:'Is another task today exposed to the same risk?'},
+    {id:'sd_unrep',t:'Are there reported hazards that haven’t been fixed?'},
+    {id:'sd_mismatch',t:'Is there a procedure that doesn’t match how work is done?'},
+    {id:'sd_need',t:'Is there equipment or PPE the crew needs but doesn’t have?'},
+    {id:'sd_stop',t:'Does the crew feel comfortable stopping work?'}
+  ];
+  var GCORR=[
+    {id:'ca_elim',t:'Was the hazard eliminated?'},
+    {id:'ca_shut',t:'Does the area need to stay shut down?'},
+    {id:'ca_remove',t:'Does equipment need to be removed from service?'},
+    {id:'ca_proc',t:'Does a procedure need to change?'},
+    {id:'ca_jha',t:'Does the JHA / JSA need to be revised?'},
+    {id:'ca_ssp',t:'Does the site safety plan need to be revised?'},
+    {id:'ca_retrain',t:'Is retraining necessary?'},
+    {id:'ca_eng',t:'Are engineering controls available?'},
+    {id:'ca_sep',t:'Can workers be physically separated from the hazard?'},
+    {id:'ca_redesign',t:'Can the task be redesigned?'},
+    {id:'ca_ppe',t:'Does additional PPE need to be issued?'},
+    {id:'ca_company',t:'Should the corrective action be applied company-wide?'}
+  ];
+  var GRESUME=[
+    {id:'rz_haz',t:'Has the hazard been corrected?'},
+    {id:'rz_method',t:'Has the revised work method been communicated?'},
+    {id:'rz_jha',t:'Has the JHA / JSA been updated?'},
+    {id:'rz_review',t:'Has the crew reviewed the updated JHA / JSA?'},
+    {id:'rz_retrain',t:'Have affected employees been retrained?'},
+    {id:'rz_ppe',t:'Has required equipment / PPE been provided?'},
+    {id:'rz_barr',t:'Have barricades / exclusion zones been established?'},
+    {id:'rz_cp',t:'Has the competent person inspected the area?'},
+    {id:'rz_roles',t:'Does everyone understand their role?'},
+    {id:'rz_concern',t:'Are there NO unresolved concerns?'},
+    {id:'rz_comfort',t:'Is the crew comfortable resuming work?'},
+    {id:'rz_auth',t:'Has management authorized work to resume?'}
+  ];
+  var GDOC=[
+    {id:'d_photos',t:'Photos attached?'},
+    {id:'d_jha',t:'Revised JHA / JSA attached?'},
+    {id:'d_supt',t:'Are supporting documents attached?'},
+    {id:'d_auth',t:'Is work authorized to resume?'}
+  ];
+
+  // event type registry: id, label, emoji, question group
+  var TYPES=[
+    {id:'excavation',label:'Excavation / trench',ic:'⛏️',title:'Excavation / trenching',g:GEXC},
+    {id:'fall',label:'Fall / from height',ic:'🪜',title:'Fall protection',g:GFALL},
+    {id:'struckby',label:'Struck-by',ic:'🎯',title:'Struck-by',g:GSTRUCK},
+    {id:'caught',label:'Caught-between / pinch',ic:'🗜️',title:'Caught-between / pinch',g:GCAUGHT},
+    {id:'electrical',label:'Electrical',ic:'⚡',title:'Electrical',g:GELEC},
+    {id:'equipment',label:'Equipment / tools',ic:'🛠️',title:'Tools & equipment',g:GEQUIP},
+    {id:'rigging',label:'Rigging / crane / hoist',ic:'🏗️',title:'Rigging / cranes / hoisting',g:GRIG},
+    {id:'traffic',label:'Traffic / mobile equip',ic:'🚧',title:'Vehicles / mobile equipment',g:GTRAF},
+    {id:'environmental',label:'Environmental / site',ic:'🌧️',title:'Environmental / site conditions',g:GENV},
+    {id:'other',label:'Other',ic:'⚠️',title:null,g:null}
+  ];
+  var FACTORS=[
+    {id:'pretask',title:'Pre-task planning / JHA / JSA',g:GPRE},
+    {id:'hazard',title:'Hazard recognition',g:GHAZ},
+    {id:'procedures',title:'Procedures',g:GPROC},
+    {id:'training',title:'Training / competency',g:GTRAIN},
+    {id:'supervision',title:'Supervision',g:GSUP},
+    {id:'ppe',title:'PPE',g:GPPE},
+    {id:'human',title:'Human factors',g:GHUM},
+    {id:'emergency',title:'Emergency preparedness',g:GEMER}
+  ];
+
+  /* ---- State ------------------------------------------------------------ */
+  var A={};            // answers: qid -> 'Y'|'N'|'NA'
+  var NOTE={};         // group notes: groupId -> text
+  var chosen={};       // selected event types
+  var CAcount=0;
+
+  /* ---- Renderers -------------------------------------------------------- */
+  function triRow(q){
+    var row=document.createElement('div'); row.className='q';
+    row.innerHTML='<div class="qt">'+q.t+'</div><div class="tri">'+
+      '<button class="tb y" data-v="Y">Yes</button>'+
+      '<button class="tb n" data-v="N">No</button>'+
+      '<button class="tb na" data-v="NA">N/A</button></div>';
+    var btns=row.querySelectorAll('.tb');
+    btns.forEach(function(b){ b.onclick=function(){
+      if(A[q.id]===b.dataset.v){ delete A[q.id]; } else { A[q.id]=b.dataset.v; }
+      btns.forEach(function(x){ x.classList.toggle('on', A[q.id]===x.dataset.v); });
+    };});
+    return row;
+  }
+  // render a question group into a container; optional notes box with a given noteId
+  function renderGroup(container,qs,noteId,notePlaceholder){
+    qs.forEach(function(q){ container.appendChild(triRow(q)); });
+    if(noteId){
+      var nb=document.createElement('div'); nb.className='gnote';
+      nb.innerHTML='<label>Notes / details</label><textarea placeholder="'+(notePlaceholder||'Anything worth recording for this section')+'"></textarea>';
+      nb.querySelector('textarea').oninput=function(){NOTE[noteId]=this.value;};
+      container.appendChild(nb);
+    }
+  }
+
+  // static groups
+  renderGroup($('grp-core'),CORE,null);
+  renderGroup($('grp-potential'),POTENTIAL,'potential','What was the reasonable worst case & what prevented it');
+  renderGroup($('grp-standown'),GSTAND,null);
+  renderGroup($('grp-corr'),GCORR,null);
+  renderGroup($('grp-resume'),GRESUME,null);
+  renderGroup($('grp-doc'),GDOC,null);
+
+  // event-type chips
+  var tc=$('types');
+  TYPES.forEach(function(ty){
+    var d=document.createElement('div'); d.className='ty'; d.dataset.id=ty.id;
+    d.innerHTML='<span class="ic">'+ty.ic+'</span>'+ty.label+'<span class="ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04231a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>';
+    d.onclick=function(){ chosen[ty.id]=!chosen[ty.id]; d.classList.toggle('on',chosen[ty.id]); rebuildDeep(); };
+    tc.appendChild(d);
+  });
+
+  function rebuildDeep(){
+    var dd=$('deepdive'); dd.innerHTML='';
+    var any=false;
+    TYPES.forEach(function(ty){
+      if(!chosen[ty.id]||!ty.g) return;
+      any=true;
+      var wrap=document.createElement('div'); wrap.style.marginBottom='18px';
+      var h=document.createElement('div'); h.className='step'; h.style.color='#cfe3d7'; h.textContent=ty.ic+'  '+ty.title;
+      wrap.appendChild(h);
+      renderGroup(wrap,ty.g,'deep_'+ty.id,'Details specific to this hazard');
+      dd.appendChild(wrap);
+    });
+    if(chosen['other']){ any=true;
+      var w=document.createElement('div');
+      w.innerHTML='<div class="step" style="color:#cfe3d7">⚠️  Other — describe</div><div class="gnote"><textarea placeholder="Describe the event type and the specific hazards involved"></textarea></div>';
+      w.querySelector('textarea').oninput=function(){NOTE['deep_other']=this.value;};
+      dd.appendChild(w);
+    }
+    if(!any){ dd.innerHTML='<div class="empty">Choose one or more event types in Step 2 and the matching questions open here.</div>'; }
+  }
+
+  // contributing-factor accordions
+  var fc=$('factors');
+  FACTORS.forEach(function(fx){
+    var acc=document.createElement('div'); acc.className='acc';
+    acc.innerHTML='<div class="ah">'+fx.title+'<span class="cnt">'+fx.g.length+' Qs</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div><div class="abody"></div>';
+    var body=acc.querySelector('.abody'); var built=false;
+    acc.querySelector('.ah').onclick=function(){
+      acc.classList.toggle('open');
+      if(!built){ renderGroup(body,fx.g,'fac_'+fx.id,'Notes for this factor'); built=true; }
+    };
+    fc.appendChild(acc);
+  });
+
+  // corrective-action rows
+  function addCA(){
+    CAcount++;
+    var i=CAcount;
+    var row=document.createElement('div'); row.className='carow'; row.dataset.i=i;
+    row.innerHTML='<div class="fld" style="margin-bottom:8px"><label>Corrective action '+i+'</label><input type="text" class="ca-act" placeholder="What will be done"></div>'+
+      '<div class="grid3"><div class="fld" style="margin-bottom:0"><label>Responsible</label><input type="text" class="ca-who" placeholder="Name"></div>'+
+      '<div class="fld" style="margin-bottom:0"><label>Due date</label><input type="date" class="ca-due"></div>'+
+      '<div class="fld" style="margin-bottom:0"><label>Verified by</label><input type="text" class="ca-ver" placeholder="Name"></div></div>'+
+      '<button class="rmca">Remove</button>';
+    row.querySelector('.rmca').onclick=function(){ row.remove(); };
+    $('cas').appendChild(row);
+  }
+  $('addCA').onclick=addCA; addCA();
+
+  /* ---- Usage / paywall / lead ------------------------------------------ */
+  function count(){return parseInt(localStorage.getItem('sacred_standdown_count')||'0',10);}
+  function setCount(n){localStorage.setItem('sacred_standdown_count',String(n));}
+  var emailSaved=localStorage.getItem('sacred_standdown_email')||"";
+  function renderCounter(){var left=Math.max(0,FREE_LIMIT-count());$('counter').innerHTML=left>0?('<b>'+left+'</b> of '+FREE_LIMIT+' free reports left'):'Free limit reached';}
+  function fire(){try{fbq('track','Lead');}catch(e){}try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}try{gtag('event','generate_lead');}catch(e){}}
+  function saveLead(email){try{fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,companyName:'Stand-Down / Near-Miss generator'})});}catch(e){}}
+  function showPaywall(){$('builder').classList.add('hidden');$('paywall').classList.remove('hidden');try{fbq('track','InitiateCheckout');}catch(e){}window.scrollTo({top:0,behavior:'smooth'});}
+  $('buyBtn').onclick=function(){try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE'});}catch(e){}};
+  function err(m){var e=$('err');e.textContent=m;e.classList.add('err');}
+  var val=function(id){var el=$(id);return el?(el.value||'').trim():'';};
+
+  $('genBtn').onclick=function(){
+    $('err').classList.remove('err');
+    if(!val('what')){err('Add a short description of what happened (Step 1).');return;}
+    var picked=TYPES.filter(function(t){return chosen[t.id];});
+    if(!picked.length){err('Pick at least one event type in Step 2.');return;}
+    if(count()>=FREE_LIMIT){showPaywall();return;}
+    var email=emailSaved;
+    if(!email){ email=val('email'); if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err('Enter a valid email to get your PDF.');return;} emailSaved=email;localStorage.setItem('sacred_standdown_email',email);saveLead(email);fire();$('emailGate').classList.add('hidden'); }
+    var btn=this;btn.disabled=true;btn.textContent='Preparing…';
+    fetch('/api/tools/usage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool:'standdown',email:email})})
+      .then(function(r){return r.json();})
+      .then(function(d){ btn.disabled=false;btn.textContent='Download Stand-Down Report (PDF)'; if(d&&typeof d.count==='number'){setCount(d.count);renderCounter();} if(d&&d.allowed===false){setCount(FREE_LIMIT);renderCounter();showPaywall();return;} generatePDF(); })
+      .catch(function(){ btn.disabled=false;btn.textContent='Download Stand-Down Report (PDF)'; if(count()>=FREE_LIMIT){showPaywall();return;} setCount(count()+1);renderCounter();generatePDF(); });
+  };
+
+  /* ---- PDF -------------------------------------------------------------- */
+  var ANS={Y:'Yes',N:'No',NA:'N/A'};
+  function ansColor(v){return v==='Y'?[4,140,88]:v==='N'?[197,42,42]:[90,102,96];}
+
+  function generatePDF(){
+    if(!(window.jspdf&&window.jspdf.jsPDF)){err('Still loading — try again in a second.');return;}
+    var jsPDF=window.jspdf.jsPDF;
+    var doc=new jsPDF({unit:'pt',format:'letter',orientation:'portrait'});
+    var W=612,H=792,M=42,y=0;
+    var CW=W-2*M;
+    function fmtDate(s){ if(!s)return ''; var p=s.split('-'); return p.length===3?(p[1]+'/'+p[2]+'/'+p[0]):s; }
+    var dt=fmtDate(val('date')); var tm=val('time');
+    var when=(dt||'')+(tm?(' '+tm):'') || new Date().toLocaleDateString('en-US');
+
+    function header(){
+      doc.setFillColor(5,7,5);doc.rect(0,0,W,54,'F');doc.setFillColor(4,164,102);doc.rect(0,54,W,3,'F');
+      doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('SACRED',M,34);var sw=doc.getTextWidth('SACRED');doc.setTextColor(4,164,102);doc.text('OPS',M+sw,34);
+      doc.setTextColor(180,196,186);doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text('STAND-DOWN / NEAR-MISS REPORT',W-M,34,{align:'right'});
+    }
+    header(); y=76;
+    function ensure(n){ if(y+n>H-52){ doc.addPage(); header(); y=76; } }
+
+    // meta grid
+    function metaRow(items){
+      ensure(30);
+      var colw=CW/items.length;
+      items.forEach(function(it,i){
+        var x=M+i*colw;
+        doc.setTextColor(120,135,126);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text(it[0].toUpperCase(),x,y);
+        doc.setTextColor(25,35,29);doc.setFont('helvetica','normal');doc.setFontSize(9.5);
+        var lines=doc.splitTextToSize(String(it[1]||'—'),colw-8);doc.text(lines.slice(0,2),x,y+12);
+      });
+      y+=30;
+    }
+    metaRow([['Project / jobsite',val('proj')],['Date / time',when],['Ref #',val('ref')]]);
+    metaRow([['Exact location',val('loc')],['Task performed',val('task')],['Phase of work',val('phase')]]);
+    metaRow([['Who was involved',val('involved')],['Who witnessed',val('witness')],['Who was notified',val('notified')]]);
+    metaRow([['Equipment / materials',val('equip')],['Nearest hospital',val('hosp')],['Sub involved / barricaded / stopped',(A.c_sub?ANS[A.c_sub]:'—')+' / '+(A.c_barr?ANS[A.c_barr]:'—')+' / '+(A.c_stop?ANS[A.c_stop]:'—')]]);
+    y+=4;
+
+    function sectionHead(t){
+      ensure(30);
+      doc.setFillColor(10,40,24);doc.rect(M,y,CW,20,'F');
+      doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.text(t.toUpperCase(),M+7,y+14);
+      y+=26;
+    }
+    function paraBlock(label,text){
+      if(!text)return;
+      ensure(28);
+      if(label){doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(4,140,88);doc.text(label.toUpperCase(),M,y);y+=12;}
+      doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(30,40,34);
+      var lines=doc.splitTextToSize(text,CW);
+      lines.forEach(function(l){ensure(13);doc.text(l,M,y);y+=13;});
+      y+=6;
+    }
+    // print answered Q/A rows for a group; onlyAnswered=false prints all
+    function qaGroup(qs,onlyAnswered){
+      qs.forEach(function(q){
+        var v=A[q.id];
+        if(onlyAnswered!==false && !v) return;
+        ensure(16);
+        doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(35,45,39);
+        var lines=doc.splitTextToSize(q.t,CW-70);
+        var rh=Math.max(13,lines.length*11);
+        ensure(rh);
+        doc.text(lines,M,y+9);
+        var c=ansColor(v||'NA');
+        doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(c[0],c[1],c[2]);
+        doc.text(v?ANS[v]:'—',W-M,y+9,{align:'right'});
+        doc.setDrawColor(228,233,230);doc.setLineWidth(.4);doc.line(M,y+rh+2,W-M,y+rh+2);
+        y+=rh+7;
+      });
+    }
+    function noteLine(id){ if(NOTE[id]) paraBlock('Notes',NOTE[id]); }
+
+    // EVENT DESCRIPTION
+    sectionHead('Event description');
+    paraBlock('What happened',val('what'));
+
+    // CLASSIFICATION
+    var picked=TYPES.filter(function(t){return chosen[t.id];});
+    paraBlock('Event classification', picked.map(function(t){return t.label;}).join('  ·  '));
+
+    // POTENTIAL SEVERITY
+    sectionHead('Potential severity — what could have happened');
+    if(val('worst')||val('close')||val('prevented')){
+      metaRow([['Worst-case outcome',val('worst')],['How close',val('close')],['What prevented it',val('prevented')]]);
+    }
+    qaGroup(POTENTIAL); noteLine('potential');
+
+    // DEEP DIVE
+    picked.forEach(function(t){
+      if(!t.g) return;
+      sectionHead(t.title);
+      qaGroup(t.g); noteLine('deep_'+t.id);
+    });
+    if(chosen['other']&&NOTE['deep_other']){ sectionHead('Other — description'); paraBlock('Details',NOTE['deep_other']); }
+
+    // CONTRIBUTING FACTORS (only those answered)
+    var facPrinted=false;
+    FACTORS.forEach(function(fx){
+      var hasAns=fx.g.some(function(q){return A[q.id];})||NOTE['fac_'+fx.id];
+      if(!hasAns) return;
+      if(!facPrinted){ facPrinted=true; }
+      sectionHead(fx.title);
+      qaGroup(fx.g); noteLine('fac_'+fx.id);
+    });
+
+    // ROOT CAUSE
+    sectionHead('Root cause — the 5 whys');
+    paraBlock('1 · Why did the near miss happen',val('why1'));
+    paraBlock('2 · Why was the hazard present',val('why2'));
+    paraBlock('3 · Why did the control fail',val('why3'));
+    paraBlock('4 · Why wasn’t it caught beforehand',val('why4'));
+    paraBlock('5 · Why did the system allow it',val('why5'));
+    if(val('nature')||val('orgfactor')) metaRow([['Primary nature',val('nature')],['Organizational / mgmt factor',val('orgfactor')]]);
+
+    // STAND-DOWN DISCUSSION
+    sectionHead('Stand-down discussion');
+    qaGroup(GSTAND);
+    paraBlock('Crew responses / lessons learned',val('crewnotes'));
+
+    // CORRECTIVE ACTIONS
+    sectionHead('Corrective actions');
+    qaGroup(GCORR);
+    var caRows=document.querySelectorAll('#cas .carow');
+    var anyCA=false;
+    caRows.forEach(function(r){
+      var act=r.querySelector('.ca-act').value.trim();
+      if(!act)return; anyCA=true;
+      var who=r.querySelector('.ca-who').value.trim();
+      var due=fmtDate(r.querySelector('.ca-due').value);
+      var ver=r.querySelector('.ca-ver').value.trim();
+      ensure(26);
+      doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(30,40,34);
+      var lines=doc.splitTextToSize('• '+act,CW);lines.forEach(function(l){ensure(12);doc.text(l,M,y+9);y+=11;});
+      doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(90,100,94);
+      doc.text('Responsible: '+(who||'—')+'    Due: '+(due||'—')+'    Verified by: '+(ver||'—'),M+8,y+9);
+      y+=18;
+    });
+    if(!anyCA && !GCORR.some(function(q){return A[q.id];})) paraBlock('','No corrective actions recorded yet.');
+
+    // BEFORE WORK RESUMES (always all)
+    sectionHead('Before work resumes — required checklist');
+    qaGroup(GRESUME,false);
+
+    // DOCUMENTATION & SIGN-OFF
+    sectionHead('Documentation & sign-off');
+    metaRow([['Stand-down led by',val('leader')],['Supervisor',val('sup')],['Safety rep',val('safety')]]);
+    metaRow([['Companies / trades',val('trades')],['# attendees',val('attn')],['Authorized to resume by',val('authby')]]);
+    qaGroup(GDOC,false);
+    ensure(60);
+    doc.setDrawColor(150,160,153);doc.setLineWidth(1);
+    doc.line(M,y+26,M+230,y+26);doc.line(W-M-230,y+26,W-M,y+26);
+    doc.setFontSize(9);doc.setTextColor(90,100,94);
+    doc.text('Supervisor sign-off',M,y+38);doc.text('Safety sign-off',W-M-230,y+38);
+    y+=52;
+    ensure(40);
+    doc.line(M,y+26,M+230,y+26);
+    doc.setTextColor(90,100,94);
+    doc.setFontSize(9);doc.text('Authorization to resume work (name / date)',M,y+38);
+
+    // watermark on every page
+    var pages=doc.getNumberOfPages();
+    for(var p=1;p<=pages;p++){doc.setPage(p);
+      if(doc.setGState){try{doc.setGState(new doc.GState({opacity:0.09}));}catch(e){}}
+      doc.setTextColor(4,164,102);doc.setFont('helvetica','bold');doc.setFontSize(46);doc.text('SAMPLE • SACREDOPS',W/2,H/2,{align:'center',angle:32});
+      doc.setFontSize(13);doc.text('Subscribe at sacredops.app to remove watermark',W/2,H/2+30,{align:'center',angle:32});
+      if(doc.setGState){try{doc.setGState(new doc.GState({opacity:1}));}catch(e){}}
+      doc.setTextColor(150,164,155);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+      doc.text('Generated free with SacredOps — unlimited stand-down reports + your whole safety program at sacredops.app',M,H-18);
+      doc.text('Page '+p+' of '+pages,W-M,H-18,{align:'right'});
+    }
+    doc.save('StandDown-'+(val('ref')||val('proj')||'report').replace(/[^A-Za-z0-9-]/g,'').slice(0,24)+'.pdf');
+    try{fbq('track','CompleteRegistration');}catch(e){}
+    if(count()>=FREE_LIMIT){setTimeout(showPaywall,800);}
+  }
+
+  renderCounter();
+})();
+</script>
+</body>
+</html>
