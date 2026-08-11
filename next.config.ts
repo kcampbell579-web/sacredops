@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
       // Product landing pages with the embedded live interactive demo.
       { source: "/supervisors", destination: "/supervisors.html" },
       { source: "/crews", destination: "/crews.html" },
+      { source: "/workers", destination: "/crews.html" },
+      { source: "/worker-portal", destination: "/crews.html" },
+      { source: "/for-workers", destination: "/crews.html" },
       { source: "/incident-reporting", destination: "/incident-reporting.html" },
       { source: "/pricing", destination: "/pricing.html" },
       { source: "/contact", destination: "/contact.html" },
