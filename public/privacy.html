@@ -12,8 +12,11 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--black);color:var(--ink);font-family:var(--body);line-height:1.7;font-size:15.5px}
   .wrap{max-width:800px;margin:0 auto;padding:0 22px}
-  header{border-bottom:1px solid var(--hair);padding:26px 0}
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,7,5,.82);border-bottom:1px solid var(--hair);padding:18px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .brand{display:flex;align-items:center;gap:11px}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 15px;border:1px solid var(--green);color:var(--bright);border-radius:2px}
+  .nav-cta:hover{background:var(--green);color:#000}
   .mark{width:34px;height:34px;border-radius:9px;background:#0a0a0a;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center}
   .mark span{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:21px;color:#fff}
   .brand b{font-family:var(--display);font-weight:700;letter-spacing:1px;font-size:19px}
@@ -35,9 +38,12 @@
 </style>
 </head>
 <body>
-<header><div class="wrap brand">
-  <span class="mark"><span>S</span></span>
-  <b>SACRED<i>OPS</i></b>
+<header><div class="wrap">
+  <a href="/" class="brand" style="text-decoration:none">
+    <span class="mark"><span>S</span></span>
+    <b>SACRED<i>OPS</i></b>
+  </a>
+  <a href="/pricing" class="nav-cta">See plans</a>
 </div></header>
 
 <main class="wrap">
