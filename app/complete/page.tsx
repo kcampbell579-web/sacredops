@@ -26,10 +26,26 @@ export default function Complete() {
 
   useEffect(() => {
     document.title = "Payment confirmed — set up SacredOps";
+    // Fire the paid-signup conversions. The analytics scripts load
+    // `afterInteractive`, so gtag may not exist the instant this effect runs —
+    // retry briefly so a real purchase is never dropped. Fire at most once.
     const w = window as unknown as { fbq?: (...a: unknown[]) => void; gtag?: (...a: unknown[]) => void };
-    try { w.fbq?.("track", "Subscribe"); } catch {}
-    try { w.gtag?.("event", "purchase", { transaction_id: "sub_" + Date.now(), currency: "USD" }); } catch {}
-    try { w.gtag?.("event", "conversion", { send_to: "AW-18341083534/2lnpCPbf29UcEI7z2qlE" }); } catch {}
+    const txId = "sub_" + Date.now();
+    let fired = false;
+    const fireConversions = () => {
+      if (fired || typeof w.gtag !== "function") return false;
+      fired = true;
+      try { w.fbq?.("track", "Subscribe"); } catch {}
+      try { w.gtag("event", "purchase", { transaction_id: txId, currency: "USD" }); } catch {}
+      try { w.gtag("event", "conversion", { send_to: "AW-18341083534/2lnpCPbf29UcEI7z2qlE", value: 1.0, currency: "USD" }); } catch {}
+      return true;
+    };
+    if (!fireConversions()) {
+      let tries = 0;
+      const iv = setInterval(() => {
+        if (fireConversions() || ++tries > 40) clearInterval(iv); // up to ~6s
+      }, 150);
+    }
 
     // Stripe appends ?session_id={CHECKOUT_SESSION_ID} to this redirect. Use it
     // to prefill the email they paid with — the server re-verifies it on submit.
