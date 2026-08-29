@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline — SacredOps</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#050705;color:#f2f5f0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:24px}
+  .wrap{max-width:340px}
+  svg{width:64px;height:64px;filter:drop-shadow(0 0 8px rgba(4,164,102,.5));margin-bottom:18px}
+  h1{font-size:20px;margin:0 0 8px}
+  p{color:#8ea394;font-size:14.5px;line-height:1.6;margin:0 0 20px}
+  button{background:#04A466;color:#04231a;border:none;border-radius:11px;padding:13px 22px;font-size:14px;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="none" stroke="#04A466" stroke-width="4"/><line x1="50" y1="4" x2="50" y2="96" stroke="#04A466" stroke-width="4" stroke-linecap="round"/><line x1="4" y1="50" x2="96" y2="50" stroke="#04A466" stroke-width="4" stroke-linecap="round"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(32 50 50)"/><ellipse cx="50" cy="50" rx="30" ry="13" fill="none" stroke="#04A466" stroke-width="3.4" transform="rotate(-32 50 50)"/><circle cx="50" cy="50" r="6" fill="#eafff0"/></svg>
+    <h1>You're offline</h1>
+    <p>SacredOps needs a connection to load. Check your signal and try again — your saved work is safe.</p>
+    <button onclick="location.reload()">Retry</button>
+  </div>
+</body>
+</html>

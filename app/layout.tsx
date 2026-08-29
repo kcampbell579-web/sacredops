@@ -6,13 +6,28 @@ export const metadata: Metadata = {
   title: "SacredOps — Supervisor Portal",
   description:
     "SacredOps is an all-in-one construction operations platform connecting contractors, unions, workers, and trainers.",
+  manifest: "/manifest.webmanifest",
+  applicationName: "SacredOps",
+  appleWebApp: {
+    capable: true,
+    title: "SacredOps",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#0d0d0d",
+  themeColor: "#050705",
 };
 
 export default function RootLayout({
@@ -57,6 +72,12 @@ export default function RootLayout({
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", "xq4xlm8mes");`}
+      </Script>
+
+      {/* PWA service worker — makes SacredOps installable (App Store / Play via
+          PWABuilder) and gives an offline fallback. Network-first, no stale cache. */}
+      <Script id="sw-register" strategy="afterInteractive">
+        {`if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}`}
       </Script>
 
       {/* Meta (Facebook) Pixel — no-op unless NEXT_PUBLIC_FB_PIXEL_ID is set. */}
