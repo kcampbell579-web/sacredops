@@ -1,0 +1,26 @@
+{
+  "name": "SacredOps — Field Safety & Operations",
+  "short_name": "SacredOps",
+  "description": "Run every job site's safety from your phone — toolbox talks, sign-ins, inspections, incident reports, JSAs and training tracking. Audit-ready OSHA compliance for construction and warehouse crews.",
+  "id": "/",
+  "start_url": "/login?src=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#050705",
+  "theme_color": "#050705",
+  "categories": ["business", "productivity", "utilities"],
+  "dir": "ltr",
+  "lang": "en-US",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Supervisor Portal", "short_name": "Supervisor", "url": "/supervisor?src=pwa", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Worker Portal", "short_name": "Worker", "url": "/worker?src=pwa", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
