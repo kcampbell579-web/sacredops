@@ -1,0 +1,71 @@
+// Village — a task marketplace where moms post small jobs and other moms
+// pick them up for a little money. "It takes a village."
+//
+// Local dev uses SQLite (a single dev.db file) so there's zero database
+// setup. For production, switch the datasource provider to "postgresql"
+// and point DATABASE_URL at a hosted Postgres — the models are the same.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// A mom. Everyone can both post tasks and help with tasks.
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  neighborhood String? // e.g. "Eastside" or a town name — helps match locally
+  zip          String?
+  phone        String? // shared with the other mom once a task is claimed
+  bio          String?
+  createdAt    DateTime @default(now())
+
+  postedTasks  Task[]    @relation("Poster")
+  claimedTasks Task[]    @relation("Helper")
+  sessions     Session[]
+}
+
+// Login session. A random token lives in an httpOnly cookie.
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// A task posted by one mom, to be picked up by another.
+// status: OPEN -> CLAIMED -> COMPLETED  (or CANCELLED at any point by poster)
+// category is a plain string validated in the app (SQLite has no enums).
+model Task {
+  id          String    @id @default(cuid())
+  posterId    String
+  poster      User      @relation("Poster", fields: [posterId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  category    String    @default("other")
+  payCents    Int // offered pay in cents (e.g. $20 = 2000)
+  neighborhood String? // where the task is
+  neededBy    DateTime? // optional "needed by" date
+  status      String    @default("OPEN")
+
+  helperId    String?
+  helper      User?     @relation("Helper", fields: [helperId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime  @default(now())
+  claimedAt   DateTime?
+  completedAt DateTime?
+
+  @@index([status])
+  @@index([posterId])
+  @@index([helperId])
+}
