@@ -51,7 +51,7 @@ export function welcomeEmailHtml(): string {
         ${step(3, "Add your crew", 'Share your <b style="color:#20c454">Company Code</b> with your workers. They open the login page, tap <b style="color:#f2f5f0">Worker</b>, and enter the code, their name, and a 4-digit PIN.')}
       </td></tr>
       <tr><td align="center" style="padding:24px 20px 0">
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#8ea394">Log in anytime: <a href="${APP}/login" style="color:#20c454;text-decoration:none">${APP.replace("https://", "")}/login</a><br>Questions? <a href="mailto:support@sacredops.app" style="color:#20c454;text-decoration:none">support@sacredops.app</a>${PORTAL ? `<br>Manage or cancel: <a href="${PORTAL}" style="color:#20c454;text-decoration:none">your subscription</a>` : ""}</p>
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#8ea394">Log in anytime: <a href="${APP}/login" style="color:#20c454;text-decoration:none">${APP.replace("https://", "")}/login</a><br>Questions? <a href="mailto:Kelly@sacredops.app" style="color:#20c454;text-decoration:none">Kelly@sacredops.app</a>${PORTAL ? `<br>Manage or cancel: <a href="${PORTAL}" style="color:#20c454;text-decoration:none">your subscription</a>` : ""}</p>
         <p style="margin:16px 0 0;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;color:#6f8175;text-transform:uppercase">Build Safer &nbsp;·&nbsp; Work Smarter</p>
       </td></tr>
     </table>
