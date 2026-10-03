@@ -353,7 +353,7 @@ fbq('init','1573862441061857');fbq('track','PageView');
 
   function saveLead(email){
     try{ fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email:email,companyName:'Toolbox Talk generator'})}); }catch(e){}
+      body:JSON.stringify({email:email,companyName:'Toolbox Talk generator'}),keepalive:true}); }catch(e){}
   }
 
   function showPaywall(){ $('builder').classList.add('hidden'); $('paywall').classList.remove('hidden'); try{fbq('track','InitiateCheckout');}catch(e){} window.scrollTo({top:0,behavior:'smooth'}); }
