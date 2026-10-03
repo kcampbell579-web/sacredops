@@ -160,7 +160,7 @@
     var name=($('name').value||'').trim(),company=($('company').value||'').trim(),email=($('email').value||'').trim(),phone=($('phone').value||'').trim(),note=($('note').value||'').trim();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$('err').textContent='Please enter a valid email.';$('err').style.display='block';return;}
     var btn=$('sub');btn.disabled=true;btn.textContent='Sending…';
-    fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,email:email,phone:phone,companyName:'Custom Portal · '+(company||'—')+(note?(' — '+note):'')})})
+    fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,email:email,phone:phone,companyName:'Custom Portal · '+(company||'—')+(note?(' — '+note):'')}),keepalive:true})
       .then(function(){ $('ok').style.display='block'; $('cf').reset(); btn.textContent='Request sent ✓';
         try{fbq('track','Lead');}catch(e){} try{gtag('event','conversion',{send_to:'AW-18341083534/CBlPCPnQyNUcEI7z2qlE',value:1.0,currency:'USD'});}catch(e){}
       })
