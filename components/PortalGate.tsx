@@ -9,6 +9,7 @@ import { hydrate, installWriteThrough } from "@/lib/portalSync";
 // their element must not mount until both steps complete.
 export default function PortalGate({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
+  const [locked, setLocked] = useState(false);
   const [message, setMessage] = useState("CHECKING SESSION…");
 
   useEffect(() => {
@@ -28,6 +29,13 @@ export default function PortalGate({ children }: { children: React.ReactNode }) 
         return;
       }
 
+      // A cancelled / unpaid subscription locks the portal until it's
+      // reactivated — never silently show the product to a lapsed account.
+      if ((user as { active?: boolean }).active === false) {
+        if (alive) setLocked(true);
+        return;
+      }
+
       // Expose the company's effective feature flags so the portals can hide
       // any module the company's plan doesn't include.
       (window as unknown as { __sacredFeatures?: Record<string, boolean> }).__sacredFeatures =
@@ -43,6 +51,46 @@ export default function PortalGate({ children }: { children: React.ReactNode }) 
       alive = false;
     };
   }, []);
+
+  if (locked) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#0d0d0d",
+          color: "#f4f7f5",
+          fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+          padding: 24,
+          textAlign: "center",
+        }}
+      >
+        <div style={{ maxWidth: 420 }}>
+          <div style={{ fontSize: 12, letterSpacing: 1.5, color: "#8fa096", fontFamily: "ui-monospace, Menlo, monospace", marginBottom: 10 }}>
+            SUBSCRIPTION INACTIVE
+          </div>
+          <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>Your SacredOps subscription has ended</h1>
+          <p style={{ color: "#8fa096", fontSize: 14.5, lineHeight: 1.6, margin: "0 0 22px" }}>
+            Your company&apos;s records are safe. Reactivate to get your crew back in.
+          </p>
+          <a
+            href="https://www.sacredops.app/pricing"
+            style={{ display: "block", background: "#04A466", color: "#04231a", textDecoration: "none", borderRadius: 12, padding: 15, fontSize: 14, fontWeight: 800, letterSpacing: 0.4 }}
+          >
+            REACTIVATE →
+          </a>
+          <a
+            href="mailto:Kelly@sacredops.app?subject=Reactivate%20SacredOps"
+            style={{ display: "block", marginTop: 12, color: "#8fa096", textDecoration: "none", fontSize: 13, fontWeight: 700 }}
+          >
+            Or email Kelly@sacredops.app
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (!ready) {
     return (
