@@ -1,6 +1,6 @@
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { effectiveFeatures } from "@/lib/features";
+import { effectiveFeatures, CANCELLED_PLAN } from "@/lib/features";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,14 +14,20 @@ export async function GET() {
   const company = await prisma.company.findUnique({ where: { id: user.companyId } });
   // The demo company always shows the full product so prospects see everything.
   const isDemo = company?.joinCode === "SACR-OPS1-DEMO";
-  // Otherwise: full access until there's an ACTIVE paid subscription (free
-  // trial / not-yet-billed). Once they subscribe (stripeSubId set), the chosen
-  // plan's limits apply. Per-company overrides in company.features still win.
+  // A subscription that ended or went unpaid is stamped "cancelled" by the
+  // Stripe webhook: the account is locked (active:false → PortalGate shows a
+  // reactivate screen) and every feature flag is off.
+  const cancelled = !isDemo && company?.plan === CANCELLED_PLAN;
+  // Otherwise, once they subscribe (stripeSubId set) the chosen plan's limits
+  // apply; legacy companies with no subscription keep full access. Per-company
+  // overrides in company.features still win.
   const subscribed = !!company?.stripeSubId;
   const features = isDemo
     ? effectiveFeatures("enterprise", null)
-    : effectiveFeatures(subscribed ? company?.plan : null, company?.features);
+    : cancelled
+      ? effectiveFeatures(CANCELLED_PLAN, null)
+      : effectiveFeatures(subscribed ? company?.plan : null, company?.features);
   return Response.json({
-    user: { ...user, plan: company?.plan || "starter", features },
+    user: { ...user, plan: company?.plan || "starter", active: !cancelled, features },
   });
 }

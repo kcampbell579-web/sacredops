@@ -22,6 +22,11 @@ export const FEATURE_LIST: { key: FeatureKey; label: string; blurb: string }[] =
 
 export type PlanKey = "starter" | "pro" | "business" | "enterprise";
 
+// Terminal state set by the Stripe webhook when a subscription ends or goes
+// unpaid. Not a PlanKey: /api/auth/me reports active:false for it so the
+// portals lock behind a reactivate screen, and every feature flag is off.
+export const CANCELLED_PLAN = "cancelled";
+
 // Which flagged features each plan turns on by default. Cumulative ladder:
 // Starter = core only · Pro adds day-to-day ops · Business adds oversight ·
 // Enterprise adds subcontractor management. (Core features — both portals,
@@ -51,10 +56,17 @@ export function effectiveFeatures(
   plan: string | null | undefined,
   overrides: unknown
 ): Record<string, boolean> {
-  // No plan set yet (free trial / demo / not-yet-billed) → full access, so
-  // prospects experience the whole product. A plan only RESTRICTS features once
-  // it's explicitly assigned (e.g. Stripe webhook sets "starter"). Per-company
-  // overrides below still win for QC / manual tuning.
+  // A cancelled / unpaid subscription turns every flagged module off (the
+  // portal itself is locked by PortalGate via active:false).
+  if (plan === CANCELLED_PLAN) {
+    const off: Record<string, boolean> = {};
+    for (const f of FEATURE_LIST) off[f.key] = false;
+    return off;
+  }
+  // No plan (legacy / demo companies created before paid signup) → full access.
+  // New companies always arrive with a plan from their paid checkout, and a
+  // plan RESTRICTS features once assigned. Per-company overrides below still
+  // win for QC / manual tuning.
   const base = (PLANS[(plan as PlanKey)] || PLANS.enterprise).features;
   const eff: Record<string, boolean> = { ...base };
   if (overrides && typeof overrides === "object") {

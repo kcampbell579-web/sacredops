@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getStripe, planForPrice } from "@/lib/stripe";
+import { CANCELLED_PLAN } from "@/lib/features";
 import { sendEmail, welcomeEmailHtml } from "@/lib/email";
 import type Stripe from "stripe";
 
@@ -63,16 +64,24 @@ export async function POST(req: Request) {
         : null) || (await companyByCustomer(sub.customer as string));
       if (company) {
         const priceId = sub.items?.data?.[0]?.price?.id;
-        const active = sub.status === "active" || sub.status === "trialing";
-        const plan = active ? planForPrice(priceId) || "pro" : "starter";
-        await setPlan(company.id, plan, { stripeSubId: sub.id });
+        // active / trialing → the paid plan (also reactivates a cancelled
+        // account that re-subscribes). past_due → keep access while Stripe
+        // retries the card. canceled / unpaid / incomplete_expired → lock.
+        const good = sub.status === "active" || sub.status === "trialing";
+        if (good) {
+          await setPlan(company.id, planForPrice(priceId) || "pro", { stripeSubId: sub.id });
+        } else if (sub.status !== "past_due") {
+          await setPlan(company.id, CANCELLED_PLAN, { stripeSubId: sub.id });
+        }
       }
     } else if (event.type === "customer.subscription.deleted") {
       const sub = event.data.object as Stripe.Subscription;
       const company = (sub.metadata?.companyId
         ? await prisma.company.findUnique({ where: { id: sub.metadata.companyId } })
         : null) || (await companyByCustomer(sub.customer as string));
-      if (company) await setPlan(company.id, "starter", { stripeSubId: null });
+      // Subscription ended → lock the account. Never downgrade to a free tier:
+      // every plan is paid, and "no plan" would mean full access.
+      if (company) await setPlan(company.id, CANCELLED_PLAN, { stripeSubId: null });
     }
   } catch {
     // Never fail the webhook on our own processing error — Stripe would retry.
