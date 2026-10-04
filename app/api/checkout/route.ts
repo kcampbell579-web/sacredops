@@ -14,10 +14,12 @@ export const dynamic = "force-dynamic";
 // SAFETY NET: if Stripe isn't configured (no secret key, or the plan's price
 // env var is missing) or session creation throws, we fall back to the existing
 // Payment Link for that plan, so a Buy button never dead-ends.
+// Fallbacks are live links on the CURRENT Stripe account (the old account's
+// links are dead): each plan's 7-day-trial Payment Link.
 const FALLBACK: Record<string, string> = {
-  starter: "https://buy.stripe.com/4gM9AMdwE40q6LU0OY2VG03",
-  pro: "https://buy.stripe.com/9B63cobowcwW9Y6cxG2VG02",
-  business: "https://buy.stripe.com/eVqdR20JSfJ85HQ55e2VG01",
+  starter: "https://buy.stripe.com/5kQaERgeg9Sd8DZ6ys5Vu03",
+  pro: "https://buy.stripe.com/fZu28l1jme8tg6r9KE5Vu02",
+  business: "https://buy.stripe.com/6oU14h7HK4xTf2n0a45Vu01",
 };
 
 function originOf(req: Request): string {
