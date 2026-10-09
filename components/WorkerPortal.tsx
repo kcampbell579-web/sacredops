@@ -364,7 +364,16 @@ export default function App(){
   const[tab,setTab]=useState("home");
   // The public /try demo can deep-link straight into a screen (e.g. the
   // incident report) by setting window.__startScreen before this mounts.
-  const[scr,setScr]=useState(()=>{try{const s=window.__startScreen;if(s){delete window.__startScreen;return s;}}catch(e){}return null;});
+  // A scanned equipment QR sticker (/inspect/<id>) leaves a pending scan in
+  // sessionStorage; open the Heavy Equipment Daily Checklist pre-filled for
+  // that machine, exactly like the "simulate a scan" buttons do.
+  const[scr,setScr]=useState(()=>{try{const s=window.__startScreen;if(s){delete window.__startScreen;return s;}}catch(e){}
+    try{const raw=sessionStorage.getItem("sacredops_pending_scan");if(raw){sessionStorage.removeItem("sacredops_pending_scan");const p=JSON.parse(raw);
+      // Ignore stale scans (>10 min) so an old tab doesn't surprise someone later.
+      if(p&&p.id&&Date.now()-(p.at||0)<10*60*1000){const e=EQUIP.find(x=>x.id===p.id);
+        window.__scanEquip=e?{serial:e.serial,cat:e.cat,type:e.type}:{serial:p.id,cat:"Excavator / Payloader",type:"Equipment "+p.id};
+        return {t:"form",id:"heavyeq"};}}}catch(e){}
+    return null;});
   const[toast,setToast]=useState("");
   const[q,setQ]=useState("");
   const[zoom,setZoom]=useState(false);
@@ -523,8 +532,8 @@ export default function App(){
     <div style={{...glass,borderRadius:18,padding:"26px 16px",textAlign:"center",marginBottom:16}}>
       <div style={{width:64,height:64,borderRadius:16,background:AC+"1e",border:"1px solid "+AC+"3a",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px"}}><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3M20 14v3M17 20h3"/></svg></div>
       <div style={{fontSize:15,fontWeight:800,color:TX}}>Scan equipment QR</div>
-      <div style={{fontSize:11.5,color:MU,marginTop:4,lineHeight:1.5}}>Point your camera at the SacredOps sticker on the equipment and its daily inspection opens automatically.</div>
-      <button onClick={()=>show("Camera scanning is enabled in the live app")} style={{marginTop:14,background:AC,color:"#04231a",border:"none",borderRadius:12,padding:"12px 22px",fontSize:12.5,fontWeight:800,cursor:"pointer"}}>Open camera</button>
+      <div style={{fontSize:11.5,color:MU,marginTop:4,lineHeight:1.5}}>Use your phone's built-in camera app — point it at the SacredOps sticker on the machine and tap the link that pops up. The daily inspection opens pre-filled for that machine.</div>
+      <div style={{marginTop:12,fontSize:10.5,color:MU,fontFamily:MONO,letterSpacing:.5}}>NO SEPARATE SCANNER NEEDED · WORKS ON ANY PHONE</div>
     </div>
     <Eyebrow>Demo — tap to simulate a scan</Eyebrow>
     {EQUIP.map(e=>(<button key={e.id} onClick={()=>{window.__scanEquip={serial:e.serial,cat:e.cat,type:e.type};setScr({t:"form",id:"heavyeq"});}} style={{...glass,width:"100%",textAlign:"left",borderRadius:14,padding:"13px",marginBottom:9,cursor:"pointer",display:"flex",alignItems:"center",gap:11}}><div style={{width:38,height:38,borderRadius:10,background:AC+"18",border:"1px solid "+AC+"3a",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:9,fontWeight:800,color:AC,fontFamily:MONO}}>{e.id.replace("EQ-","")}</div><div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:700,color:TX}}>{e.type} · {e.make}</div><div style={{fontSize:10.5,color:MU,fontFamily:MONO}}>SN {e.serial}</div></div><span style={{fontSize:16,color:AC}}>›</span></button>))}
